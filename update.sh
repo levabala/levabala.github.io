@@ -2,5 +2,5 @@ cd ../nugareact2
 yarn build
 
 cd ../levabala.github.io
-cp -a ../nugareact2/. ./
+cp -r ../nugareact2/dist/. ./
 ./commit.sh
