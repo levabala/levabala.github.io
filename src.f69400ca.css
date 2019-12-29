@@ -31,6 +31,10 @@
 .MainBlock__mainBlock__3lG9a {
   position: relative;
   height: 2300px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
 .ScrollingLayer__scrollingLayer__1ogmE {
   position: absolute;
@@ -49,12 +53,26 @@
   position: relative;
 }
 .AppointmentWrapper__appointmentWrapper__1Y-Le {
-  background: #fff;
+  background: #9b0000;
   outline: 1px solid #d3d3d3;
+  opacity: 0.5;
   position: absolute;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
   height: 60px;
   width: 100px;
   transform: "translate(0px, 0px)";
+}
+.AppointmentWrapper__appointmentWrapper__1Y-Le.AppointmentWrapper__dragging__3TsqR {
+  z-index: 10000;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+.AppointmentWrapper__appointmentWrapper__1Y-Le.AppointmentWrapper__dragOrigin__3St2g {
+  opacity: 0.3;
 }
 .AppointmentCell__appointmentCell__2A3wN {
   display: flex;

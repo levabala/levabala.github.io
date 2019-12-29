@@ -57790,34 +57790,16 @@ function createContainer(useHook) {
 function useContainer(container) {
   return container.useContainer();
 }
-},{"react":"../node_modules/react/index.js"}],"stores/appointments.ts":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js"}],"assembly/interval.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createAppointment = createAppointment;
-exports.AppointmentsInfo = void 0;
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
-
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
-
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
-
-var _immutable = require("immutable");
-
-var _react = require("react");
-
-var _unstatedNext = require("unstated-next");
-
-var _uuid = _interopRequireDefault(require("uuid"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+exports.maxInterval = maxInterval;
+exports.withinInterval = withinInterval;
+exports.offsetInterval = offsetInterval;
+exports.areIntervalsIntersects = areIntervalsIntersects;
 
 function maxInterval(i1, i2) {
   return {
@@ -57826,207 +57808,25 @@ function maxInterval(i1, i2) {
   };
 }
 
-function createAppointment(args) {
-  return _objectSpread({}, args, {
-    id: args.id || _uuid.default.v4()
-  });
+function withinInterval(val, i) {
+  var includeStart = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  var includeEnd = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+  return (includeStart ? i.start <= val : i.start < val) && (includeEnd ? i.end >= val : i.end > val);
 }
 
-function useAppointments() {
-  var initialState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 25;
-
-  var _useState = (0, _react.useState)(initialState),
-      _useState2 = (0, _slicedToArray2.default)(_useState, 1),
-      blockSize = _useState2[0];
-
-  var _useState3 = (0, _react.useState)(_immutable.List.of()),
-      _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
-      appointmentBlocks = _useState4[0],
-      setAppointmentBlocks = _useState4[1];
-
-  var addAppointment = function addAppointment(app) {
-    var blockIndex = appointmentBlocks.findLastIndex(function (block) {
-      return block.elements.size <= blockSize && (block.interval.start.valueOf() <= app.interval.start.valueOf() || block.interval.start === Infinity);
-    });
-    var targetBlock = appointmentBlocks.get(blockIndex);
-    var newApps = blockIndex === -1 ? appointmentBlocks.push({
-      elements: _immutable.List.of(app),
-      id: _uuid.default.v4(),
-      interval: app.interval,
-      size: 1
-    }) : appointmentBlocks.set(blockIndex, {
-      elements: targetBlock.elements.push(app).sortBy(function (a) {
-        return a.interval.start;
-      }),
-      id: targetBlock.id,
-      interval: maxInterval(targetBlock.interval, app.interval),
-      size: targetBlock.size + 1
-    });
-    setAppointmentBlocks(newApps);
-  };
-
-  var addAppointments = function addAppointments(apps) {
-    var blockIndex2apps = apps.reduce(function (acc, app) {
-      var blockIndex = appointmentBlocks.findLastIndex(function (block, i) {
-        return block.elements.size + (acc[i] || {
-          length: 0
-        }).length < blockSize && block.interval.start.valueOf() <= app.interval.start.valueOf();
-      });
-      return _objectSpread({}, acc, (0, _defineProperty2.default)({}, blockIndex, [].concat((0, _toConsumableArray2.default)(acc[blockIndex] || []), [app])));
-    }, {});
-    var appsWithoutBlock = blockIndex2apps[-1] || [];
-    var newBlocks = Array.from((0, _immutable.List)(appsWithoutBlock).sortBy(function (a) {
-      return a.interval.start;
-    }).reduce(function (acc, val) {
-      if (!acc.length) return [{
-        elements: _immutable.List.of(val),
-        id: _uuid.default.v4(),
-        interval: val.interval,
-        size: 1
-      }];
-      var currentBlockIndex = acc[acc.length - 1].size < blockSize ? acc.length - 1 : acc.length;
-      var currentBlock = acc[currentBlockIndex] || {
-        elements: (0, _immutable.List)(),
-        id: _uuid.default.v4(),
-        interval: {
-          end: -Infinity,
-          start: Infinity
-        },
-        size: 0
-      };
-      return [].concat((0, _toConsumableArray2.default)(acc.slice(0, currentBlockIndex)), [{
-        elements: currentBlock.elements.push(val),
-        id: currentBlock.id,
-        interval: maxInterval(currentBlock.interval, val.interval),
-        size: currentBlock.size + 1
-      }]);
-    }, []));
-    var newAppBlocks = appointmentBlocks.map(function (block, i) {
-      return i in blockIndex2apps ? _objectSpread({}, block, {
-        elements: block.elements.concat(blockIndex2apps[i]).sortBy(function (_ref) {
-          var interval = _ref.interval;
-          return interval.start;
-        }),
-        id: block.id,
-        size: block.size + blockIndex2apps[i].length
-      }) : block;
-    });
-    setAppointmentBlocks(newAppBlocks.concat(newBlocks).sortBy(function (b) {
-      return b.interval.start;
-    }));
-  };
-
+function offsetInterval(i, delta) {
   return {
-    appointmentBlocks: appointmentBlocks,
-    addAppointment: addAppointment,
-    addAppointments: addAppointments,
-    blockSize: blockSize
+    start: i.start.valueOf() + delta.valueOf(),
+    end: i.end.valueOf() + delta.valueOf()
   };
 }
 
-var AppointmentsInfo = (0, _unstatedNext.createContainer)(useAppointments);
-exports.AppointmentsInfo = AppointmentsInfo;
-},{"@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","immutable":"../node_modules/immutable/dist/immutable.es.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","uuid":"../node_modules/uuid/index.js"}],"fetchers/fetchAppointments.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.fetchAppointments = fetchAppointments;
-exports.default = void 0;
-
-var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
-
-var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
-
-var _dateFns = require("date-fns");
-
-var _uuid = _interopRequireDefault(require("uuid"));
-
-var _random = require("../assembly/random");
-
-var _timeout = require("../assembly/timeout");
-
-var _utility = require("../assembly/utility");
-
-var _appointments = require("../stores/appointments");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function fetchAppointments(_x) {
-  return _fetchAppointments.apply(this, arguments);
+function areIntervalsIntersects(i1, i2) {
+  var includeStart = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  var includeEnd = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+  return i1.start == i2.start && i1.end == i2.end || withinInterval(i1.start, i2, includeStart, includeEnd) || withinInterval(i1.end, i2, includeStart, includeEnd) || withinInterval(i2.start, i1, includeStart, includeEnd) || withinInterval(i2.end, i1, includeStart, includeEnd);
 }
-
-function _fetchAppointments() {
-  _fetchAppointments = (0, _asyncToGenerator2.default)(
-  /*#__PURE__*/
-  _regenerator.default.mark(function _callee(interval) {
-    var stepDuration,
-        densityPerDay,
-        maxRowIndex,
-        delay,
-        possibleDuration,
-        snapValue,
-        toGenerate,
-        apps,
-        _args = arguments;
-    return _regenerator.default.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            snapValue = function _ref(val) {
-              return Math.floor(val / stepDuration.valueOf()) * stepDuration.valueOf();
-            };
-
-            stepDuration = _args.length > 1 && _args[1] !== undefined ? _args[1] : 1;
-            densityPerDay = _args.length > 2 && _args[2] !== undefined ? _args[2] : 200;
-            maxRowIndex = _args.length > 3 && _args[3] !== undefined ? _args[3] : 10;
-            delay = 0;
-            possibleDuration = {
-              end: (0, _dateFns.addMinutes)(0, 120),
-              start: (0, _dateFns.addMinutes)(0, 40)
-            };
-            _context.next = 8;
-            return (0, _timeout.timeout)(delay);
-
-          case 8:
-            toGenerate = Math.round((0, _dateFns.differenceInMilliseconds)(interval.end, interval.start) * (densityPerDay / (0, _dateFns.addDays)(0, 1).valueOf()));
-            apps = (0, _utility.shell)(toGenerate).map(function (_) {
-              return snapValue((0, _random.randomInt)(interval.start, Math.max(interval.start.valueOf(), interval.end.valueOf() - possibleDuration.start.valueOf())));
-            }).map(function (start) {
-              var duration = snapValue((0, _random.randomInt)(possibleDuration.start, possibleDuration.end));
-              var end = Math.min(start + duration, interval.end.valueOf());
-              return (0, _appointments.createAppointment)({
-                interval: {
-                  start: start,
-                  end: end
-                },
-                rowIndex: (0, _random.randomInt)(0, maxRowIndex),
-                userId: _uuid.default.v4()
-              });
-            }).reduce(function (acc, app) {
-              return acc.some(function (app2) {
-                return app2.rowIndex === app.rowIndex && (0, _dateFns.areIntervalsOverlapping)(app.interval, app2.interval);
-              }) ? acc : [].concat((0, _toConsumableArray2.default)(acc), [app]);
-            }, []);
-            console.log("".concat(apps.length, " apps fetched"));
-            return _context.abrupt("return", apps);
-
-          case 12:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee);
-  }));
-  return _fetchAppointments.apply(this, arguments);
-}
-
-var _default = 0;
-exports.default = _default;
-},{"@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/asyncToGenerator":"../node_modules/@babel/runtime/helpers/asyncToGenerator.js","date-fns":"../node_modules/date-fns/esm/index.js","uuid":"../node_modules/uuid/index.js","../assembly/random":"assembly/random.ts","../assembly/timeout":"assembly/timeout.ts","../assembly/utility":"assembly/utility.ts","../stores/appointments":"stores/appointments.ts"}],"stores/ui.ts":[function(require,module,exports) {
+},{}],"stores/ui.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -58056,64 +57856,7 @@ function useUI() {
 
 var UIInfo = (0, _unstatedNext.createContainer)(useUI);
 exports.UIInfo = UIInfo;
-},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs"}],"stores/users.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.createUser = createUser;
-exports.UsersInfo = void 0;
-
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
-
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
-
-var _react = require("react");
-
-var _unstatedNext = require("unstated-next");
-
-var _uuid = _interopRequireDefault(require("uuid"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function createUser(args) {
-  return _objectSpread({}, args, {
-    id: args.id || _uuid.default.v4(),
-    secondName: args.secondName || ""
-  });
-}
-
-function useUsers() {
-  var _useState = (0, _react.useState)({}),
-      _useState2 = (0, _slicedToArray2.default)(_useState, 2),
-      users = _useState2[0],
-      setUsers = _useState2[1];
-
-  var addUser = function addUser(user) {
-    return setUsers(_objectSpread({}, users, (0, _defineProperty2.default)({}, user.id, user)));
-  };
-
-  var addUsers = function addUsers(newUsers) {
-    return setUsers(_objectSpread({}, users, {}, newUsers.reduce(function (acc, user) {
-      return _objectSpread({}, acc, (0, _defineProperty2.default)({}, user.id, user));
-    }, {})));
-  };
-
-  return {
-    users: users,
-    addUser: addUser,
-    addUsers: addUsers
-  };
-}
-
-var UsersInfo = (0, _unstatedNext.createContainer)(useUsers);
-exports.UsersInfo = UsersInfo;
-},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","uuid":"../node_modules/uuid/index.js"}],"components/Calendar/Calendar.variables.scss":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs"}],"components/Calendar/Calendar.variables.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
@@ -58127,7 +57870,7 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.LeftColumnInfo = exports.ViewIntervalInfo = exports.GridInfo = exports.ScrollInfo = exports.RowsInfo = exports.ColumnsInfo = exports.TimeLineInfo = void 0;
+exports.LeftColumnInfo = exports.ViewIntervalInfo = exports.GridInfo = exports.ScrollInfo = exports.RowsInfo = exports.ColumnsInfo = exports.TimeLineInfo = exports.DraggedInfo = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -58156,7 +57899,8 @@ function useLeftColumn() {
       setLeftColumnWidth = _useState2[1];
 
   return {
-    leftColumnWidth: leftColumnWidth
+    leftColumnWidth: leftColumnWidth,
+    setLeftColumnWidth: setLeftColumnWidth
   };
 }
 
@@ -58411,6 +58155,30 @@ function useViewInterval() {
   };
 }
 
+function useDragged() {
+  var _useState33 = (0, _react.useState)(null),
+      _useState34 = (0, _slicedToArray2.default)(_useState33, 2),
+      draggingApp = _useState34[0],
+      setDraggingApp = _useState34[1];
+
+  var _useState35 = (0, _react.useState)({
+    dx: 0,
+    dy: 0
+  }),
+      _useState36 = (0, _slicedToArray2.default)(_useState35, 2),
+      dragOffsetToAppCell = _useState36[0],
+      setDragOffsetToAppCell = _useState36[1];
+
+  return {
+    draggingApp: draggingApp,
+    setDraggingApp: setDraggingApp,
+    dragOffsetToAppCell: dragOffsetToAppCell,
+    setDragOffsetToAppCell: setDragOffsetToAppCell
+  };
+}
+
+var DraggedInfo = (0, _unstatedNext.createContainer)(useDragged);
+exports.DraggedInfo = DraggedInfo;
 var TimeLineInfo = (0, _unstatedNext.createContainer)(useTimeLine);
 exports.TimeLineInfo = TimeLineInfo;
 var ColumnsInfo = (0, _unstatedNext.createContainer)(useColumns);
@@ -58425,7 +58193,597 @@ var ViewIntervalInfo = (0, _unstatedNext.createContainer)(useViewInterval);
 exports.ViewIntervalInfo = ViewIntervalInfo;
 var LeftColumnInfo = (0, _unstatedNext.createContainer)(useLeftColumn);
 exports.LeftColumnInfo = LeftColumnInfo;
-},{"@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../stores/ui":"stores/ui.ts","./Calendar.variables.scss":"components/Calendar/Calendar.variables.scss"}],"components/Calendar/LeftBlock/LeftBlock.scss":[function(require,module,exports) {
+},{"@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../stores/ui":"stores/ui.ts","./Calendar.variables.scss":"components/Calendar/Calendar.variables.scss"}],"stores/appointments.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createAppointment = createAppointment;
+exports.AppointmentsInfo = exports.Result = void 0;
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
+
+var _immutable = require("immutable");
+
+var _react = require("react");
+
+var _unstatedNext = require("unstated-next");
+
+var _uuid = require("uuid");
+
+var _interval = require("../assembly/interval");
+
+var _Calendar = require("../components/Calendar/Calendar.containers");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function maxInterval(i1, i2) {
+  return {
+    end: Math.max(i1.end, i2.end),
+    start: Math.min(i1.start, i2.start)
+  };
+}
+
+function createAppointment(args) {
+  return _objectSpread({}, args, {
+    id: args.id || (0, _uuid.v4)()
+  });
+}
+
+var Result;
+exports.Result = Result;
+
+(function (Result) {
+  Result[Result["Success"] = 0] = "Success";
+  Result[Result["Fail"] = 1] = "Fail";
+})(Result || (exports.Result = Result = {}));
+
+function useAppointments() {
+  var initialStateOrigin = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+    blockSize: 25
+  };
+
+  var _useState = (0, _react.useState)(initialStateOrigin),
+      _useState2 = (0, _slicedToArray2.default)(_useState, 1),
+      initialState = _useState2[0];
+
+  var blockSize = initialState.blockSize;
+
+  var _RowsInfo$useContaine = _Calendar.RowsInfo.useContainer(),
+      rowsCount = _RowsInfo$useContaine.rowsCount;
+
+  var _useState3 = (0, _react.useState)(_immutable.List.of()),
+      _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
+      appointmentBlocks = _useState4[0],
+      setAppointmentBlocks = _useState4[1];
+
+  var addAppointment = (0, _react.useCallback)(function (app) {
+    var blockIndex = appointmentBlocks.findLastIndex(function (block) {
+      return block.elements.size <= blockSize && (block.interval.start.valueOf() <= app.interval.start.valueOf() || block.interval.start === Infinity);
+    });
+    var targetBlock = appointmentBlocks.get(blockIndex);
+
+    var appWithBlockId = _objectSpread({}, app, {
+      blockId: targetBlock.id
+    });
+
+    var newApps = blockIndex === -1 ? appointmentBlocks.push({
+      elements: _immutable.List.of(appWithBlockId),
+      id: (0, _uuid.v4)(),
+      interval: app.interval,
+      size: 1
+    }) : appointmentBlocks.set(blockIndex, {
+      elements: targetBlock.elements.push(appWithBlockId).sortBy(function (a) {
+        return a.interval.start;
+      }),
+      id: targetBlock.id,
+      interval: maxInterval(targetBlock.interval, app.interval),
+      size: targetBlock.size + 1
+    });
+    setAppointmentBlocks(newApps);
+  }, [appointmentBlocks, blockSize]);
+  var addAppointments = (0, _react.useCallback)(function (apps) {
+    var blockIndex2apps = apps.reduce(function (acc, app) {
+      var blockIndex = appointmentBlocks.findLastIndex(function (block, i) {
+        return block.elements.size + (acc[i] || {
+          length: 0
+        }).length < blockSize && block.interval.start.valueOf() <= app.interval.start.valueOf();
+      });
+
+      var appWithIndex = _objectSpread({}, app, {
+        blockId: blockIndex.toString()
+      });
+
+      return _objectSpread({}, acc, (0, _defineProperty2.default)({}, blockIndex, [].concat((0, _toConsumableArray2.default)(acc[blockIndex] || []), [appWithIndex])));
+    }, {}); // TODO: mark each Appointment with block id
+
+    var appsWithoutBlock = blockIndex2apps[-1] || [];
+    var newBlocks = Array.from((0, _immutable.List)(appsWithoutBlock).sortBy(function (a) {
+      return a.interval.start;
+    }).reduce(function (acc, val) {
+      if (!acc.length) {
+        var blockId = (0, _uuid.v4)();
+        var block = {
+          elements: _immutable.List.of(_objectSpread({}, val, {
+            blockId: blockId
+          })),
+          id: blockId,
+          interval: val.interval,
+          size: 1
+        };
+        return [block];
+      }
+
+      var currentBlockIndex = acc[acc.length - 1].size < blockSize ? acc.length - 1 : acc.length;
+      var currentBlock = acc[currentBlockIndex] || {
+        elements: (0, _immutable.List)(),
+        id: (0, _uuid.v4)(),
+        interval: {
+          end: -Infinity,
+          start: Infinity
+        },
+        size: 0
+      };
+
+      var appWithBlockId = _objectSpread({}, val, {
+        blockId: currentBlock.id
+      });
+
+      return [].concat((0, _toConsumableArray2.default)(acc.slice(0, currentBlockIndex)), [{
+        elements: currentBlock.elements.push(appWithBlockId),
+        id: currentBlock.id,
+        interval: maxInterval(currentBlock.interval, val.interval),
+        size: currentBlock.size + 1
+      }]);
+    }, []));
+    var newAppBlocks = appointmentBlocks.map(function (block, i) {
+      return i in blockIndex2apps ? _objectSpread({}, block, {
+        elements: block.elements.concat(blockIndex2apps[i]).sortBy(function (_ref) {
+          var interval = _ref.interval;
+          return interval.start;
+        }),
+        id: block.id,
+        size: block.size + blockIndex2apps[i].length
+      }) : block;
+    });
+    setAppointmentBlocks(newAppBlocks.concat(newBlocks).sortBy(function (b) {
+      return b.interval.start;
+    }));
+  }, [appointmentBlocks, blockSize]);
+  var getAppCoords = (0, _react.useCallback)(function (id) {
+    var appointmentBlocksCurrent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : appointmentBlocks;
+    var coords = appointmentBlocksCurrent.reduce(function (coords, block, blockId) {
+      if (coords) return coords;
+      var appIndex = block.elements.findIndex(function (app) {
+        return app.id === id;
+      });
+      if (appIndex === -1) return coords;
+      return {
+        blockId: blockId,
+        appIndex: appIndex
+      };
+    }, null);
+    return coords;
+  }, [appointmentBlocks]);
+  var getAppById = (0, _react.useCallback)(function (id) {
+    var _getAppCoords = getAppCoords(id),
+        appIndex = _getAppCoords.appIndex,
+        blockId = _getAppCoords.blockId;
+
+    var app = appointmentBlocks.get(blockId).elements.get(appIndex);
+    return app;
+  }, [getAppCoords, appointmentBlocks]);
+  var shiftAppForBlocks = (0, _react.useCallback)(function (shiftingAppId, delta, appointmentBlocks) {
+    var _getAppCoords2 = getAppCoords(shiftingAppId, appointmentBlocks),
+        blockId = _getAppCoords2.blockId,
+        appIndex = _getAppCoords2.appIndex;
+
+    var block = appointmentBlocks.get(blockId);
+
+    var updatedBlock = _objectSpread({}, block, {
+      elements: block.elements.update(appIndex, function (previousApp) {
+        return _objectSpread({}, previousApp, {
+          rowIndex: previousApp.rowIndex + delta
+        });
+      })
+    });
+
+    var newAppointmentBlocks = appointmentBlocks.update(blockId, function () {
+      return updatedBlock;
+    });
+    return newAppointmentBlocks;
+  }, [getAppCoords]); // TODO: not to override existing block - move newApp to another block instead
+
+  var updateAppForBlocks = (0, _react.useCallback)(function (newApp, appointmentBlocks) {
+    var _getAppCoords3 = getAppCoords(newApp.id, appointmentBlocks),
+        blockId = _getAppCoords3.blockId,
+        appIndex = _getAppCoords3.appIndex;
+
+    var block = appointmentBlocks.get(blockId);
+
+    var updatedBlock = _objectSpread({}, block, {
+      interval: maxInterval(block.interval, newApp.interval),
+      elements: block.elements.update(appIndex, function (previousApp) {
+        return _objectSpread({}, previousApp, {}, newApp);
+      })
+    });
+
+    var newAppointmentBlocks = appointmentBlocks.update(blockId, function () {
+      return updatedBlock;
+    });
+    return newAppointmentBlocks;
+  }, [getAppCoords]);
+  var updateApp = (0, _react.useCallback)(function (newApp) {
+    var newAppointmentBlocks = updateAppForBlocks(newApp, appointmentBlocks);
+    setAppointmentBlocks(newAppointmentBlocks);
+  }, [appointmentBlocks, updateAppForBlocks]);
+  var updateApps = (0, _react.useCallback)(function (newApps) {
+    var newAppointmentBlocks = newApps.reduce(function (acc, val) {
+      return updateAppForBlocks(val, acc);
+    }, appointmentBlocks);
+    setAppointmentBlocks(newAppointmentBlocks);
+  }, [appointmentBlocks, updateAppForBlocks]);
+  var getApp = (0, _react.useCallback)(function (date, row) {
+    var blocks = appointmentBlocks.filter(function (block) {
+      return (0, _interval.withinInterval)(date, block.interval);
+    });
+    var app = blocks.reduce(function (app, block) {
+      return app ? app : block.elements.find(function (app) {
+        return app.rowIndex === row && (0, _interval.withinInterval)(date, app.interval, true, false);
+      });
+    }, null);
+    return app;
+  }, [appointmentBlocks]);
+  var getVerticalNeighboursByApp = (0, _react.useCallback)(function (targetApp) {
+    var appointmentBlocksCurrent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : appointmentBlocks;
+
+    var areVerticalNeighbours = function areVerticalNeighbours(app1, app2) {
+      return Math.abs(app1.rowIndex - app2.rowIndex) === 1 && (0, _interval.areIntervalsIntersects)(app1.interval, app2.interval, false, false);
+    }; // we are looking only to 1 level of blocks recursion
+
+
+    var intersectingBlocks = appointmentBlocksCurrent.filter(function (block) {
+      return (0, _interval.areIntervalsIntersects)(block.interval, targetApp.interval);
+    });
+    var totalNeighbours = intersectingBlocks.reduce(function (acc, block) {
+      return acc.concat(block.elements.filter(function (app) {
+        return areVerticalNeighbours(targetApp, app);
+      }));
+    }, _immutable.List.of());
+    return totalNeighbours;
+  }, [appointmentBlocks]);
+  var getVerticalNeighboursById = (0, _react.useCallback)(function (appId) {
+    var appointmentBlocksCurrent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : appointmentBlocks;
+
+    var _getAppCoords4 = getAppCoords(appId, appointmentBlocksCurrent),
+        blockId = _getAppCoords4.blockId,
+        appIndex = _getAppCoords4.appIndex;
+
+    var originBlock = appointmentBlocksCurrent.get(blockId);
+    var targetApp = originBlock.elements.get(appIndex);
+    return getVerticalNeighboursByApp(targetApp, appointmentBlocksCurrent);
+  }, [appointmentBlocks, getAppCoords, getVerticalNeighboursByApp]);
+  var getIntersectingApps = (0, _react.useCallback)(function (row, interval) {
+    var intersectingBlocks = appointmentBlocks.filter(function (block) {
+      return (0, _interval.areIntervalsIntersects)(block.interval, interval);
+    });
+    var intersectingApps = intersectingBlocks.reduce(function (acc, block) {
+      return acc.concat(block.elements.filter(function (app) {
+        return app.rowIndex === row && (0, _interval.areIntervalsIntersects)(app.interval, interval, false, false);
+      }));
+    }, _immutable.List.of());
+    return intersectingApps;
+  }, [appointmentBlocks]);
+  var tryToFreePlace = (0, _react.useCallback)(function (forWhom, rowIndex, interval) {
+    var usedIds = new Set();
+
+    var makeIdShorter = function makeIdShorter(id) {
+      return id.split("-")[0];
+    };
+
+    var getIdNode = function getIdNode(node) {
+      return makeIdShorter(node.value.id);
+    };
+
+    var applyShiftNode = function applyShiftNode(node, appointmentBlocks) {
+      var reducer = function reducer(acc, val) {
+        return applyShiftNode(val, acc);
+      };
+
+      if (node.ifGoUp) {
+        if (window.logging) console.log("shift ".concat(getIdNode(node), " up"));
+        var onceShiftedAppBlocks = shiftAppForBlocks(node.value.id, -1, appointmentBlocks);
+        var fullyShitedNewAppBlocks = node.ifGoUp.reduce(reducer, onceShiftedAppBlocks);
+        return fullyShitedNewAppBlocks;
+      } else if (node.ifGoDown) {
+        if (window.logging) console.log("shift ".concat(getIdNode(node), " down"));
+
+        var _onceShiftedAppBlocks = shiftAppForBlocks(node.value.id, 1, appointmentBlocks);
+
+        var _fullyShitedNewAppBlocks = node.ifGoDown.reduce(reducer, _onceShiftedAppBlocks);
+
+        return _fullyShitedNewAppBlocks;
+      }
+
+      throw new Error("This node is stop node");
+    };
+
+    var getNeighboursUnderAndAbove = function getNeighboursUnderAndAbove(app, appointmentBlocks, exclude) {
+      var verticalNeighbours = getVerticalNeighboursByApp(app, appointmentBlocks).filter(function (_ref2) {
+        var id = _ref2.id;
+        return !exclude.includes(id);
+      });
+      var under = verticalNeighbours.filter(function (nei) {
+        return nei.rowIndex > app.rowIndex;
+      });
+      var above = verticalNeighbours.filter(function (nei) {
+        return nei.rowIndex < app.rowIndex;
+      });
+      return {
+        under: under,
+        above: above
+      };
+    };
+
+    var buildShiftNode = function buildShiftNode(app, moverId, appointmentBlocks) {
+      if (window.logging) console.log("buildShiftNode for ".concat(makeIdShorter(app.id), " (previous: ").concat(makeIdShorter(moverId), ")"));
+      var node = {
+        value: app,
+        ifGoUp: false,
+        // nodes to shift if to go up
+        ifGoDown: false // nodes to shift if to go down
+
+      };
+      return buildShiftTree(node, moverId, appointmentBlocks);
+    };
+
+    var buildShiftTree = function buildShiftTree(currentNode, moverId, appointmentBlocks) {
+      if (window.logging) console.log("buildShiftTree for ".concat(getIdNode(currentNode), " (previous: ").concat(makeIdShorter(moverId), ")"));
+
+      var _getNeighboursUnderAn = getNeighboursUnderAndAbove(currentNode.value, appointmentBlocks, []),
+          appsAbove = _getNeighboursUnderAn.above,
+          appsUnder = _getNeighboursUnderAn.under;
+
+      var currentApp = currentNode.value;
+      usedIds.add(currentApp.id);
+      var nearToBorderTop = currentApp.rowIndex === 0;
+      var nearToBorderBottom = currentApp.rowIndex === rowsCount - 1;
+
+      var isStatic = function isStatic(app) {
+        return usedIds.has(app.id) || app.id === forWhom;
+      };
+
+      var isStaticTop = nearToBorderTop || appsAbove.some(isStatic);
+      var isStaticBottom = nearToBorderBottom || appsUnder.some(isStatic);
+
+      var reducer = function reducer(acc, val) {
+        if (!acc || usedIds.has(val.id)) return false;
+        var node = buildShiftNode(val, currentApp.id, appointmentBlocks);
+        if (!node) return false;
+        return acc.push(node);
+      };
+
+      var shiftsTop = isStaticTop ? false : appsAbove.reduce(reducer, _immutable.List.of());
+      var shiftsBottom = isStaticBottom ? false : appsUnder.reduce(reducer, _immutable.List.of()); // mutating
+
+      currentNode.ifGoUp = shiftsTop;
+      currentNode.ifGoDown = shiftsBottom;
+      if (window.logging) console.log("".concat(getIdNode(currentNode), " was build. up: ").concat(shiftsTop && shiftsTop.count(), " down: ").concat(shiftsBottom && shiftsBottom.count()));
+      return !shiftsTop && !shiftsBottom ? false : currentNode;
+    }; // move draggingApp
+
+
+    var appBlocksAfterDrop = updateAppForBlocks({
+      id: forWhom,
+      interval: interval,
+      rowIndex: rowIndex
+    }, appointmentBlocks); // get all intersecting apps except dragging app
+
+    var intersectingApps = getIntersectingApps(rowIndex, interval).filter(function (_ref3) {
+      var id = _ref3.id;
+      return id !== forWhom;
+    });
+    if (window.logging) console.log("placing ".concat(makeIdShorter(forWhom))); // if no intersectings - just return
+
+    if (!intersectingApps.count()) return [Result.Success, appBlocksAfterDrop];
+    var result = intersectingApps.reduce(function (appBlocks, val) {
+      if (!appBlocks) return false;
+      if (window.logging) console.log("shifting app ".concat(makeIdShorter(val.id)));
+      var rootShiftNode = buildShiftNode(val, forWhom, appBlocks);
+      if (!rootShiftNode) return false;
+      if (window.logging) console.log({
+        rootShiftNode: rootShiftNode
+      });
+      var newAppBlocks = applyShiftNode(rootShiftNode, appBlocks);
+      return newAppBlocks;
+    }, appBlocksAfterDrop);
+    if (!result) return [Result.Fail];else return [Result.Success, result];
+  }, [getIntersectingApps, getVerticalNeighboursByApp, appointmentBlocks, rowsCount, shiftAppForBlocks, updateAppForBlocks]);
+  return {
+    appointmentBlocks: appointmentBlocks,
+    addAppointment: addAppointment,
+    addAppointments: addAppointments,
+    blockSize: blockSize,
+    getApp: getApp,
+    getAppById: getAppById,
+    getAppCoords: getAppCoords,
+    updateApp: updateApp,
+    updateApps: updateApps,
+    getVerticalNeighbours: getVerticalNeighboursById,
+    tryToFreePlace: tryToFreePlace,
+    setAppointmentBlocks: setAppointmentBlocks
+  };
+}
+
+var AppointmentsInfo = (0, _unstatedNext.createContainer)(useAppointments);
+exports.AppointmentsInfo = AppointmentsInfo;
+},{"@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","immutable":"../node_modules/immutable/dist/immutable.es.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","uuid":"../node_modules/uuid/index.js","../assembly/interval":"assembly/interval.ts","../components/Calendar/Calendar.containers":"components/Calendar/Calendar.containers.ts"}],"fetchers/fetchAppointments.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.fetchAppointments = fetchAppointments;
+exports.default = void 0;
+
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+
+var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
+
+var _dateFns = require("date-fns");
+
+var _uuid = require("uuid");
+
+var _random = require("../assembly/random");
+
+var _timeout = require("../assembly/timeout");
+
+var _utility = require("../assembly/utility");
+
+var _appointments = require("../stores/appointments");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function fetchAppointments(_x) {
+  return _fetchAppointments.apply(this, arguments);
+}
+
+function _fetchAppointments() {
+  _fetchAppointments = (0, _asyncToGenerator2.default)(
+  /*#__PURE__*/
+  _regenerator.default.mark(function _callee(interval) {
+    var stepDuration,
+        densityPerDay,
+        maxRowIndex,
+        delay,
+        possibleDuration,
+        snapValue,
+        toGenerate,
+        apps,
+        _args = arguments;
+    return _regenerator.default.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            snapValue = function _ref(val) {
+              return Math.floor(val / stepDuration.valueOf()) * stepDuration.valueOf();
+            };
+
+            stepDuration = _args.length > 1 && _args[1] !== undefined ? _args[1] : 1;
+            densityPerDay = _args.length > 2 && _args[2] !== undefined ? _args[2] : 200;
+            maxRowIndex = _args.length > 3 && _args[3] !== undefined ? _args[3] : 10;
+            delay = 0;
+            possibleDuration = {
+              end: (0, _dateFns.addMinutes)(0, 120),
+              start: (0, _dateFns.addMinutes)(0, 40)
+            };
+            _context.next = 8;
+            return (0, _timeout.timeout)(delay);
+
+          case 8:
+            toGenerate = Math.round((0, _dateFns.differenceInMilliseconds)(interval.end, interval.start) * (densityPerDay / (0, _dateFns.addDays)(0, 1).valueOf()));
+            apps = (0, _utility.shell)(toGenerate).map(function () {
+              return snapValue((0, _random.randomInt)(interval.start, Math.max(interval.start.valueOf(), interval.end.valueOf() - possibleDuration.start.valueOf())));
+            }).map(function (start) {
+              var duration = snapValue((0, _random.randomInt)(possibleDuration.start, possibleDuration.end));
+              var end = Math.min(start + duration, interval.end.valueOf());
+              return (0, _appointments.createAppointment)({
+                interval: {
+                  start: start,
+                  end: end
+                },
+                rowIndex: (0, _random.randomInt)(0, maxRowIndex),
+                userId: (0, _uuid.v4)()
+              });
+            }).reduce(function (acc, app) {
+              return acc.some(function (app2) {
+                return app2.rowIndex === app.rowIndex && (0, _dateFns.areIntervalsOverlapping)(app.interval, app2.interval);
+              }) ? acc : [].concat((0, _toConsumableArray2.default)(acc), [app]);
+            }, []);
+            console.log("".concat(apps.length, " apps fetched"));
+            return _context.abrupt("return", apps);
+
+          case 12:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+  return _fetchAppointments.apply(this, arguments);
+}
+
+var _default = 0;
+exports.default = _default;
+},{"@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/asyncToGenerator":"../node_modules/@babel/runtime/helpers/asyncToGenerator.js","date-fns":"../node_modules/date-fns/esm/index.js","uuid":"../node_modules/uuid/index.js","../assembly/random":"assembly/random.ts","../assembly/timeout":"assembly/timeout.ts","../assembly/utility":"assembly/utility.ts","../stores/appointments":"stores/appointments.ts"}],"stores/users.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createUser = createUser;
+exports.UsersInfo = void 0;
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
+
+var _react = require("react");
+
+var _unstatedNext = require("unstated-next");
+
+var _uuid = require("uuid");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function createUser(args) {
+  return _objectSpread({}, args, {
+    id: args.id || (0, _uuid.v4)(),
+    secondName: args.secondName || ""
+  });
+}
+
+function useUsers() {
+  var _useState = (0, _react.useState)({}),
+      _useState2 = (0, _slicedToArray2.default)(_useState, 2),
+      users = _useState2[0],
+      setUsers = _useState2[1];
+
+  var addUser = function addUser(user) {
+    return setUsers(_objectSpread({}, users, (0, _defineProperty2.default)({}, user.id, user)));
+  };
+
+  var addUsers = function addUsers(newUsers) {
+    return setUsers(_objectSpread({}, users, {}, newUsers.reduce(function (acc, user) {
+      return _objectSpread({}, acc, (0, _defineProperty2.default)({}, user.id, user));
+    }, {})));
+  };
+
+  return {
+    users: users,
+    addUser: addUser,
+    addUsers: addUsers
+  };
+}
+
+var UsersInfo = (0, _unstatedNext.createContainer)(useUsers);
+exports.UsersInfo = UsersInfo;
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","uuid":"../node_modules/uuid/index.js"}],"components/Calendar/LeftBlock/LeftBlock.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
@@ -58681,15 +59039,440 @@ function executeTasks(tasks, postEffectTimeMap, maxFrameDuration, preFrameDurati
 
 var LazyTaskContainer = (0, _unstatedNext.createContainer)(useLazyTask);
 exports.LazyTaskContainer = LazyTaskContainer;
-},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentWrapper.scss":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs"}],"../node_modules/babel-plugin-react-css-modules/dist/browser/schemas/optionsDefaults.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+var optionsDefaults = {
+  attributeNames: {
+    styleName: 'className'
+  },
+  generateScopedName: '[path]___[name]__[local]___[hash:base64:5]',
+  handleMissingStyleName: 'throw'
+};
+var _default = optionsDefaults;
+exports["default"] = _default;
+},{}],"../node_modules/babel-plugin-react-css-modules/dist/browser/getClassName.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _optionsDefaults = _interopRequireDefault(require("./schemas/optionsDefaults"));
+
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : {
+    "default": obj
+  };
+}
+
+var isNamespacedStyleName = function isNamespacedStyleName(styleName) {
+  return styleName.indexOf('.') !== -1;
+};
+
+var handleError = function handleError(message, handleMissingStyleName) {
+  if (handleMissingStyleName === 'throw') {
+    throw new Error(message);
+  } else if (handleMissingStyleName === 'warn') {
+    // eslint-disable-next-line no-console
+    console.warn(message);
+  }
+
+  return null;
+};
+
+var getClassNameForNamespacedStyleName = function getClassNameForNamespacedStyleName(styleName, styleModuleImportMap, handleMissingStyleNameOption) {
+  // Note:
+  // Do not use the desctructing syntax with Babel.
+  // Desctructing adds _slicedToArray helper.
+  var styleNameParts = styleName.split('.');
+  var importName = styleNameParts[0];
+  var moduleName = styleNameParts[1];
+  var handleMissingStyleName = handleMissingStyleNameOption || _optionsDefaults["default"].handleMissingStyleName;
+
+  if (!moduleName) {
+    return handleError('Invalid style name: ' + styleName, handleMissingStyleName);
+  }
+
+  if (!styleModuleImportMap[importName]) {
+    return handleError('CSS module import does not exist: ' + importName, handleMissingStyleName);
+  }
+
+  if (!styleModuleImportMap[importName][moduleName]) {
+    return handleError('CSS module does not exist: ' + moduleName, handleMissingStyleName);
+  }
+
+  return styleModuleImportMap[importName][moduleName];
+};
+
+var getClassNameFromMultipleImports = function getClassNameFromMultipleImports(styleName, styleModuleImportMap, handleMissingStyleNameOption) {
+  var handleMissingStyleName = handleMissingStyleNameOption || _optionsDefaults["default"].handleMissingStyleName;
+  var importKeysWithMatches = Object.keys(styleModuleImportMap).map(function (importKey) {
+    return styleModuleImportMap[importKey][styleName] && importKey;
+  }).filter(function (importKey) {
+    return importKey;
+  });
+
+  if (importKeysWithMatches.length > 1) {
+    throw new Error('Cannot resolve styleName "' + styleName + '" because it is present in multiple imports:' + '\n\n\t' + importKeysWithMatches.join('\n\t') + '\n\nYou can resolve this by using a named import, e.g:' + '\n\n\timport foo from "' + importKeysWithMatches[0] + '";' + '\n\t<div styleName="foo.' + styleName + '" />' + '\n\n');
+  }
+
+  if (importKeysWithMatches.length === 0) {
+    return handleError('Could not resolve the styleName \'' + styleName + '\'.', handleMissingStyleName);
+  }
+
+  return styleModuleImportMap[importKeysWithMatches[0]][styleName];
+};
+
+var _default = function _default(styleNameValue, styleModuleImportMap, options) {
+  var styleModuleImportMapKeys = Object.keys(styleModuleImportMap);
+
+  var _ref = options || {},
+      _ref$handleMissingSty = _ref.handleMissingStyleName,
+      handleMissingStyleName = _ref$handleMissingSty === void 0 ? _optionsDefaults["default"].handleMissingStyleName : _ref$handleMissingSty,
+      _ref$autoResolveMulti = _ref.autoResolveMultipleImports,
+      autoResolveMultipleImports = _ref$autoResolveMulti === void 0 ? _optionsDefaults["default"].autoResolveMultipleImports : _ref$autoResolveMulti;
+
+  if (!styleNameValue) {
+    return '';
+  }
+
+  return styleNameValue.split(' ').filter(function (styleName) {
+    return styleName;
+  }).map(function (styleName) {
+    if (isNamespacedStyleName(styleName)) {
+      return getClassNameForNamespacedStyleName(styleName, styleModuleImportMap, handleMissingStyleName);
+    }
+
+    if (styleModuleImportMapKeys.length === 0) {
+      throw new Error('Cannot use styleName attribute for style name \'' + styleName + '\' without importing at least one stylesheet.');
+    }
+
+    if (styleModuleImportMapKeys.length > 1) {
+      if (!autoResolveMultipleImports) {
+        throw new Error('Cannot use anonymous style name \'' + styleName + '\' with more than one stylesheet import without setting \'autoResolveMultipleImports\' to true.');
+      }
+
+      return getClassNameFromMultipleImports(styleName, styleModuleImportMap, handleMissingStyleName);
+    }
+
+    var styleModuleMap = styleModuleImportMap[styleModuleImportMapKeys[0]];
+
+    if (!styleModuleMap[styleName]) {
+      return handleError('Could not resolve the styleName \'' + styleName + '\'.', handleMissingStyleName);
+    }
+
+    return styleModuleMap[styleName];
+  }).filter(function (className) {
+    // Remove any styles which could not be found (if handleMissingStyleName === 'ignore')
+    return className;
+  }).join(' ');
+};
+
+exports["default"] = _default;
+},{"./schemas/optionsDefaults":"../node_modules/babel-plugin-react-css-modules/dist/browser/schemas/optionsDefaults.js"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentWrapper.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
 module.exports = {
-  "appointmentWrapper": "AppointmentWrapper__appointmentWrapper__1Y-Le"
+  "appointmentWrapper": "AppointmentWrapper__appointmentWrapper__1Y-Le",
+  "dragging": "AppointmentWrapper__dragging__3TsqR",
+  "dragOrigin": "AppointmentWrapper__dragOrigin__3St2g"
 };
-},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/AppointmentCell.scss":[function(require,module,exports) {
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../node_modules/classnames/index.js":[function(require,module,exports) {
+var define;
+/*!
+  Copyright (c) 2017 Jed Watson.
+  Licensed under the MIT License (MIT), see
+  http://jedwatson.github.io/classnames
+*/
+/* global define */
+
+(function () {
+	'use strict';
+
+	var hasOwn = {}.hasOwnProperty;
+
+	function classNames () {
+		var classes = [];
+
+		for (var i = 0; i < arguments.length; i++) {
+			var arg = arguments[i];
+			if (!arg) continue;
+
+			var argType = typeof arg;
+
+			if (argType === 'string' || argType === 'number') {
+				classes.push(arg);
+			} else if (Array.isArray(arg) && arg.length) {
+				var inner = classNames.apply(null, arg);
+				if (inner) {
+					classes.push(inner);
+				}
+			} else if (argType === 'object') {
+				for (var key in arg) {
+					if (hasOwn.call(arg, key) && arg[key]) {
+						classes.push(key);
+					}
+				}
+			}
+		}
+
+		return classes.join(' ');
+	}
+
+	if (typeof module !== 'undefined' && module.exports) {
+		classNames.default = classNames;
+		module.exports = classNames;
+	} else if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
+		// register as 'classnames', consistent with npm package name
+		define('classnames', [], function () {
+			return classNames;
+		});
+	} else {
+		window.classNames = classNames;
+	}
+}());
+
+},{}],"../node_modules/use-ssr/dist/useSSR.js":[function(require,module,exports) {
+"use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var Device;
+(function (Device) {
+    Device["Browser"] = "browser";
+    Device["Server"] = "server";
+    Device["Native"] = "native";
+})(Device = exports.Device || (exports.Device = {}));
+var Browser = Device.Browser, Server = Device.Server, Native = Device.Native;
+var canUseDOM = !!(typeof window !== 'undefined' &&
+    window.document &&
+    window.document.createElement);
+var canUseNative = typeof navigator != 'undefined' && navigator.product == 'ReactNative';
+var device = canUseNative ? Native : canUseDOM ? Browser : Server;
+var SSRObject = {
+    isBrowser: device === Browser,
+    isServer: device === Server,
+    isNative: device === Native,
+    device: device,
+    canUseWorkers: typeof Worker !== 'undefined',
+    canUseEventListeners: device === Browser && !!window.addEventListener,
+    canUseViewport: device === Browser && !!window.screen,
+};
+var assign = function () {
+    var args = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+    }
+    return args.reduce(function (acc, obj) { return (__assign(__assign({}, acc), obj)); }, {});
+};
+var values = function (obj) { return Object.keys(obj).map(function (key) { return obj[key]; }); };
+var toArrayObject = function () { return assign((values(SSRObject), SSRObject)); };
+var useSSRObject = toArrayObject();
+exports.weAreServer = function () {
+    SSRObject.isServer = true;
+    useSSRObject = toArrayObject();
+};
+exports.useSSR = function () { return useSSRObject; };
+exports.default = exports.useSSR;
+
+},{}],"../node_modules/react-useportal/dist/usePortal.js":[function(require,module,exports) {
+"use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var react_1 = require("react");
+var react_dom_1 = require("react-dom");
+var use_ssr_1 = __importDefault(require("use-ssr"));
+exports.errorMessage1 = 'You must either add a `ref` to the element you are interacting with or pass an `event` to openPortal(e) or togglePortal(e).';
+function usePortal(_a) {
+    if (_a === void 0) { _a = {}; }
+    var _b = _a.closeOnOutsideClick, closeOnOutsideClick = _b === void 0 ? true : _b, _c = _a.closeOnEsc, closeOnEsc = _c === void 0 ? true : _c, bindTo = _a.bindTo, // attach the portal to this node in the DOM
+    _d = _a.isOpen, // attach the portal to this node in the DOM
+    defaultIsOpen = _d === void 0 ? false : _d, onOpen = _a.onOpen, onClose = _a.onClose, onPortalClick = _a.onPortalClick, eventHandlers = __rest(_a, ["closeOnOutsideClick", "closeOnEsc", "bindTo", "isOpen", "onOpen", "onClose", "onPortalClick"]);
+    var _e = use_ssr_1.default(), isServer = _e.isServer, isBrowser = _e.isBrowser;
+    var _f = react_1.useState(defaultIsOpen), isOpen = _f[0], makeOpen = _f[1];
+    // we use this ref because `isOpen` is stale for handleOutsideMouseClick
+    var open = react_1.useRef(isOpen);
+    var setOpen = react_1.useCallback(function (v) {
+        // workaround to not have stale `isOpen` in the handleOutsideMouseClick
+        open.current = v;
+        makeOpen(v);
+    }, []);
+    var targetEl = react_1.useRef(); // this is the element you are clicking/hovering/whatever, to trigger opening the portal
+    var portal = react_1.useRef(isBrowser ? document.createElement('div') : null);
+    react_1.useEffect(function () {
+        if (isBrowser && !portal.current)
+            portal.current = document.createElement('div');
+    }, [isBrowser, portal]);
+    var elToMountTo = react_1.useMemo(function () {
+        if (isServer)
+            return;
+        return (bindTo && react_dom_1.findDOMNode(bindTo)) || document.body;
+    }, [isServer, bindTo]);
+    var createCustomEvent = function (e) {
+        if (!e)
+            return { portal: portal, targetEl: targetEl, event: e };
+        var event = e || {};
+        if (event.persist)
+            event.persist();
+        event.portal = portal;
+        event.targetEl = targetEl;
+        event.event = e;
+        var currentTarget = e.currentTarget;
+        if (!targetEl.current && currentTarget && currentTarget !== document)
+            targetEl.current = event.currentTarget;
+        return event;
+    };
+    // this should handle all eventHandlers like onClick, onMouseOver, etc. passed into the config
+    var customEventHandlers = Object
+        .entries(eventHandlers)
+        .reduce(function (acc, _a) {
+        var handlerName = _a[0], eventHandler = _a[1];
+        acc[handlerName] = function (event) {
+            if (isServer)
+                return;
+            eventHandler(createCustomEvent(event));
+        };
+        return acc;
+    }, {});
+    var openPortal = react_1.useCallback(function (e) {
+        if (isServer)
+            return;
+        var customEvent = createCustomEvent(e);
+        // for some reason, when we don't have the event argument, there
+        // is a weird race condition. Would like to see if we can remove
+        // setTimeout, but for now this works
+        if (targetEl.current == null) {
+            setTimeout(function () { return setOpen(true); }, 0);
+            throw Error(exports.errorMessage1);
+        }
+        if (onOpen)
+            onOpen(customEvent);
+        setOpen(true);
+    }, [isServer, portal, setOpen, targetEl, onOpen]);
+    var closePortal = react_1.useCallback(function (e) {
+        if (isServer)
+            return;
+        var customEvent = createCustomEvent(e);
+        if (onClose && open.current)
+            onClose(customEvent);
+        if (open.current)
+            setOpen(false);
+    }, [isServer, onClose, setOpen]);
+    var togglePortal = react_1.useCallback(function (e) {
+        return open.current ? closePortal(e) : openPortal(e);
+    }, [closePortal, openPortal]);
+    var handleKeydown = react_1.useCallback(function (e) {
+        return (e.key === 'Escape' && closeOnEsc) ? closePortal(e) : undefined;
+    }, [closeOnEsc, closePortal]);
+    var handleOutsideMouseClick = react_1.useCallback(function (e) {
+        var containsTarget = function (target) { return target.current.contains(e.target); };
+        if (containsTarget(portal) || e.button !== 0 || !open.current || containsTarget(targetEl))
+            return;
+        if (closeOnOutsideClick)
+            closePortal(e);
+    }, [isServer, closePortal, closeOnOutsideClick, portal]);
+    var handleMouseDown = react_1.useCallback(function (e) {
+        if (isServer || !(portal.current instanceof HTMLElement))
+            return;
+        var customEvent = createCustomEvent(e);
+        if (portal.current.contains(customEvent.target) && onPortalClick)
+            onPortalClick(customEvent);
+        handleOutsideMouseClick(e);
+    }, [handleOutsideMouseClick]);
+    // used to remove the event listeners on unmount
+    var eventListeners = react_1.useRef({});
+    react_1.useEffect(function () {
+        if (isServer)
+            return;
+        if (!(elToMountTo instanceof HTMLElement) || !(portal.current instanceof HTMLElement))
+            return;
+        // TODO: eventually will need to figure out a better solution for this.
+        // Surely we can find a way to map onScroll/onWheel -> scroll/wheel better,
+        // but for all other event handlers. For now this works.
+        var eventHandlerMap = {
+            onScroll: 'scroll',
+            onWheel: 'wheel',
+        };
+        var node = portal.current;
+        elToMountTo.appendChild(portal.current);
+        // handles all special case handlers. Currently only onScroll and onWheel
+        Object.entries(eventHandlerMap).forEach(function (_a) {
+            var handlerName = _a[0] /* onScroll */, eventListenerName = _a[1] /* scroll */;
+            if (!eventHandlers[handlerName])
+                return;
+            eventListeners.current[handlerName] = function (e) { return eventHandlers[handlerName](createCustomEvent(e)); };
+            document.addEventListener(eventListenerName, eventListeners.current[handlerName]);
+        });
+        document.addEventListener('keydown', handleKeydown);
+        document.addEventListener('mousedown', handleMouseDown);
+        return function () {
+            // handles all special case handlers. Currently only onScroll and onWheel
+            Object.entries(eventHandlerMap).forEach(function (_a) {
+                var handlerName = _a[0], eventListenerName = _a[1];
+                if (!eventHandlers[handlerName])
+                    return;
+                document.removeEventListener(eventListenerName, eventListeners.current[handlerName]);
+                delete eventListeners.current[handlerName];
+            });
+            document.removeEventListener('keydown', handleKeydown);
+            document.removeEventListener('mousedown', handleMouseDown);
+            elToMountTo.removeChild(node);
+        };
+    }, [isServer, handleOutsideMouseClick, handleKeydown, elToMountTo, portal]);
+    var Portal = react_1.useCallback(function (_a) {
+        var children = _a.children;
+        if (portal.current != null)
+            return react_dom_1.createPortal(children, portal.current);
+        return null;
+    }, [portal]);
+    return Object.assign([openPortal, closePortal, open.current, Portal, togglePortal, targetEl, portal], __assign(__assign({ isOpen: open.current, openPortal: openPortal, ref: targetEl, closePortal: closePortal,
+        togglePortal: togglePortal,
+        Portal: Portal, portalRef: portal }, customEventHandlers), { bind: __assign({ ref: targetEl }, customEventHandlers) }));
+}
+exports.default = usePortal;
+
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","use-ssr":"../node_modules/use-ssr/dist/useSSR.js"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/AppointmentCell.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
@@ -58793,8 +59576,8 @@ var AppointmentCell = function AppointmentCell(props) {
   }), _react.default.createElement(_CenteredVertically.default, null, _react.default.createElement("span", {
     className: "AppointmentCell__avatar__tRFru"
   })), _react.default.createElement(_CenteredVertically.default, null, _react.default.createElement("span", {
-    className: "AppointmentCell__info__3MA_v"
-  }, "info here"))), _react.default.createElement("div", {
+    className: ""
+  }, props.app.id.split("-")[0]))), _react.default.createElement("div", {
     className: "AppointmentCell__rightBlock__1crxs"
   }, _react.default.createElement(_CenteredVertically.default, null, _react.default.createElement("span", {
     className: "AppointmentCell__points__16BwB"
@@ -58825,13 +59608,35 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
+var _getClassName2 = _interopRequireDefault(require("babel-plugin-react-css-modules/dist/browser/getClassName"));
+
 require("./AppointmentWrapper.scss");
 
-var _react = _interopRequireDefault(require("react"));
+var _classnames = _interopRequireDefault(require("classnames"));
+
+var _react = _interopRequireWildcard(require("react"));
+
+var _reactUseportal = _interopRequireDefault(require("react-useportal"));
+
+var _Calendar = require("../../../../Calendar.containers");
 
 var _AppointmentCell = _interopRequireDefault(require("./AppointmentCell"));
 
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; if (obj != null) { var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _styleModuleImportMap = {
+  "./AppointmentWrapper.scss": {
+    "appointmentWrapper": "AppointmentWrapper__appointmentWrapper__1Y-Le",
+    "dragging": "AppointmentWrapper__dragging__3TsqR",
+    "dragOrigin": "AppointmentWrapper__dragOrigin__3St2g"
+  }
+};
 
 var AppointmentWrapper = function AppointmentWrapper(_ref) {
   var width = _ref.width,
@@ -58839,24 +59644,134 @@ var AppointmentWrapper = function AppointmentWrapper(_ref) {
       left = _ref.left,
       top = _ref.top,
       app = _ref.app;
-  return _react.default.createElement("div", {
-    className: "AppointmentWrapper__appointmentWrapper__1Y-Le",
-    style: {
-      height: height,
-      transform: "translate(".concat(left, "px, ").concat(top, "px)"),
-      width: width
+
+  var _useState = (0, _react.useState)(null),
+      _useState2 = (0, _slicedToArray2.default)(_useState, 2),
+      mouseDownCoords = _useState2[0],
+      setMouseDownCoords = _useState2[1];
+
+  var _useState3 = (0, _react.useState)({
+    dx: 0,
+    dy: 0
+  }),
+      _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
+      offset = _useState4[0],
+      setOffset = _useState4[1];
+
+  var _useState5 = (0, _react.useState)({
+    x: 0,
+    y: 0
+  }),
+      _useState6 = (0, _slicedToArray2.default)(_useState5, 2),
+      coords = _useState6[0],
+      setCoords = _useState6[1];
+
+  var _usePortal = (0, _reactUseportal.default)(),
+      ref = _usePortal.ref,
+      openPortal = _usePortal.openPortal,
+      closePortal = _usePortal.closePortal,
+      Portal = _usePortal.Portal;
+
+  var _DraggedInfo$useConta = _Calendar.DraggedInfo.useContainer(),
+      setDragOffsetToAppCell = _DraggedInfo$useConta.setDragOffsetToAppCell;
+
+  var isDragging = !!mouseDownCoords;
+  var onMouseMove = (0, _react.useCallback)(function (event) {
+    if (!mouseDownCoords) return;
+    var x = event.pageX,
+        y = event.pageY;
+    var dx = x - mouseDownCoords.x;
+    var dy = y - mouseDownCoords.y;
+    setOffset({
+      dx: dx,
+      dy: dy
+    });
+  }, [mouseDownCoords]);
+  var onMouseDown = (0, _react.useCallback)(function (event) {
+    var appElement = ref.current;
+
+    var _appElement$getBoundi = appElement.getBoundingClientRect(),
+        x = _appElement$getBoundi.left,
+        y = _appElement$getBoundi.top;
+
+    var dx = event.pageX - x;
+    var dy = event.pageY - y;
+    setCoords({
+      x: x,
+      y: y
+    });
+    setDragOffsetToAppCell({
+      dx: dx,
+      dy: dy
+    });
+    setMouseDownCoords({
+      x: event.pageX,
+      y: event.pageY
+    });
+    openPortal();
+  }, [openPortal, ref, setDragOffsetToAppCell]);
+  var onMouseUp = (0, _react.useCallback)(function () {
+    setMouseDownCoords(null);
+    setOffset({
+      dx: 0,
+      dy: 0
+    });
+    closePortal();
+  }, [closePortal]);
+  (0, _react.useLayoutEffect)(function () {
+    if (mouseDownCoords) {
+      window.addEventListener("mousemove", onMouseMove);
+      addEventListener("mouseup", function () {
+        removeEventListener("mousemove", onMouseMove);
+        onMouseUp();
+      });
     }
-  }, _react.default.createElement(_AppointmentCell.default, {
-    app: app,
-    width: width,
-    height: height
-  }));
+  }, [mouseDownCoords, onMouseMove, onMouseUp]);
+  var appCell = (0, _react.useMemo)(function () {
+    return _react.default.createElement(_AppointmentCell.default, {
+      app: app,
+      width: width,
+      height: height
+    });
+  }, [app, width, height]);
+  var staticAppWrapper = (0, _react.useMemo)(function () {
+    return _react.default.createElement("div", {
+      style: {
+        height: height,
+        transform: "translate(".concat(left, "px, ").concat(top, "px)"),
+        width: width
+      },
+      onMouseDownCapture: onMouseDown,
+      onMouseUpCapture: onMouseUp,
+      ref: ref,
+      className: (0, _getClassName2.default)((0, _classnames.default)("appointmentWrapper", isDragging ? "dragOrigin" : ""), _styleModuleImportMap, {
+        "handleMissingStyleName": "warn"
+      })
+    }, appCell);
+  }, [left, top, height, width, onMouseDown, onMouseUp, ref, appCell, isDragging]);
+  var draggingAppWrapper = (0, _react.useMemo)(function () {
+    return isDragging ? _react.default.createElement(Portal, null, _react.default.createElement("div", {
+      style: {
+        height: height,
+        transform: "translate(".concat(coords.x + offset.dx, "px, ").concat(coords.y + offset.dy, "px)"),
+        width: width
+      },
+      onMouseDownCapture: onMouseDown,
+      onMouseUpCapture: onMouseUp,
+      className: (0, _getClassName2.default)((0, _classnames.default)("appointmentWrapper", "dragging"), _styleModuleImportMap, {
+        "handleMissingStyleName": "warn"
+      })
+    }, appCell)) : null;
+  }, [height, width, onMouseDown, onMouseUp, appCell, coords, isDragging, offset]);
+  return (0, _react.useMemo)(function () {
+    return _react.default.createElement(_react.default.Fragment, null, staticAppWrapper, draggingAppWrapper);
+  }, [staticAppWrapper, draggingAppWrapper]);
 };
 
 var _default = _react.default.memo(AppointmentWrapper);
 
 exports.default = _default;
-},{"./AppointmentWrapper.scss":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentWrapper.scss","react":"../node_modules/react/index.js","./AppointmentCell":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","babel-plugin-react-css-modules/dist/browser/getClassName":"../node_modules/babel-plugin-react-css-modules/dist/browser/getClassName.js","./AppointmentWrapper.scss":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentWrapper.scss","classnames":"../node_modules/classnames/index.js","react":"../node_modules/react/index.js","react-useportal":"../node_modules/react-useportal/dist/usePortal.js","../../../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./AppointmentCell":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -58925,6 +59840,7 @@ var AppointmentBlock = _react.default.memo(function (_ref2) {
       gridStepDuration = _ref2.gridStepDuration,
       columnWidth = _ref2.columnWidth,
       zeroAxis = _ref2.zeroAxis;
+  //  console.log("app block updated");
   var cachedApps = (0, _react.useRef)({});
   var cachedByEnvironment = (0, _react.useMemo)(function () {
     return appsBlock.elements.reduce(function (acc, app) {
@@ -58936,7 +59852,7 @@ var AppointmentBlock = _react.default.memo(function (_ref2) {
         zeroAxis: zeroAxis
       })));
     }, {});
-  }, [rowHeight, gridStepDuration, columnWidth, zeroAxis]);
+  }, [rowHeight, gridStepDuration, columnWidth, zeroAxis, appsBlock.elements]);
   var appElements = appsBlock.elements.reduce(function (acc, app) {
     return _objectSpread({}, acc, (0, _defineProperty2.default)({}, app.id, cachedByEnvironment[app.id] || cachedApps.current[app.id] || generateApp({
       app: app,
@@ -58980,8 +59896,6 @@ var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/de
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
 var _interval = _interopRequireDefault(require("@use-it/interval"));
-
-var _immutable = require("immutable");
 
 var _react = _interopRequireWildcard(require("react"));
 
@@ -59028,9 +59942,16 @@ function useAppBlocksJSX() {
 
   var appBlocksDebounced = appBlocks; // useDebounce(appBlocks, 20);
 
-  var addBlock = (0, _react.useCallback)(function (blockJSX, id) {
+  var renderedBlocksRef = (0, _react.useRef)({});
+
+  var _DraggedInfo$useConta = _Calendar.DraggedInfo.useContainer(),
+      draggingApp = _DraggedInfo$useConta.draggingApp;
+
+  var addBlock = (0, _react.useCallback)(function (blockJSX, block) {
     // tslint:disable-next-line:no-object-mutation
-    appBlocksRef.current[id] = blockJSX;
+    appBlocksRef.current[block.id] = blockJSX; // tslint:disable-next-line:no-object-mutation
+
+    renderedBlocksRef.current[block.id] = block;
     setAppBlocks(Object.values(appBlocksRef.current));
   }, []);
   var addBlocks = (0, _react.useCallback)(function (arr) {
@@ -59052,8 +59973,13 @@ function useAppBlocksJSX() {
 
     appBlocksRef.current = Object.entries(appBlocksRef.current).filter(function (_ref3) {
       var _ref4 = (0, _slicedToArray2.default)(_ref3, 2),
-          _ = _ref4[0],
+          id = _ref4[0],
           jsx = _ref4[1];
+
+      if (draggingApp && draggingApp.blockId === id) {
+        // console.log(`stay ${id} here`);
+        return true;
+      }
 
       var interval = jsx.props.appsBlock.interval;
       var dists = [viewInterval.start.valueOf() - interval.start, viewInterval.end.valueOf() - interval.start, viewInterval.start.valueOf() - interval.start, viewInterval.end.valueOf() - interval.end].map(function (d) {
@@ -59076,12 +60002,13 @@ function useAppBlocksJSX() {
       setAppBlocks(Object.values(appBlocksRef.current));
       console.log("".concat(amountWas, " => ").concat(amountNow, " (clear)"));
     }
-  }, []);
+  }, [draggingApp]);
   return {
     appBlocks: appBlocksDebounced,
     addBlock: addBlock,
     addBlocks: addBlocks,
-    cleanFarBlocks: cleanFarBlocks
+    cleanFarBlocks: cleanFarBlocks,
+    renderedBlocks: renderedBlocksRef.current
   };
 }
 
@@ -59112,18 +60039,15 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
   var _AppBlocksJSXInfo$use = AppBlocksJSXInfo.useContainer(),
       addBlock = _AppBlocksJSXInfo$use.addBlock,
       appBlocks = _AppBlocksJSXInfo$use.appBlocks,
-      cleanFarBlocks = _AppBlocksJSXInfo$use.cleanFarBlocks;
+      cleanFarBlocks = _AppBlocksJSXInfo$use.cleanFarBlocks,
+      renderedBlocks = _AppBlocksJSXInfo$use.renderedBlocks; // console.log("update");
+  // const appBlocksCount = appBlocks.length;
+  // const appBlocksCountPrevious = usePrevious(appBlocksCount);
 
-  var appBlocksCount = appBlocks.length;
-  var appBlocksCountPrevious = (0, _useHooks.usePrevious)(appBlocksCount);
+
   var currentEnvironment = [columnWidth, gridStepDuration, rowHeight, viewInterval, zeroAxis];
-
-  var _useState3 = (0, _react.useState)((0, _immutable.Set)()),
-      _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
-      appBlocksInProcess = _useState4[0],
-      setAppBlocksInProcess = _useState4[1];
-
-  console.log("".concat(appBlocksCountPrevious, " => ").concat(appBlocksCount, " (render)")); // useWhyDidYouUpdate("AppointmentPlacer", {
+  var appBlocksInProcessRef = (0, _react.useRef)(new Set());
+  var appBlocksInProcess = appBlocksInProcessRef.current; // useWhyDidYouUpdate("AppointmentPlacer", {
   //   columnWidth,
   //   rowHeight,
   //   appointmentBlocks,
@@ -59134,27 +60058,45 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
   //   addLazyTask,
   //   addBlock,
   //   appBlocks,
-  //   cleanFarBlocks,
-  //   appBlocksCountPrevious
+  //   cleanFarBlocks
   // });
 
   var environmentChanged = useIsChanged(currentEnvironment);
-  var newAppBlocks = !environmentChanged ? appointmentBlocks.filter(function (block) {
-    return !appBlocksInProcess.includes(block.id);
-  }) : appointmentBlocks;
-  var appBlocksInRange = newAppBlocks.filter(function (block) {
-    var s1 = block.interval.start;
-    var e1 = block.interval.end;
-    var s2 = viewInterval.start.valueOf() - oneScrollDuration;
-    var e2 = viewInterval.end.valueOf() + oneScrollDuration;
-    return s1 > s2 && s1 < e2 || e1 > s2 && e1 < e2;
-  });
+  var previousAppBlocks = (0, _useHooks.usePrevious)(appointmentBlocks);
+  var newAppBlocks = (0, _react.useMemo)(function () {
+    return !environmentChanged ? appointmentBlocks.filter(function (block) {
+      return !appBlocksInProcess.has(block.id);
+    }).filter(function (block) {
+      return (!previousAppBlocks[block.id] || previousAppBlocks[block.id] !== block) && (!renderedBlocks[block.id] || renderedBlocks[block.id] !== block);
+    }) : appointmentBlocks;
+  }, [appointmentBlocks, previousAppBlocks, environmentChanged, appBlocksInProcess, renderedBlocks]);
+  var appBlocksInRange = (0, _react.useMemo)(function () {
+    return newAppBlocks.filter(function (block) {
+      var s1 = block.interval.start;
+      var e1 = block.interval.end;
+      var s2 = viewInterval.start.valueOf() - oneScrollDuration;
+      var e2 = viewInterval.end.valueOf() + oneScrollDuration;
+      return s1 > s2 && s1 < e2 || e1 > s2 && e1 < e2;
+    });
+  }, [newAppBlocks, viewInterval, oneScrollDuration]); // (window as any).appBlocksInRange = appBlocksInRange;
+  // (window as any).newAppBlocks = newAppBlocks;
+  // console.log(renderedBlocks);
+  // console.log(Object.values(appBlocksInProcess.values()));
+  // console.log(
+  //   `${appBlocksInRange.count()}/${newAppBlocks.count()}, ${appointmentBlocks
+  //     .filter(block => renderedBlocks[block.id])
+  //     .count()}, ${appointmentBlocks
+  //     .filter(
+  //       block => renderedBlocks[block.id] && renderedBlocks[block.id] !== block
+  //     )
+  //     .count()}`
+  // );
 
   if (appBlocksInRange.count()) {
-    setAppBlocksInProcess(appBlocksInProcess.concat(appBlocksInRange.map(function (_ref7) {
+    appBlocksInRange.forEach(function (_ref7) {
       var id = _ref7.id;
-      return id;
-    }))); // lazy-lazy code
+      return appBlocksInProcess.add(id);
+    }); // lazy-lazy code
 
     appBlocksInRange.forEach(function (block) {
       return addLazyTask({
@@ -59174,7 +60116,8 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
           performance.mark("blockJSX generating - end");
           performance.measure("blockJSX generating", "blockJSX generating - start", "blockJSX generating - end");
           performance.mark("addBlock - start");
-          addBlock(blockJSX, block.id);
+          addBlock(blockJSX, block);
+          appBlocksInProcess.delete(block.id);
           var diff = Date.now() - t1;
           registerPostEffectDuration("AppointBlock JSX Generation", diff, 1);
           performance.mark("addBlock - end");
@@ -59220,7 +60163,8 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
     //   );
     //   addBlock(blockJSX, block.id);
     // });
-  }
+  } // TODO: execute cleanFarBlocks only at end of each scrolling
+
 
   (0, _interval.default)(function () {
     return addLazyTask({
@@ -59275,7 +60219,7 @@ const apps = useMemo(
 */
 
 exports.default = _default;
-},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","@use-it/interval":"../node_modules/@use-it/interval/dist/interval.m.js","immutable":"../node_modules/immutable/dist/immutable.es.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../../../../stores/appointments":"stores/appointments.ts","../../../../../stores/lazytask":"stores/lazytask.ts","../../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./AppointmentBlock":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentBlock/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","@use-it/interval":"../node_modules/@use-it/interval/dist/interval.m.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../../../../stores/appointments":"stores/appointments.ts","../../../../../stores/lazytask":"stores/lazytask.ts","../../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./AppointmentBlock":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentBlock/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -59575,17 +60519,14 @@ var ScrollingLayer = function ScrollingLayer() {
   }, [selfData, columnWidth, oneScrollSize, setOneScrollSizeReal, setOneScrollSizePixels]);
   var translateX = scrollOffset * oneScrollSizePixels;
   var transform = "translate3d(".concat(translateX, "px, ", 0, "px, ", 0, "px)");
-
-  var onTransitionEnd = function onTransitionEnd() {
+  var onTransitionEnd = (0, _react.useCallback)(function () {
     return setTimeout(function () {
       return endScroll();
     });
-  };
-
-  console.log("qwe");
+  }, [endScroll]);
   var content = (0, _react.useMemo)(function () {
     return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("div", {
-      className: ""
+      className: "ScrollingLayer__topBlock__2O2Ed"
     }, _react.default.createElement(_TimeLine.default, null)), _react.default.createElement("div", {
       className: "ScrollingLayer__bottomBlock__3OaJm"
     }, _react.default.createElement(_BackGrid.default, null), _react.default.createElement(_AppointmentsPlacer.default, null)));
@@ -59659,6 +60600,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
+
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
 require("./MainBlock.scss");
@@ -59666,6 +60609,10 @@ require("./MainBlock.scss");
 var _react = _interopRequireWildcard(require("react"));
 
 var _useHooks = require("use-hooks");
+
+var _interval = require("../../../assembly/interval");
+
+var _appointments = require("../../../stores/appointments");
 
 var _Calendar = require("../Calendar.containers");
 
@@ -59679,11 +60626,40 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
 var MainBlock = function MainBlock(_ref) {
   var minColumnWidth = _ref.minColumnWidth;
 
   var _ColumnsInfo$useConta = _Calendar.ColumnsInfo.useContainer(),
-      setColumns = _ColumnsInfo$useConta.setColumns;
+      setColumns = _ColumnsInfo$useConta.setColumns,
+      columnWidth = _ColumnsInfo$useConta.columnWidth;
+
+  var _RowsInfo$useContaine = _Calendar.RowsInfo.useContainer(),
+      rowHeight = _RowsInfo$useContaine.rowHeight;
+
+  var _ScrollInfo$useContai = _Calendar.ScrollInfo.useContainer(),
+      scrollOffset = _ScrollInfo$useContai.scrollOffset,
+      oneScrollSizePixels = _ScrollInfo$useContai.oneScrollSizePixels;
+
+  var _DraggedInfo$useConta = _Calendar.DraggedInfo.useContainer(),
+      draggingApp = _DraggedInfo$useConta.draggingApp,
+      setDraggingApp = _DraggedInfo$useConta.setDraggingApp,
+      dragOffsetToAppCell = _DraggedInfo$useConta.dragOffsetToAppCell;
+
+  var _TimeLineInfo$useCont = _Calendar.TimeLineInfo.useContainer(),
+      timeLineHeight = _TimeLineInfo$useCont.timeLineHeight;
+
+  var _AppointmentsInfo$use = _appointments.AppointmentsInfo.useContainer(),
+      getApp = _AppointmentsInfo$use.getApp,
+      tryToFreePlace = _AppointmentsInfo$use.tryToFreePlace,
+      setAppointmentBlocks = _AppointmentsInfo$use.setAppointmentBlocks;
+
+  var _GridInfo$useContaine = _Calendar.GridInfo.useContainer(),
+      zeroAxis = _GridInfo$useContaine.zeroAxis,
+      gridStepDuration = _GridInfo$useContaine.gridStepDuration;
 
   var _useWindowSize = (0, _useHooks.useWindowSize)(),
       width = _useWindowSize.width;
@@ -59692,7 +60668,9 @@ var MainBlock = function MainBlock(_ref) {
 
   var _useState = (0, _react.useState)({
     offsetHeight: 0,
-    offsetWidth: 0
+    offsetWidth: 0,
+    offsetLeft: 0,
+    offsetTop: 0
   }),
       _useState2 = (0, _slicedToArray2.default)(_useState, 2),
       selfData = _useState2[0],
@@ -59705,27 +60683,101 @@ var MainBlock = function MainBlock(_ref) {
     if (self.current) {
       var _self$current = self.current,
           offsetWidth = _self$current.offsetWidth,
-          offsetHeight = _self$current.offsetHeight;
+          offsetHeight = _self$current.offsetHeight,
+          offsetTop = _self$current.offsetTop,
+          offsetLeft = _self$current.offsetLeft;
       setSelfData({
         offsetWidth: offsetWidth,
-        offsetHeight: offsetHeight
+        offsetHeight: offsetHeight,
+        offsetTop: offsetTop,
+        offsetLeft: offsetLeft
       });
     }
-  }, [widthD]);
+  }, [widthD, self]);
   (0, _react.useEffect)(function () {
     if (loaded) setColumns(selfData.offsetWidth, minColumnWidth);
   }, [selfData.offsetWidth, minColumnWidth, loaded, setColumns]);
+  var getRowColumn = (0, _react.useCallback)(function (pageX, pageY) {
+    var processor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (a) {
+      return a;
+    };
+    var realX = pageX - selfData.offsetLeft;
+    var realY = pageY - selfData.offsetTop;
+    var absoluteX = realX - scrollOffset * oneScrollSizePixels;
+    var absoluteY = realY - timeLineHeight;
+    var row = processor(absoluteY / rowHeight);
+    var column = processor(absoluteX / columnWidth);
+    return {
+      row: row,
+      column: column
+    };
+  }, [selfData, scrollOffset, oneScrollSizePixels, rowHeight, columnWidth, timeLineHeight]);
+  var getDate = (0, _react.useCallback)(function (column) {
+    return zeroAxis.valueOf() + column * gridStepDuration.valueOf();
+  }, [zeroAxis, gridStepDuration]);
+  var mouseDownHandler = (0, _react.useCallback)(function (event) {
+    //  console.log("mouse down");
+    var pageX = event.pageX,
+        pageY = event.pageY;
+
+    var _getRowColumn = getRowColumn(pageX, pageY, Math.floor),
+        column = _getRowColumn.column,
+        row = _getRowColumn.row;
+
+    var date = getDate(column);
+    var app = getApp(date, row); //  console.log(app);
+
+    if (app) {
+      setDraggingApp(app);
+    }
+  }, [getRowColumn, getApp, setDraggingApp, getDate]);
+  var mouseUpHandler = (0, _react.useCallback)(function (event) {
+    // console.log("mouse up", draggingApp);
+    if (!draggingApp) return; //  console.log("mouse up (with draggingApp");
+
+    var pageX = event.pageX,
+        pageY = event.pageY;
+    var dx = dragOffsetToAppCell.dx,
+        dy = dragOffsetToAppCell.dy;
+    var anchorX = pageX - dx;
+    var anchorY = pageY - dy + window.scrollY; //  + rowHeight / 2;
+
+    var _getRowColumn2 = getRowColumn(anchorX, anchorY, Math.round),
+        row = _getRowColumn2.row,
+        column = _getRowColumn2.column; // console.log({ dx, dy, anchorX, anchorY });
+
+
+    var currentDateStart = getDate(column);
+    var dateOffset = currentDateStart - draggingApp.interval.start;
+
+    var updatedApp = _objectSpread({}, draggingApp, {
+      rowIndex: row,
+      interval: (0, _interval.offsetInterval)(draggingApp.interval, dateOffset)
+    });
+
+    var _tryToFreePlace = tryToFreePlace(updatedApp.id, updatedApp.rowIndex, updatedApp.interval),
+        _tryToFreePlace2 = (0, _slicedToArray2.default)(_tryToFreePlace, 2),
+        shiftResult = _tryToFreePlace2[0],
+        newAppBlocks = _tryToFreePlace2[1];
+
+    if (shiftResult === _appointments.Result.Success) setAppointmentBlocks(newAppBlocks);
+    setDraggingApp(null);
+  }, [draggingApp, getRowColumn, getDate, setDraggingApp, dragOffsetToAppCell, tryToFreePlace, setAppointmentBlocks]); // console.log(selfData);
+
   return (0, _react.useMemo)(function () {
     return _react.default.createElement("div", {
       className: "MainBlock__mainBlock__3lG9a",
-      ref: self
+      ref: self,
+      onMouseDownCapture: mouseDownHandler,
+      onMouseUpCapture: mouseUpHandler,
+      onDropCapture: mouseUpHandler
     }, _react.default.createElement(_StaticLayer.default, null), _react.default.createElement(_ScrollingLayer.default, null));
-  }, []);
+  }, [mouseDownHandler, mouseUpHandler]);
 };
 
 var _default = MainBlock;
 exports.default = _default;
-},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","./MainBlock.scss":"components/Calendar/MainBlock/MainBlock.scss","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../Calendar.containers":"components/Calendar/Calendar.containers.ts","./ScrollingLayer":"components/Calendar/MainBlock/ScrollingLayer/index.ts","./StaticLayer":"components/Calendar/MainBlock/StaticLayer/index.ts"}],"components/Calendar/MainBlock/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","./MainBlock.scss":"components/Calendar/MainBlock/MainBlock.scss","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../../assembly/interval":"assembly/interval.ts","../../../stores/appointments":"stores/appointments.ts","../Calendar.containers":"components/Calendar/Calendar.containers.ts","./ScrollingLayer":"components/Calendar/MainBlock/ScrollingLayer/index.ts","./StaticLayer":"components/Calendar/MainBlock/StaticLayer/index.ts"}],"components/Calendar/MainBlock/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -59825,6 +60877,9 @@ var Calendar = function Calendar() {
       scrollLeft = _ScrollInfo$useContai.scrollLeft,
       scrollRight = _ScrollInfo$useContai.scrollRight;
 
+  var _RowsInfo$useContaine = _Calendar2.RowsInfo.useContainer(),
+      rowsCount = _RowsInfo$useContaine.rowsCount;
+
   var _AppointmentsInfo$use = _appointments.AppointmentsInfo.useContainer(),
       addAppointments = _AppointmentsInfo$use.addAppointments;
 
@@ -59833,9 +60888,6 @@ var Calendar = function Calendar() {
 
   var _UIInfo$useContainer = _ui.UIInfo.useContainer(),
       setPageLoaded = _UIInfo$useContainer.setPageLoaded;
-
-  var _RowsInfo$useContaine = _Calendar2.RowsInfo.useContainer(),
-      rowsCount = _RowsInfo$useContaine.rowsCount;
 
   var arrowRightPressed = (0, _useHooks.useKeyPress)("ArrowRight", true);
   var arrowLeftPressed = (0, _useHooks.useKeyPress)("ArrowLeft", true);
@@ -59891,9 +60943,11 @@ var Calendar = function Calendar() {
 };
 
 var Wrapper = function Wrapper() {
-  return _react.default.createElement(_users.UsersInfo.Provider, null, _react.default.createElement(_appointments.AppointmentsInfo.Provider, {
-    initialState: 20
-  }, _react.default.createElement(_Calendar2.ColumnsInfo.Provider, null, _react.default.createElement(_Calendar2.ScrollInfo.Provider, null, _react.default.createElement(_Calendar2.GridInfo.Provider, null, _react.default.createElement(_Calendar2.RowsInfo.Provider, null, _react.default.createElement(_Calendar2.LeftColumnInfo.Provider, null, _react.default.createElement(Calendar, null))))))));
+  return _react.default.createElement(_users.UsersInfo.Provider, null, _react.default.createElement(_Calendar2.DraggedInfo.Provider, null, _react.default.createElement(_Calendar2.ColumnsInfo.Provider, null, _react.default.createElement(_Calendar2.ScrollInfo.Provider, null, _react.default.createElement(_Calendar2.GridInfo.Provider, null, _react.default.createElement(_Calendar2.RowsInfo.Provider, null, _react.default.createElement(_Calendar2.LeftColumnInfo.Provider, null, _react.default.createElement(_appointments.AppointmentsInfo.Provider, {
+    initialState: {
+      blockSize: 20
+    }
+  }, _react.default.createElement(Calendar, null)))))))));
 };
 
 var _default = Wrapper;
@@ -60123,7 +61177,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "46385" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "35771" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
