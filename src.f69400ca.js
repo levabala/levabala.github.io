@@ -57870,7 +57870,7 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.LeftColumnInfo = exports.ViewIntervalInfo = exports.GridInfo = exports.ScrollInfo = exports.RowsInfo = exports.ColumnsInfo = exports.TimeLineInfo = exports.DraggedInfo = void 0;
+exports.DraggingAutoScrollInfo = exports.LeftColumnInfo = exports.ViewIntervalInfo = exports.GridInfo = exports.ScrollInfo = exports.RowsInfo = exports.ColumnsInfo = exports.TimeLineInfo = exports.DraggedInfo = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -58169,11 +58169,29 @@ function useDragged() {
       dragOffsetToAppCell = _useState36[0],
       setDragOffsetToAppCell = _useState36[1];
 
+  var isDragging = draggingApp !== null;
   return {
+    isDragging: isDragging,
     draggingApp: draggingApp,
     setDraggingApp: setDraggingApp,
     dragOffsetToAppCell: dragOffsetToAppCell,
     setDragOffsetToAppCell: setDragOffsetToAppCell
+  };
+}
+
+function useDraggingAutoScroll() {
+  var _ColumnsInfo$useConta3 = ColumnsInfo.useContainer(),
+      columnWidth = _ColumnsInfo$useConta3.columnWidth;
+
+  var _useState37 = (0, _react.useState)(0.3),
+      _useState38 = (0, _slicedToArray2.default)(_useState37, 2),
+      threshold = _useState38[0],
+      setThreshold = _useState38[1];
+
+  var thresholdPixels = columnWidth * threshold;
+  return {
+    thresholdPixels: thresholdPixels,
+    setThreshold: setThreshold
   };
 }
 
@@ -58193,6 +58211,8 @@ var ViewIntervalInfo = (0, _unstatedNext.createContainer)(useViewInterval);
 exports.ViewIntervalInfo = ViewIntervalInfo;
 var LeftColumnInfo = (0, _unstatedNext.createContainer)(useLeftColumn);
 exports.LeftColumnInfo = LeftColumnInfo;
+var DraggingAutoScrollInfo = (0, _unstatedNext.createContainer)(useDraggingAutoScroll);
+exports.DraggingAutoScrollInfo = DraggingAutoScrollInfo;
 },{"@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../stores/ui":"stores/ui.ts","./Calendar.variables.scss":"components/Calendar/Calendar.variables.scss"}],"stores/appointments.ts":[function(require,module,exports) {
 "use strict";
 
@@ -59726,6 +59746,10 @@ var AppointmentWrapper = function AppointmentWrapper(_ref) {
         onMouseUp();
       });
     }
+
+    return function () {
+      return removeEventListener("mousemove", onMouseMove);
+    };
   }, [mouseDownCoords, onMouseMove, onMouseUp]);
   var appCell = (0, _react.useMemo)(function () {
     return _react.default.createElement(_AppointmentCell.default, {
@@ -60513,9 +60537,9 @@ var ScrollingLayer = function ScrollingLayer() {
   (0, _react.useEffect)(function () {
     // it means that selfData is still not-initialized
     if (!selfData.offsetWidth) return;
-    var scrollPerScroll = Math.floor(selfData.offsetWidth * oneScrollSize / columnWidth) * columnWidth;
-    setOneScrollSizePixels(scrollPerScroll);
-    setOneScrollSizeReal(scrollPerScroll / selfData.offsetWidth);
+    var pixelsPerScroll = Math.floor(selfData.offsetWidth * oneScrollSize / columnWidth) * columnWidth;
+    setOneScrollSizePixels(pixelsPerScroll);
+    setOneScrollSizeReal(pixelsPerScroll / selfData.offsetWidth);
   }, [selfData, columnWidth, oneScrollSize, setOneScrollSizeReal, setOneScrollSizePixels]);
   var translateX = scrollOffset * oneScrollSizePixels;
   var transform = "translate3d(".concat(translateX, "px, ", 0, "px, ", 0, "px)");
@@ -60642,12 +60666,16 @@ var MainBlock = function MainBlock(_ref) {
 
   var _ScrollInfo$useContai = _Calendar.ScrollInfo.useContainer(),
       scrollOffset = _ScrollInfo$useContai.scrollOffset,
-      oneScrollSizePixels = _ScrollInfo$useContai.oneScrollSizePixels;
+      oneScrollSizePixels = _ScrollInfo$useContai.oneScrollSizePixels,
+      isScrolling = _ScrollInfo$useContai.isScrolling,
+      scrollLeft = _ScrollInfo$useContai.scrollLeft,
+      scrollRight = _ScrollInfo$useContai.scrollRight;
 
   var _DraggedInfo$useConta = _Calendar.DraggedInfo.useContainer(),
       draggingApp = _DraggedInfo$useConta.draggingApp,
       setDraggingApp = _DraggedInfo$useConta.setDraggingApp,
-      dragOffsetToAppCell = _DraggedInfo$useConta.dragOffsetToAppCell;
+      dragOffsetToAppCell = _DraggedInfo$useConta.dragOffsetToAppCell,
+      isDragging = _DraggedInfo$useConta.isDragging;
 
   var _TimeLineInfo$useCont = _Calendar.TimeLineInfo.useContainer(),
       timeLineHeight = _TimeLineInfo$useCont.timeLineHeight;
@@ -60660,6 +60688,9 @@ var MainBlock = function MainBlock(_ref) {
   var _GridInfo$useContaine = _Calendar.GridInfo.useContainer(),
       zeroAxis = _GridInfo$useContaine.zeroAxis,
       gridStepDuration = _GridInfo$useContaine.gridStepDuration;
+
+  var _DraggingAutoScrollIn = _Calendar.DraggingAutoScrollInfo.useContainer(),
+      thresholdPixels = _DraggingAutoScrollIn.thresholdPixels;
 
   var _useWindowSize = (0, _useHooks.useWindowSize)(),
       width = _useWindowSize.width;
@@ -60697,6 +60728,22 @@ var MainBlock = function MainBlock(_ref) {
   (0, _react.useEffect)(function () {
     if (loaded) setColumns(selfData.offsetWidth, minColumnWidth);
   }, [selfData.offsetWidth, minColumnWidth, loaded, setColumns]);
+
+  var _useState3 = (0, _react.useState)(Infinity),
+      _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
+      relativeTriggerLeft = _useState4[0],
+      setRelativeTriggerLeft = _useState4[1];
+
+  var _useState5 = (0, _react.useState)(Infinity),
+      _useState6 = (0, _slicedToArray2.default)(_useState5, 2),
+      relativeTriggerRight = _useState6[0],
+      setRelativeTriggerRight = _useState6[1];
+
+  if (!isScrolling && isDragging) {
+    if (relativeTriggerLeft < thresholdPixels) scrollLeft();
+    if (relativeTriggerRight < thresholdPixels) scrollRight();
+  }
+
   var getRowColumn = (0, _react.useCallback)(function (pageX, pageY) {
     var processor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (a) {
       return a;
@@ -60762,17 +60809,30 @@ var MainBlock = function MainBlock(_ref) {
 
     if (shiftResult === _appointments.Result.Success) setAppointmentBlocks(newAppBlocks);
     setDraggingApp(null);
-  }, [draggingApp, getRowColumn, getDate, setDraggingApp, dragOffsetToAppCell, tryToFreePlace, setAppointmentBlocks]); // console.log(selfData);
+    setRelativeTriggerLeft(Infinity);
+    setRelativeTriggerRight(Infinity);
+  }, [draggingApp, getRowColumn, getDate, setDraggingApp, dragOffsetToAppCell, tryToFreePlace, setAppointmentBlocks]);
+  var mouseMoveHandler = (0, _react.useCallback)(function (event) {
+    if (!isDragging) return;
+    var relativeTriggerLeft = event.pageX;
+    var relativeTriggerRight = window.innerWidth - event.pageX;
+    setRelativeTriggerLeft(relativeTriggerLeft);
+    setRelativeTriggerRight(relativeTriggerRight);
+  }, [isDragging]); // console.log(selfData);
 
+  var innerJSX = (0, _react.useMemo)(function () {
+    return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement(_StaticLayer.default, null), _react.default.createElement(_ScrollingLayer.default, null));
+  }, []);
   return (0, _react.useMemo)(function () {
     return _react.default.createElement("div", {
       className: "MainBlock__mainBlock__3lG9a",
       ref: self,
       onMouseDownCapture: mouseDownHandler,
       onMouseUpCapture: mouseUpHandler,
+      onMouseMoveCapture: mouseMoveHandler,
       onDropCapture: mouseUpHandler
-    }, _react.default.createElement(_StaticLayer.default, null), _react.default.createElement(_ScrollingLayer.default, null));
-  }, [mouseDownHandler, mouseUpHandler]);
+    }, innerJSX);
+  }, [mouseDownHandler, mouseUpHandler, mouseMoveHandler, innerJSX]);
 };
 
 var _default = MainBlock;
@@ -60936,9 +60996,9 @@ var Calendar = function Calendar() {
       className: "Calendar__top__2DDTC"
     }, _react.default.createElement(_TopBlock.default, null)), _react.default.createElement("div", {
       className: "Calendar__bottom__2g2Yl"
-    }, _react.default.createElement(_LeftBlock.default, null), _react.default.createElement(_Calendar2.GridInfo.Provider, null, _react.default.createElement(_Calendar2.ViewIntervalInfo.Provider, null, _react.default.createElement(_Calendar2.TimeLineInfo.Provider, null, _react.default.createElement(_MainBlock.default, {
+    }, _react.default.createElement(_LeftBlock.default, null), _react.default.createElement(_Calendar2.GridInfo.Provider, null, _react.default.createElement(_Calendar2.ViewIntervalInfo.Provider, null, _react.default.createElement(_Calendar2.TimeLineInfo.Provider, null, _react.default.createElement(_Calendar2.DraggingAutoScrollInfo.Provider, null, _react.default.createElement(_MainBlock.default, {
       minColumnWidth: 200
-    }))))));
+    })))))));
   }, [handlers]);
 };
 
@@ -61177,7 +61237,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "35771" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36155" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
