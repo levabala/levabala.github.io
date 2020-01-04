@@ -58183,14 +58183,19 @@ function useDraggingAutoScroll() {
   var _ColumnsInfo$useConta3 = ColumnsInfo.useContainer(),
       columnWidth = _ColumnsInfo$useConta3.columnWidth;
 
+  var _RowsInfo$useContaine2 = RowsInfo.useContainer(),
+      rowHeight = _RowsInfo$useContaine2.rowHeight;
+
   var _useState37 = (0, _react.useState)(0.3),
       _useState38 = (0, _slicedToArray2.default)(_useState37, 2),
       threshold = _useState38[0],
       setThreshold = _useState38[1];
 
-  var thresholdPixels = columnWidth * threshold;
+  var thresholdPixelsHorizontal = columnWidth * threshold;
+  var thresholdPixelsVertical = rowHeight * threshold;
   return {
-    thresholdPixels: thresholdPixels,
+    thresholdPixelsVertical: thresholdPixelsVertical,
+    thresholdPixelsHorizontal: thresholdPixelsHorizontal,
     setThreshold: setThreshold
   };
 }
@@ -58900,7 +58905,40 @@ module.hot.accept(reloadCSS);
 module.exports = {
   "mainBlock": "MainBlock__mainBlock__3lG9a"
 };
-},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.scss":[function(require,module,exports) {
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"assembly/animationController.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.removeAnimation = exports.addAnimation = void 0;
+var animations = new Map();
+var lastTime = Date.now();
+
+var loop = function loop() {
+  var nowTime = Date.now();
+  var delta = nowTime - lastTime;
+  lastTime = nowTime;
+  animations.forEach(function (anim) {
+    return anim(delta);
+  });
+  requestAnimationFrame(loop);
+};
+
+loop();
+
+var addAnimation = function addAnimation(animation) {
+  animations.set(animation, animation);
+};
+
+exports.addAnimation = addAnimation;
+
+var removeAnimation = function removeAnimation(animation) {
+  animations.delete(animation);
+};
+
+exports.removeAnimation = removeAnimation;
+},{}],"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
@@ -59698,8 +59736,8 @@ var AppointmentWrapper = function AppointmentWrapper(_ref) {
   var isDragging = !!mouseDownCoords;
   var onMouseMove = (0, _react.useCallback)(function (event) {
     if (!mouseDownCoords) return;
-    var x = event.pageX,
-        y = event.pageY;
+    var x = event.clientX,
+        y = event.clientY;
     var dx = x - mouseDownCoords.x;
     var dy = y - mouseDownCoords.y;
     setOffset({
@@ -59725,8 +59763,8 @@ var AppointmentWrapper = function AppointmentWrapper(_ref) {
       dy: dy
     });
     setMouseDownCoords({
-      x: event.pageX,
-      y: event.pageY
+      x: event.clientX,
+      y: event.clientY
     });
     openPortal();
   }, [openPortal, ref, setDragOffsetToAppCell]);
@@ -60634,6 +60672,8 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _useHooks = require("use-hooks");
 
+var _animationController = require("../../../assembly/animationController");
+
 var _interval = require("../../../assembly/interval");
 
 var _appointments = require("../../../stores/appointments");
@@ -60690,7 +60730,8 @@ var MainBlock = function MainBlock(_ref) {
       gridStepDuration = _GridInfo$useContaine.gridStepDuration;
 
   var _DraggingAutoScrollIn = _Calendar.DraggingAutoScrollInfo.useContainer(),
-      thresholdPixels = _DraggingAutoScrollIn.thresholdPixels;
+      thresholdPixelsHorizontal = _DraggingAutoScrollIn.thresholdPixelsHorizontal,
+      thresholdPixelsVertical = _DraggingAutoScrollIn.thresholdPixelsVertical;
 
   var _useWindowSize = (0, _useHooks.useWindowSize)(),
       width = _useWindowSize.width;
@@ -60708,6 +60749,12 @@ var MainBlock = function MainBlock(_ref) {
       setSelfData = _useState2[1];
 
   var self = (0, _react.useRef)(null);
+
+  var _useState3 = (0, _react.useState)(window.scrollY),
+      _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
+      dragStartScrollY = _useState4[0],
+      setDragStartScrollY = _useState4[1];
+
   var loaded = !!selfData.offsetWidth; // self data collecting hook
 
   (0, _react.useEffect)(function () {
@@ -60729,20 +60776,62 @@ var MainBlock = function MainBlock(_ref) {
     if (loaded) setColumns(selfData.offsetWidth, minColumnWidth);
   }, [selfData.offsetWidth, minColumnWidth, loaded, setColumns]);
 
-  var _useState3 = (0, _react.useState)(Infinity),
-      _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
-      relativeTriggerLeft = _useState4[0],
-      setRelativeTriggerLeft = _useState4[1];
-
   var _useState5 = (0, _react.useState)(Infinity),
       _useState6 = (0, _slicedToArray2.default)(_useState5, 2),
-      relativeTriggerRight = _useState6[0],
-      setRelativeTriggerRight = _useState6[1];
+      relativeTriggerLeft = _useState6[0],
+      setRelativeTriggerLeft = _useState6[1];
+
+  var _useState7 = (0, _react.useState)(Infinity),
+      _useState8 = (0, _slicedToArray2.default)(_useState7, 2),
+      relativeTriggerRight = _useState8[0],
+      setRelativeTriggerRight = _useState8[1];
+
+  var _useState9 = (0, _react.useState)(Infinity),
+      _useState10 = (0, _slicedToArray2.default)(_useState9, 2),
+      relativeTriggerTop = _useState10[0],
+      setRelativeTriggerTop = _useState10[1];
+
+  var _useState11 = (0, _react.useState)(Infinity),
+      _useState12 = (0, _slicedToArray2.default)(_useState11, 2),
+      relativeTriggerBottom = _useState12[0],
+      setRelativeTriggerBottom = _useState12[1];
+
+  var _useState13 = (0, _react.useState)(false),
+      _useState14 = (0, _slicedToArray2.default)(_useState13, 2),
+      anyAnimationActive = _useState14[0],
+      setAnyAnimationActive = _useState14[1];
+
+  var scrollAnimationTop = (0, _react.useCallback)(function (delta) {
+    return window.scrollBy(0, -1 * delta);
+  }, []);
+  var scrollAnimationBottom = (0, _react.useCallback)(function (delta) {
+    return window.scrollBy(0, 1 * delta);
+  }, []);
+  var clearAnimations = (0, _react.useCallback)(function () {
+    (0, _animationController.removeAnimation)(scrollAnimationTop);
+    (0, _animationController.removeAnimation)(scrollAnimationBottom);
+    setAnyAnimationActive(false);
+  }, [scrollAnimationTop, scrollAnimationBottom]);
+  var tryClearAnimations = (0, _react.useCallback)(function () {
+    if (anyAnimationActive) clearAnimations();
+  }, [anyAnimationActive, clearAnimations]);
 
   if (!isScrolling && isDragging) {
-    if (relativeTriggerLeft < thresholdPixels) scrollLeft();
-    if (relativeTriggerRight < thresholdPixels) scrollRight();
-  }
+    if (relativeTriggerLeft < thresholdPixelsHorizontal) scrollLeft();
+    if (relativeTriggerRight < thresholdPixelsHorizontal) scrollRight();
+
+    if (relativeTriggerTop < thresholdPixelsVertical) {
+      if (!anyAnimationActive) {
+        (0, _animationController.addAnimation)(scrollAnimationTop);
+        setAnyAnimationActive(true);
+      }
+    } else if (relativeTriggerBottom < thresholdPixelsVertical) {
+      if (!anyAnimationActive) {
+        (0, _animationController.addAnimation)(scrollAnimationBottom);
+        setAnyAnimationActive(true);
+      }
+    } else tryClearAnimations();
+  } else tryClearAnimations();
 
   var getRowColumn = (0, _react.useCallback)(function (pageX, pageY) {
     var processor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (a) {
@@ -60763,7 +60852,6 @@ var MainBlock = function MainBlock(_ref) {
     return zeroAxis.valueOf() + column * gridStepDuration.valueOf();
   }, [zeroAxis, gridStepDuration]);
   var mouseDownHandler = (0, _react.useCallback)(function (event) {
-    //  console.log("mouse down");
     var pageX = event.pageX,
         pageY = event.pageY;
 
@@ -60772,27 +60860,28 @@ var MainBlock = function MainBlock(_ref) {
         row = _getRowColumn.row;
 
     var date = getDate(column);
-    var app = getApp(date, row); //  console.log(app);
+    var app = getApp(date, row);
 
     if (app) {
       setDraggingApp(app);
+      setDragStartScrollY(window.scrollY);
     }
   }, [getRowColumn, getApp, setDraggingApp, getDate]);
   var mouseUpHandler = (0, _react.useCallback)(function (event) {
     // console.log("mouse up", draggingApp);
-    if (!draggingApp) return; //  console.log("mouse up (with draggingApp");
+    if (!draggingApp) return; //  console.log("mouse up (with draggingApp)");
 
     var pageX = event.pageX,
         pageY = event.pageY;
     var dx = dragOffsetToAppCell.dx,
         dy = dragOffsetToAppCell.dy;
+    var deltaScrollY = window.scrollY - dragStartScrollY;
     var anchorX = pageX - dx;
-    var anchorY = pageY - dy + window.scrollY; //  + rowHeight / 2;
+    var anchorY = pageY - dy + window.scrollY - deltaScrollY; //  + rowHeight / 2;
 
     var _getRowColumn2 = getRowColumn(anchorX, anchorY, Math.round),
         row = _getRowColumn2.row,
-        column = _getRowColumn2.column; // console.log({ dx, dy, anchorX, anchorY });
-
+        column = _getRowColumn2.column;
 
     var currentDateStart = getDate(column);
     var dateOffset = currentDateStart - draggingApp.interval.start;
@@ -60811,13 +60900,19 @@ var MainBlock = function MainBlock(_ref) {
     setDraggingApp(null);
     setRelativeTriggerLeft(Infinity);
     setRelativeTriggerRight(Infinity);
-  }, [draggingApp, getRowColumn, getDate, setDraggingApp, dragOffsetToAppCell, tryToFreePlace, setAppointmentBlocks]);
+    setRelativeTriggerTop(Infinity);
+    setRelativeTriggerBottom(Infinity);
+  }, [draggingApp, getRowColumn, getDate, setDraggingApp, dragOffsetToAppCell, tryToFreePlace, setAppointmentBlocks, dragStartScrollY]);
   var mouseMoveHandler = (0, _react.useCallback)(function (event) {
     if (!isDragging) return;
-    var relativeTriggerLeft = event.pageX;
-    var relativeTriggerRight = window.innerWidth - event.pageX;
+    var relativeTriggerLeft = event.clientX;
+    var relativeTriggerRight = window.innerWidth - relativeTriggerLeft;
+    var relativeTriggerTop = event.clientY;
+    var relativeTriggerBottom = window.innerHeight - relativeTriggerTop;
     setRelativeTriggerLeft(relativeTriggerLeft);
     setRelativeTriggerRight(relativeTriggerRight);
+    setRelativeTriggerTop(relativeTriggerTop);
+    setRelativeTriggerBottom(relativeTriggerBottom);
   }, [isDragging]); // console.log(selfData);
 
   var innerJSX = (0, _react.useMemo)(function () {
@@ -60837,7 +60932,7 @@ var MainBlock = function MainBlock(_ref) {
 
 var _default = MainBlock;
 exports.default = _default;
-},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","./MainBlock.scss":"components/Calendar/MainBlock/MainBlock.scss","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../../assembly/interval":"assembly/interval.ts","../../../stores/appointments":"stores/appointments.ts","../Calendar.containers":"components/Calendar/Calendar.containers.ts","./ScrollingLayer":"components/Calendar/MainBlock/ScrollingLayer/index.ts","./StaticLayer":"components/Calendar/MainBlock/StaticLayer/index.ts"}],"components/Calendar/MainBlock/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","./MainBlock.scss":"components/Calendar/MainBlock/MainBlock.scss","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../../assembly/animationController":"assembly/animationController.ts","../../../assembly/interval":"assembly/interval.ts","../../../stores/appointments":"stores/appointments.ts","../Calendar.containers":"components/Calendar/Calendar.containers.ts","./ScrollingLayer":"components/Calendar/MainBlock/ScrollingLayer/index.ts","./StaticLayer":"components/Calendar/MainBlock/StaticLayer/index.ts"}],"components/Calendar/MainBlock/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61237,7 +61332,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36155" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34553" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
