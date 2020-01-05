@@ -1,14 +1,10 @@
 .Calendar__calendar__qh_12 {
   display: -ms-grid;
   display: grid;
-  -ms-grid-rows: 100px 1fr;
-  grid-template-rows: 100px 1fr;
+  -ms-grid-rows: 120px 1fr;
+  grid-template-rows: 120px 1fr;
   overflow-x: hidden;
   background: #fdfdfd;
-}
-.Calendar__calendar__qh_12 .Calendar__top__2DDTC div {
-  height: 100%;
-  width: 100%;
 }
 .Calendar__calendar__qh_12 .Calendar__bottom__2g2Yl {
   display: -ms-grid;
@@ -35,6 +31,7 @@
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
+  overflow: hidden;
 }
 .ScrollingLayer__scrollingLayer__1ogmE {
   position: absolute;
@@ -150,6 +147,48 @@
 }
 .TimeLine__timeLine__1CT7j .TimeLine__timeMark__1eqLA {
   width: 200px;
+}
+.TopBlock__topBlock__27bJ5 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+.MonthLabel__monthLabel__2zhQu {
+  font-weight: bold;
+  font-size: 30px;
+}
+.MonthRow__monthRow__39hGQ {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.MonthChunk__monthChunk__2qRpI {
+  display: flex;
+  flex-direction: column;
+}
+.MonthChunk__monthChunk__2qRpI > div {
+  text-align: center;
+  margin: 2px 0;
+}
+.MonthChunk__monthChunk__2qRpI .MonthChunk__monthday__j1tzI {
+  background: lightgray;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  line-height: 25px;
+}
+.VersionBox__versionBox__4YcJf {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 100px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  background: white;
+  border: solid gray 1px;
+  opacity: 0.5;
 }
 
 /*# sourceMappingURL=/src.f69400ca.css.map */

@@ -32848,7 +32848,6 @@ module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
 module.exports = {
   "calendar": "Calendar__calendar__qh_12",
-  "top": "Calendar__top__2DDTC",
   "bottom": "Calendar__bottom__2g2Yl"
 };
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../node_modules/date-fns/esm/toDate/index.js":[function(require,module,exports) {
@@ -58397,6 +58396,7 @@ function useAppointments() {
         appIndex: appIndex
       };
     }, null);
+    if (coords === null) throw new Error("Cannot find the app!");
     return coords;
   }, [appointmentBlocks]);
   var getAppById = (0, _react.useCallback)(function (id) {
@@ -58464,7 +58464,7 @@ function useAppointments() {
     var app = blocks.reduce(function (app, block) {
       return app ? app : block.elements.find(function (app) {
         return app.rowIndex === row && (0, _interval.withinInterval)(date, app.interval, true, false);
-      });
+      }) || null;
     }, null);
     return app;
   }, [appointmentBlocks]);
@@ -60129,7 +60129,10 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
     return !environmentChanged ? appointmentBlocks.filter(function (block) {
       return !appBlocksInProcess.has(block.id);
     }).filter(function (block) {
-      return (!previousAppBlocks[block.id] || previousAppBlocks[block.id] !== block) && (!renderedBlocks[block.id] || renderedBlocks[block.id] !== block);
+      var previousBlock = previousAppBlocks.find(function (appBlock) {
+        return appBlock.id === block.id;
+      });
+      return (!previousBlock || previousBlock !== block) && (!renderedBlocks[block.id] || renderedBlocks[block.id] !== block);
     }) : appointmentBlocks;
   }, [appointmentBlocks, previousAppBlocks, environmentChanged, appBlocksInProcess, renderedBlocks]);
   var appBlocksInRange = (0, _react.useMemo)(function () {
@@ -60702,7 +60705,8 @@ var MainBlock = function MainBlock(_ref) {
       columnWidth = _ColumnsInfo$useConta.columnWidth;
 
   var _RowsInfo$useContaine = _Calendar.RowsInfo.useContainer(),
-      rowHeight = _RowsInfo$useContaine.rowHeight;
+      rowHeight = _RowsInfo$useContaine.rowHeight,
+      rowsCount = _RowsInfo$useContaine.rowsCount;
 
   var _ScrollInfo$useContai = _Calendar.ScrollInfo.useContainer(),
       scrollOffset = _ScrollInfo$useContai.scrollOffset,
@@ -60843,11 +60847,13 @@ var MainBlock = function MainBlock(_ref) {
     var absoluteY = realY - timeLineHeight;
     var row = processor(absoluteY / rowHeight);
     var column = processor(absoluteX / columnWidth);
+    var rowNormalized = Math.min(Math.max(row, 0), rowsCount);
+    var columnNormalized = column;
     return {
-      row: row,
-      column: column
+      row: rowNormalized,
+      column: columnNormalized
     };
-  }, [selfData, scrollOffset, oneScrollSizePixels, rowHeight, columnWidth, timeLineHeight]);
+  }, [selfData, scrollOffset, oneScrollSizePixels, rowHeight, columnWidth, timeLineHeight, rowsCount]);
   var getDate = (0, _react.useCallback)(function (column) {
     return zeroAxis.valueOf() + column * gridStepDuration.valueOf();
   }, [zeroAxis, gridStepDuration]);
@@ -60918,6 +60924,7 @@ var MainBlock = function MainBlock(_ref) {
   var innerJSX = (0, _react.useMemo)(function () {
     return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement(_StaticLayer.default, null), _react.default.createElement(_ScrollingLayer.default, null));
   }, []);
+  var height = rowHeight * (rowsCount + 2) + 1;
   return (0, _react.useMemo)(function () {
     return _react.default.createElement("div", {
       className: "MainBlock__mainBlock__3lG9a",
@@ -60925,9 +60932,12 @@ var MainBlock = function MainBlock(_ref) {
       onMouseDownCapture: mouseDownHandler,
       onMouseUpCapture: mouseUpHandler,
       onMouseMoveCapture: mouseMoveHandler,
-      onDropCapture: mouseUpHandler
+      onDropCapture: mouseUpHandler,
+      style: {
+        height: height
+      }
     }, innerJSX);
-  }, [mouseDownHandler, mouseUpHandler, mouseMoveHandler, innerJSX]);
+  }, [mouseDownHandler, mouseUpHandler, mouseMoveHandler, innerJSX, height]);
 };
 
 var _default = MainBlock;
@@ -60946,7 +60956,23 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = _MainBlock.default;
 exports.default = _default;
-},{"./MainBlock":"components/Calendar/MainBlock/MainBlock.tsx"}],"components/Calendar/TopBlock/TopBlock.tsx":[function(require,module,exports) {
+},{"./MainBlock":"components/Calendar/MainBlock/MainBlock.tsx"}],"components/Calendar/TopBlock/TopBlock.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "topBlock": "TopBlock__topBlock__27bJ5"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/TopBlock/MonthLabel/MonthLabel.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "monthLabel": "MonthLabel__monthLabel__2zhQu"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/TopBlock/MonthLabel/MonthLabel.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -60954,19 +60980,173 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+require("./MonthLabel.scss");
+
 var _react = _interopRequireDefault(require("react"));
 
-var _Striped = _interopRequireDefault(require("../../../style-components/Striped"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var MonthLabel = function MonthLabel() {
+  return _react.default.createElement("div", {
+    className: "MonthLabel__monthLabel__2zhQu"
+  }, "December");
+};
+
+var _default = MonthLabel;
+exports.default = _default;
+},{"./MonthLabel.scss":"components/Calendar/TopBlock/MonthLabel/MonthLabel.scss","react":"../node_modules/react/index.js"}],"components/Calendar/TopBlock/MonthLabel/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _MonthLabel = _interopRequireDefault(require("./MonthLabel"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _default = _MonthLabel.default;
+exports.default = _default;
+},{"./MonthLabel":"components/Calendar/TopBlock/MonthLabel/MonthLabel.tsx"}],"components/Calendar/TopBlock/MonthRow/MonthRow.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "monthRow": "MonthRow__monthRow__39hGQ"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "monthChunk": "MonthChunk__monthChunk__2qRpI",
+  "monthday": "MonthChunk__monthday__j1tzI"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+require("./MonthChunk.scss");
+
+var _dateFns = require("date-fns");
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var MonthChunk = function MonthChunk(_ref) {
+  var date = _ref.date,
+      appsCount = _ref.appsCount;
+  return _react.default.createElement("span", {
+    className: "MonthChunk__monthChunk__2qRpI"
+  }, _react.default.createElement("div", {
+    className: "MonthChunk__weekday__3L4f2"
+  }, (0, _dateFns.format)(date, "EEEEEE")), _react.default.createElement("div", {
+    className: "MonthChunk__monthday__j1tzI"
+  }, (0, _dateFns.format)(date, "d")), _react.default.createElement("div", {
+    className: "MonthChunk__appsCount__1jeVZ"
+  }, appsCount));
+};
+
+var _default = MonthChunk;
+exports.default = _default;
+},{"./MonthChunk.scss":"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.scss","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js"}],"components/Calendar/TopBlock/MonthRow/MonthChunk/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _MonthChunk = _interopRequireDefault(require("./MonthChunk"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _default = _MonthChunk.default;
+exports.default = _default;
+},{"./MonthChunk":"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.tsx"}],"components/Calendar/TopBlock/MonthRow/MonthRow.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+require("./MonthRow.scss");
+
+var _dateFns = require("date-fns");
+
+var _react = _interopRequireDefault(require("react"));
+
+var _random = require("../../../../assembly/random");
+
+var _MonthChunk = _interopRequireDefault(require("./MonthChunk"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var MonthRow = function MonthRow() {
+  var now = new Date();
+  return _react.default.createElement("div", {
+    className: "MonthRow__monthRow__39hGQ"
+  }, new Array(20).fill(null).map(function (_, i) {
+    return _react.default.createElement(_MonthChunk.default, {
+      key: i,
+      date: (0, _dateFns.addDays)(now, i),
+      appsCount: (0, _random.randomInt)(0, 150)
+    });
+  }));
+};
+
+var _default = MonthRow;
+exports.default = _default;
+},{"./MonthRow.scss":"components/Calendar/TopBlock/MonthRow/MonthRow.scss","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","../../../../assembly/random":"assembly/random.ts","./MonthChunk":"components/Calendar/TopBlock/MonthRow/MonthChunk/index.ts"}],"components/Calendar/TopBlock/MonthRow/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _MonthRow = _interopRequireDefault(require("./MonthRow"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _default = _MonthRow.default;
+exports.default = _default;
+},{"./MonthRow":"components/Calendar/TopBlock/MonthRow/MonthRow.tsx"}],"components/Calendar/TopBlock/TopBlock.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+require("./TopBlock.scss");
+
+var _react = _interopRequireDefault(require("react"));
+
+var _MonthLabel = _interopRequireDefault(require("./MonthLabel"));
+
+var _MonthRow = _interopRequireDefault(require("./MonthRow"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var TopBlock = function TopBlock() {
-  return _react.default.createElement(_Striped.default, null);
+  return _react.default.createElement("div", {
+    className: "TopBlock__topBlock__27bJ5"
+  }, _react.default.createElement(_MonthLabel.default, null), _react.default.createElement(_MonthRow.default, null));
 };
 
 var _default = TopBlock;
 exports.default = _default;
-},{"react":"../node_modules/react/index.js","../../../style-components/Striped":"style-components/Striped.tsx"}],"components/Calendar/TopBlock/index.ts":[function(require,module,exports) {
+},{"./TopBlock.scss":"components/Calendar/TopBlock/TopBlock.scss","react":"../node_modules/react/index.js","./MonthLabel":"components/Calendar/TopBlock/MonthLabel/index.ts","./MonthRow":"components/Calendar/TopBlock/MonthRow/index.ts"}],"components/Calendar/TopBlock/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61121,7 +61301,59 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = _Calendar.default;
 exports.default = _default;
-},{"./Calendar":"components/Calendar/Calendar.tsx"}],"serviceWorker.ts":[function(require,module,exports) {
+},{"./Calendar":"components/Calendar/Calendar.tsx"}],"components/VersionBox/VersionBox.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "versionBox": "VersionBox__versionBox__4YcJf"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"CurrentVersion.json":[function(require,module,exports) {
+module.exports = {
+  "major": 0,
+  "minor": 1,
+  "patch": 20
+};
+},{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+require("./VersionBox.scss");
+
+var _react = _interopRequireDefault(require("react"));
+
+var _CurrentVersion = _interopRequireDefault(require("../../CurrentVersion.json"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var VersionBox = function VersionBox() {
+  return _react.default.createElement("div", {
+    className: "VersionBox__versionBox__4YcJf"
+  }, "".concat(_CurrentVersion.default.major, ".").concat(_CurrentVersion.default.minor, ".").concat(_CurrentVersion.default.patch));
+};
+
+var _default = VersionBox;
+exports.default = _default;
+},{"./VersionBox.scss":"components/VersionBox/VersionBox.scss","react":"../node_modules/react/index.js","../../CurrentVersion.json":"CurrentVersion.json"}],"components/VersionBox/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _VersionBox = _interopRequireDefault(require("./VersionBox"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _default = _VersionBox.default;
+exports.default = _default;
+},{"./VersionBox":"components/VersionBox/VersionBox.tsx"}],"serviceWorker.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61284,6 +61516,8 @@ var _reactDom = require("react-dom");
 
 var _Calendar = _interopRequireDefault(require("./components/Calendar"));
 
+var _VersionBox = _interopRequireDefault(require("./components/VersionBox"));
+
 var _serviceWorker = require("./serviceWorker");
 
 var _lazytask = require("./stores/lazytask");
@@ -61298,13 +61532,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var App = function App() {
   return _react.default.useMemo(function () {
-    return _react.default.createElement(_mock.MockInfo.Provider, null, _react.default.createElement(_lazytask.LazyTaskContainer.Provider, null, _react.default.createElement(_ui.UIInfo.Provider, null, _react.default.createElement(_users.UsersInfo.Provider, null, _react.default.createElement(_Calendar.default, null)))));
+    return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement(_mock.MockInfo.Provider, null, _react.default.createElement(_lazytask.LazyTaskContainer.Provider, null, _react.default.createElement(_ui.UIInfo.Provider, null, _react.default.createElement(_users.UsersInfo.Provider, null, _react.default.createElement(_Calendar.default, null))))), _react.default.createElement(_VersionBox.default, null));
   }, []);
 };
 
 (0, _reactDom.render)(_react.default.createElement(App, null), document.getElementById("root"));
 (0, _serviceWorker.register)();
-},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./components/Calendar":"components/Calendar/index.ts","./serviceWorker":"serviceWorker.ts","./stores/lazytask":"stores/lazytask.ts","./stores/mock":"stores/mock.ts","./stores/ui":"stores/ui.ts","./stores/users":"stores/users.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./components/Calendar":"components/Calendar/index.ts","./components/VersionBox":"components/VersionBox/index.ts","./serviceWorker":"serviceWorker.ts","./stores/lazytask":"stores/lazytask.ts","./stores/mock":"stores/mock.ts","./stores/ui":"stores/ui.ts","./stores/users":"stores/users.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -61332,7 +61566,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34553" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34449" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
