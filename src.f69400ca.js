@@ -58163,7 +58163,7 @@ function useGrid() {
       oneDayStartTime = _useState30[0],
       setOneDayStartTime = _useState30[1];
 
-  var _useState31 = (0, _react.useState)(10),
+  var _useState31 = (0, _react.useState)(5),
       _useState32 = (0, _slicedToArray2.default)(_useState31, 2),
       oneDayStepsCount = _useState32[0],
       setOneDayStepsCount = _useState32[1];
@@ -58240,12 +58240,17 @@ function useViewInterval() {
   //   )}`
   // );
 
-  var currentDay = (0, _dateFns.startOfDay)(viewInterval.start + (viewInterval.end - viewInterval.start) / 2 || 0).valueOf();
-
   var _useState35 = (0, _react.useState)(viewInterval),
       _useState36 = (0, _slicedToArray2.default)(_useState35, 2),
       viewIntervalAfterScrolling = _useState36[0],
       setViewIntervalAfterScrolling = _useState36[1];
+
+  var currentDay = (0, _react.useMemo)(function () {
+    return (0, _dateFns.startOfDay)(viewInterval.start + (viewInterval.end - viewInterval.start) / 2 || 0).valueOf();
+  }, [viewInterval]);
+  var currentDayAfterScrolling = (0, _react.useMemo)(function () {
+    return (0, _dateFns.startOfDay)(viewIntervalAfterScrolling.start + (viewIntervalAfterScrolling.end - viewIntervalAfterScrolling.start) / 2 || 0).valueOf();
+  }, [viewIntervalAfterScrolling]); // console.log(`currentDay: ${format(currentDay, "dd")}`);
 
   if ((pageFirstLoaded || pageScrollingEnded) && (!(0, _dateFns.isEqual)(viewIntervalAfterScrolling.start, viewInterval.start) || !(0, _dateFns.isEqual)(viewIntervalAfterScrolling.end, viewInterval.end))) setViewIntervalAfterScrolling(viewInterval);
   return {
@@ -58254,7 +58259,9 @@ function useViewInterval() {
     viewInterval: viewInterval,
     viewIntervalAfterScrolling: viewIntervalAfterScrolling,
     currentDay: currentDay,
-    initialTime: initialTime
+    currentDayAfterScrolling: currentDayAfterScrolling,
+    initialTime: initialTime,
+    initialStartOfDay: initialStartOfDay
   };
 }
 
@@ -61187,7 +61194,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = _MonthLabel.default;
 exports.default = _default;
-},{"./MonthLabel":"components/Calendar/TopBlock/MonthLabel/MonthLabel.tsx"}],"components/Calendar/TopBlock/MonthRow/MonthRow.scss":[function(require,module,exports) {
+},{"./MonthLabel":"components/Calendar/TopBlock/MonthLabel/MonthLabel.tsx"}],"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
@@ -61195,7 +61202,67 @@ module.hot.accept(reloadCSS);
 module.exports = {
   "monthChunkSize": "25px",
   "monthChunksGap": "15px",
-  "monthRow": "MonthRow__monthRow__39hGQ"
+  "monthRow": "MonthChunk__monthRow__2CO4_",
+  "offsetController": "MonthChunk__offsetController__2Iw9_",
+  "monthChunk": "MonthChunk__monthChunk__2qRpI",
+  "monthday": "MonthChunk__monthday__j1tzI"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+require("./MonthChunk.scss");
+
+var _dateFns = require("date-fns");
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var MonthChunk = function MonthChunk(_ref) {
+  var date = _ref.date,
+      appsCount = _ref.appsCount;
+  return _react.default.createElement("span", {
+    className: "MonthChunk__monthChunk__2qRpI"
+  }, _react.default.createElement("div", {
+    className: "MonthChunk__weekday__3L4f2"
+  }, (0, _dateFns.format)(date, "EEEEEE")), _react.default.createElement("div", {
+    className: "MonthChunk__monthday__j1tzI"
+  }, (0, _dateFns.format)(date, "d")), _react.default.createElement("div", {
+    className: "MonthChunk__appsCount__1jeVZ"
+  }, appsCount));
+};
+
+var _default = MonthChunk;
+exports.default = _default;
+},{"./MonthChunk.scss":"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.scss","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js"}],"components/Calendar/TopBlock/MonthRow/MonthChunk/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _MonthChunk = _interopRequireDefault(require("./MonthChunk"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _default = _MonthChunk.default;
+exports.default = _default;
+},{"./MonthChunk":"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.tsx"}],"components/Calendar/TopBlock/MonthRow/MonthRow.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "monthChunkSize": "25px",
+  "monthChunksGap": "15px",
+  "monthRow": "MonthRow__monthRow__39hGQ",
+  "offsetController": "MonthRow__offsetController__3aWay"
 };
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/TopBlock/MonthRow/MonthRow.tsx":[function(require,module,exports) {
 "use strict";
@@ -61205,11 +61272,25 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _react = _interopRequireDefault(require("react"));
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
-var _Striped = _interopRequireDefault(require("../../../../style-components/Striped"));
+var _dateFns = require("date-fns");
+
+var _react = _interopRequireWildcard(require("react"));
+
+var _useHooks = require("use-hooks");
+
+var _ui = require("../../../../stores/ui");
+
+var _Calendar = require("../../Calendar.containers");
+
+var _MonthChunk = _interopRequireDefault(require("./MonthChunk"));
 
 var _MonthRow = _interopRequireDefault(require("./MonthRow.scss"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; if (obj != null) { var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -61218,76 +61299,72 @@ var monthChunksGap = parseFloat(_MonthRow.default.monthChunksGap);
 var monthChunksSizeTotal = monthChunkSize + monthChunksGap;
 
 var MonthRow = function MonthRow() {
-  // const [selfData, setSelfData] = useState({
-  //   offsetHeight: 0,
-  //   offsetWidth: 0
-  // });
-  // const { width } = useWindowSize();
-  // const widthD = useDebounce(width, 500);
-  // const { currentDay, initialTime } = ViewIntervalInfo.useContainer();
-  // const { pageLoaded } = UIInfo.useContainer();
-  // const self = useRef<HTMLDivElement>(null);
-  // // self data collecting hook
-  // useEffect(() => {
-  //   if (self.current) {
-  //     const { offsetWidth, offsetHeight } = self.current;
-  //     setSelfData({ offsetWidth, offsetHeight });
-  //   }
-  // }, [widthD]);
-  // const chunksCount = Math.floor(selfData.offsetWidth / monthChunksSizeTotal);
-  // const daysDelta = pageLoaded ? differenceInDays(currentDay, initialTime) : 0;
-  // // console.log({ daysDelta, currentDay, initialTime });
-  // const translateX = -daysDelta * monthChunksSizeTotal;
-  // // console.log(
-  // //   selfData.offsetWidth
-  // //     ? selfData.offsetWidth + Math.max(daysDelta, 0)
-  // //     : "auto"
-  // // );
-  // return useMemo(
-  //   () => (
-  //     <div
-  //       styleName="monthRow"
-  //       ref={self}
-  //       style={{
-  //         transform: `translateX(${translateX}px)`,
-  //         width: `${
-  //           //   ((console.log({
-  //           //   offsetWidth: selfData.offsetWidth
-  //           // }) as any) ||
-  //           //   true) &&
-  //           selfData.offsetWidth
-  //             ? selfData.offsetWidth + Math.max(daysDelta, 0)
-  //             : "auto"
-  //         }`
-  //       }}
-  //     >
-  //       {/* {((console.log({ currentDay }) as any) || true) && */}
-  //       {new Array(chunksCount + Math.max(daysDelta, 0))
-  //         .fill(null)
-  //         .map((_, i) => (
-  //           <MonthChunk
-  //             key={i}
-  //             date={addDays(initialTime, i + Math.min(daysDelta, 0))}
-  //             appsCount={169}
-  //           />
-  //         ))}
-  //     </div>
-  //   ),
-  //   [
-  //     selfData.offsetWidth,
-  //     chunksCount,
-  //     // currentDay,
-  //     daysDelta,
-  //     initialTime,
-  //     translateX
-  //   ]
-  // );
-  return _react.default.createElement(_Striped.default, null);
+  var _useState = (0, _react.useState)({
+    offsetHeight: 0,
+    offsetWidth: 0
+  }),
+      _useState2 = (0, _slicedToArray2.default)(_useState, 2),
+      selfData = _useState2[0],
+      setSelfData = _useState2[1];
+
+  var _useWindowSize = (0, _useHooks.useWindowSize)(),
+      width = _useWindowSize.width;
+
+  var widthD = (0, _useHooks.useDebounce)(width, 500);
+
+  var _ViewIntervalInfo$use = _Calendar.ViewIntervalInfo.useContainer(),
+      currentDay = _ViewIntervalInfo$use.currentDay,
+      currentDayAfterScrolling = _ViewIntervalInfo$use.currentDayAfterScrolling,
+      initialStartOfDay = _ViewIntervalInfo$use.initialStartOfDay;
+
+  var _UIInfo$useContainer = _ui.UIInfo.useContainer(),
+      pageLoaded = _UIInfo$useContainer.pageLoaded;
+
+  var self = (0, _react.useRef)(null); // self data collecting hook
+
+  (0, _react.useEffect)(function () {
+    if (self.current) {
+      var _self$current = self.current,
+          offsetWidth = _self$current.offsetWidth,
+          offsetHeight = _self$current.offsetHeight;
+      setSelfData({
+        offsetWidth: offsetWidth,
+        offsetHeight: offsetHeight
+      });
+    }
+  }, [widthD]);
+  var buffer = 1;
+  var chunksCount = Math.floor(selfData.offsetWidth / monthChunksSizeTotal) + buffer * 2;
+  var daysDelta = pageLoaded ? (0, _dateFns.differenceInDays)(currentDay, initialStartOfDay) : 0;
+  var daysDeltaAfterScrolling = pageLoaded ? (0, _dateFns.differenceInDays)(currentDayAfterScrolling, initialStartOfDay) : 0;
+  var translateXAnimated = -daysDelta * monthChunksSizeTotal;
+  var translateXInstant = (daysDeltaAfterScrolling - buffer) * monthChunksSizeTotal;
+  return (0, _react.useMemo)(function () {
+    return _react.default.createElement("div", {
+      className: "MonthRow__monthRow__39hGQ",
+      ref: self,
+      style: {
+        transform: "translateX(".concat(translateXInstant, "px)")
+      }
+    }, _react.default.createElement("div", {
+      className: "MonthRow__offsetController__3aWay",
+      style: {
+        transform: "translateX(".concat(translateXAnimated, "px)"),
+        width: selfData.offsetWidth + buffer * 2 * monthChunksSizeTotal
+      }
+    }, new Array(chunksCount).fill(null).map(function (_, i) {
+      return _react.default.createElement(_MonthChunk.default, {
+        key: i,
+        date: (0, _dateFns.addDays)(initialStartOfDay, i + daysDeltaAfterScrolling + buffer),
+        appsCount: 169
+      });
+    })));
+  }, [chunksCount, initialStartOfDay, translateXAnimated, translateXInstant, selfData.offsetWidth, daysDeltaAfterScrolling]);
 };
 
 var _default = MonthRow;
 exports.default = _default;
-},{"react":"../node_modules/react/index.js","../../../../style-components/Striped":"style-components/Striped.tsx","./MonthRow.scss":"components/Calendar/TopBlock/MonthRow/MonthRow.scss"}],"components/Calendar/TopBlock/MonthRow/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../../../stores/ui":"stores/ui.ts","../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./MonthChunk":"components/Calendar/TopBlock/MonthRow/MonthChunk/index.ts","./MonthRow.scss":"components/Calendar/TopBlock/MonthRow/MonthRow.scss"}],"components/Calendar/TopBlock/MonthRow/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61506,8 +61583,8 @@ module.exports = {
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"CurrentVersion.json":[function(require,module,exports) {
 module.exports = {
   "major": 0,
-  "minor": 1,
-  "patch": 20
+  "minor": 2,
+  "patch": 0
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
@@ -61760,7 +61837,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "39875" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "40615" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
