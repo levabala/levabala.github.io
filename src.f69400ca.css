@@ -162,21 +162,8 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-}
-.MonthChunk__monthChunk__2qRpI {
-  display: flex;
-  flex-direction: column;
-}
-.MonthChunk__monthChunk__2qRpI > div {
-  text-align: center;
-  margin: 2px 0;
-}
-.MonthChunk__monthChunk__2qRpI .MonthChunk__monthday__j1tzI {
-  background: lightgray;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  line-height: 25px;
+  transition: transform 0.5s ease-in-out;
+  transform: translateX(0);
 }
 .VersionBox__versionBox__4YcJf {
   position: fixed;

@@ -51561,7 +51561,23 @@ Object.keys(_useWindowSize).forEach(function (key) {
     }
   });
 });
-},{"./use-animation":"../node_modules/use-hooks/dist/es2015/use-animation.js","./use-dark-mode":"../node_modules/use-hooks/dist/es2015/use-dark-mode.js","./use-debounce":"../node_modules/use-hooks/dist/es2015/use-debounce.js","./use-event-listener":"../node_modules/use-hooks/dist/es2015/use-event-listener.js","./use-history":"../node_modules/use-hooks/dist/es2015/use-history.js","./use-hover":"../node_modules/use-hooks/dist/es2015/use-hover.js","./use-key-press":"../node_modules/use-hooks/dist/es2015/use-key-press.js","./use-local-storage":"../node_modules/use-hooks/dist/es2015/use-local-storage.js","./use-lock-body-scroll":"../node_modules/use-hooks/dist/es2015/use-lock-body-scroll.js","./use-media":"../node_modules/use-hooks/dist/es2015/use-media.js","./use-on-click-outside":"../node_modules/use-hooks/dist/es2015/use-on-click-outside.js","./use-on-screen":"../node_modules/use-hooks/dist/es2015/use-on-screen.js","./use-previous":"../node_modules/use-hooks/dist/es2015/use-previous.js","./use-script":"../node_modules/use-hooks/dist/es2015/use-script.js","./use-theme":"../node_modules/use-hooks/dist/es2015/use-theme.js","./use-why-did-you-update":"../node_modules/use-hooks/dist/es2015/use-why-did-you-update.js","./use-window-size":"../node_modules/use-hooks/dist/es2015/use-window-size.js"}],"../node_modules/@babel/runtime/helpers/arrayWithoutHoles.js":[function(require,module,exports) {
+},{"./use-animation":"../node_modules/use-hooks/dist/es2015/use-animation.js","./use-dark-mode":"../node_modules/use-hooks/dist/es2015/use-dark-mode.js","./use-debounce":"../node_modules/use-hooks/dist/es2015/use-debounce.js","./use-event-listener":"../node_modules/use-hooks/dist/es2015/use-event-listener.js","./use-history":"../node_modules/use-hooks/dist/es2015/use-history.js","./use-hover":"../node_modules/use-hooks/dist/es2015/use-hover.js","./use-key-press":"../node_modules/use-hooks/dist/es2015/use-key-press.js","./use-local-storage":"../node_modules/use-hooks/dist/es2015/use-local-storage.js","./use-lock-body-scroll":"../node_modules/use-hooks/dist/es2015/use-lock-body-scroll.js","./use-media":"../node_modules/use-hooks/dist/es2015/use-media.js","./use-on-click-outside":"../node_modules/use-hooks/dist/es2015/use-on-click-outside.js","./use-on-screen":"../node_modules/use-hooks/dist/es2015/use-on-screen.js","./use-previous":"../node_modules/use-hooks/dist/es2015/use-previous.js","./use-script":"../node_modules/use-hooks/dist/es2015/use-script.js","./use-theme":"../node_modules/use-hooks/dist/es2015/use-theme.js","./use-why-did-you-update":"../node_modules/use-hooks/dist/es2015/use-why-did-you-update.js","./use-window-size":"../node_modules/use-hooks/dist/es2015/use-window-size.js"}],"assembly/utility.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.last = last;
+exports.shell = shell;
+
+function last(arr) {
+  return arr[arr.length - 1];
+}
+
+function shell(size) {
+  return new Array(size).fill(null);
+}
+},{}],"../node_modules/@babel/runtime/helpers/arrayWithoutHoles.js":[function(require,module,exports) {
 function _arrayWithoutHoles(arr) {
   if (Array.isArray(arr)) {
     for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
@@ -51597,7 +51613,63 @@ function _toConsumableArray(arr) {
 }
 
 module.exports = _toConsumableArray;
-},{"./arrayWithoutHoles":"../node_modules/@babel/runtime/helpers/arrayWithoutHoles.js","./iterableToArray":"../node_modules/@babel/runtime/helpers/iterableToArray.js","./nonIterableSpread":"../node_modules/@babel/runtime/helpers/nonIterableSpread.js"}],"../node_modules/uuid/lib/rng-browser.js":[function(require,module,exports) {
+},{"./arrayWithoutHoles":"../node_modules/@babel/runtime/helpers/arrayWithoutHoles.js","./iterableToArray":"../node_modules/@babel/runtime/helpers/iterableToArray.js","./nonIterableSpread":"../node_modules/@babel/runtime/helpers/nonIterableSpread.js"}],"../node_modules/@babel/runtime/helpers/arrayWithHoles.js":[function(require,module,exports) {
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+module.exports = _arrayWithHoles;
+},{}],"../node_modules/@babel/runtime/helpers/iterableToArrayLimit.js":[function(require,module,exports) {
+function _iterableToArrayLimit(arr, i) {
+  if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+    return;
+  }
+
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _e = undefined;
+
+  try {
+    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+
+  return _arr;
+}
+
+module.exports = _iterableToArrayLimit;
+},{}],"../node_modules/@babel/runtime/helpers/nonIterableRest.js":[function(require,module,exports) {
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance");
+}
+
+module.exports = _nonIterableRest;
+},{}],"../node_modules/@babel/runtime/helpers/slicedToArray.js":[function(require,module,exports) {
+var arrayWithHoles = require("./arrayWithHoles");
+
+var iterableToArrayLimit = require("./iterableToArrayLimit");
+
+var nonIterableRest = require("./nonIterableRest");
+
+function _slicedToArray(arr, i) {
+  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || nonIterableRest();
+}
+
+module.exports = _slicedToArray;
+},{"./arrayWithHoles":"../node_modules/@babel/runtime/helpers/arrayWithHoles.js","./iterableToArrayLimit":"../node_modules/@babel/runtime/helpers/iterableToArrayLimit.js","./nonIterableRest":"../node_modules/@babel/runtime/helpers/nonIterableRest.js"}],"../node_modules/uuid/lib/rng-browser.js":[function(require,module,exports) {
 // Unique ID creation requires a high quality random # generator.  In the
 // browser this is a little complicated due to unknown quality of Math.random()
 // and inconsistent support for the `crypto` API.  We do the best we can via
@@ -51836,79 +51908,7 @@ function timeout(ms) {
     return setTimeout(resolve, ms);
   });
 }
-},{}],"assembly/utility.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.last = last;
-exports.shell = shell;
-
-function last(arr) {
-  return arr[arr.length - 1];
-}
-
-function shell(size) {
-  return new Array(size).fill(null);
-}
-},{}],"../node_modules/@babel/runtime/helpers/arrayWithHoles.js":[function(require,module,exports) {
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
-}
-
-module.exports = _arrayWithHoles;
-},{}],"../node_modules/@babel/runtime/helpers/iterableToArrayLimit.js":[function(require,module,exports) {
-function _iterableToArrayLimit(arr, i) {
-  if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-    return;
-  }
-
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-  var _e = undefined;
-
-  try {
-    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-
-      if (i && _arr.length === i) break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null) _i["return"]();
-    } finally {
-      if (_d) throw _e;
-    }
-  }
-
-  return _arr;
-}
-
-module.exports = _iterableToArrayLimit;
-},{}],"../node_modules/@babel/runtime/helpers/nonIterableRest.js":[function(require,module,exports) {
-function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance");
-}
-
-module.exports = _nonIterableRest;
-},{}],"../node_modules/@babel/runtime/helpers/slicedToArray.js":[function(require,module,exports) {
-var arrayWithHoles = require("./arrayWithHoles");
-
-var iterableToArrayLimit = require("./iterableToArrayLimit");
-
-var nonIterableRest = require("./nonIterableRest");
-
-function _slicedToArray(arr, i) {
-  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || nonIterableRest();
-}
-
-module.exports = _slicedToArray;
-},{"./arrayWithHoles":"../node_modules/@babel/runtime/helpers/arrayWithHoles.js","./iterableToArrayLimit":"../node_modules/@babel/runtime/helpers/iterableToArrayLimit.js","./nonIterableRest":"../node_modules/@babel/runtime/helpers/nonIterableRest.js"}],"../node_modules/@babel/runtime/helpers/defineProperty.js":[function(require,module,exports) {
+},{}],"../node_modules/@babel/runtime/helpers/defineProperty.js":[function(require,module,exports) {
 function _defineProperty(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {
@@ -57799,6 +57799,9 @@ exports.maxInterval = maxInterval;
 exports.withinInterval = withinInterval;
 exports.offsetInterval = offsetInterval;
 exports.areIntervalsIntersects = areIntervalsIntersects;
+exports.intervalToString = intervalToString;
+
+var _dateFns = require("date-fns");
 
 function maxInterval(i1, i2) {
   return {
@@ -57825,7 +57828,60 @@ function areIntervalsIntersects(i1, i2) {
   var includeEnd = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
   return i1.start == i2.start && i1.end == i2.end || withinInterval(i1.start, i2, includeStart, includeEnd) || withinInterval(i1.end, i2, includeStart, includeEnd) || withinInterval(i2.start, i1, includeStart, includeEnd) || withinInterval(i2.end, i1, includeStart, includeEnd);
 }
-},{}],"stores/ui.ts":[function(require,module,exports) {
+
+function intervalToString(interval) {
+  return "view: ".concat((0, _dateFns.format)(interval.start, "dd HH:mm"), " - ").concat((0, _dateFns.format)(interval.end, "dd HH:mm"));
+}
+},{"date-fns":"../node_modules/date-fns/esm/index.js"}],"assembly/timeConverts.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.convertCustom = convertCustom;
+exports.convertCustomMs = convertCustomMs;
+exports.convert = convert;
+exports.convertMs = convertMs;
+exports.Durations = exports.Duration = void 0;
+
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
+
+var _Durations;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Duration;
+exports.Duration = Duration;
+
+(function (Duration) {
+  Duration[Duration["ms"] = 0] = "ms";
+  Duration[Duration["sec"] = 1] = "sec";
+  Duration[Duration["min"] = 2] = "min";
+  Duration[Duration["hour"] = 3] = "hour";
+  Duration[Duration["day"] = 4] = "day";
+})(Duration || (exports.Duration = Duration = {}));
+
+var Durations = (_Durations = {}, (0, _defineProperty2.default)(_Durations, Duration.ms, 1), (0, _defineProperty2.default)(_Durations, Duration.sec, 1000), (0, _defineProperty2.default)(_Durations, Duration.min, 60 * 1000), (0, _defineProperty2.default)(_Durations, Duration.hour, 60 * 60 * 1000), (0, _defineProperty2.default)(_Durations, Duration.day, 24 * 60 * 60 * 1000), _Durations);
+exports.Durations = Durations;
+
+function convertCustom(value, fromCoeff, toCoeff) {
+  var postProcessor = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : Math.floor;
+  return postProcessor(value * fromCoeff / toCoeff);
+}
+
+function convertCustomMs(value, toCoeff) {
+  var postProcessor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : Math.floor;
+  return postProcessor(value / toCoeff);
+}
+
+function convert(value, from, to, postProcessor) {
+  return convertCustom(value, Durations[from], Durations[to], postProcessor);
+}
+
+function convertMs(value, to, postProcessor) {
+  return convert(value, Duration.ms, to, postProcessor);
+}
+},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js"}],"stores/ui.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -57883,13 +57939,16 @@ var _unstatedNext = require("unstated-next");
 
 var _useHooks = require("use-hooks");
 
+var _timeConverts = require("../../assembly/timeConverts");
+
 var _ui = require("../../stores/ui");
 
 var _CalendarVariables = _interopRequireDefault(require("./Calendar.variables.scss"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-console.log(_CalendarVariables.default);
+var initialTime = new Date().valueOf();
+var initialStartOfDay = (0, _dateFns.startOfDay)(initialTime);
 
 function useLeftColumn() {
   var _useState = (0, _react.useState)(50),
@@ -58094,28 +58153,50 @@ function useScroll() {
 }
 
 function useGrid() {
-  var _useState27 = (0, _react.useState)(0),
+  var _useState27 = (0, _react.useState)((0, _dateFns.addMinutes)(0, 40)),
       _useState28 = (0, _slicedToArray2.default)(_useState27, 2),
-      zeroAxis = _useState28[0],
-      setZeroAxis = _useState28[1];
+      gridStepDuration = _useState28[0],
+      setGridStepDuration = _useState28[1];
 
-  var _useState29 = (0, _react.useState)((0, _dateFns.addMinutes)(0, 40)),
+  var _useState29 = (0, _react.useState)((0, _dateFns.addHours)((0, _dateFns.addMinutes)(initialStartOfDay, 0), 7)),
       _useState30 = (0, _slicedToArray2.default)(_useState29, 2),
-      gridStepDuration = _useState30[0],
-      setGridStepDuration = _useState30[1];
+      oneDayStartTime = _useState30[0],
+      setOneDayStartTime = _useState30[1];
+
+  var _useState31 = (0, _react.useState)(10),
+      _useState32 = (0, _slicedToArray2.default)(_useState31, 2),
+      oneDayStepsCount = _useState32[0],
+      setOneDayStepsCount = _useState32[1];
+
+  var oneDayDuration = oneDayStepsCount * gridStepDuration.valueOf();
+  var oneDayDurationBlind = (0, _timeConverts.convert)(1, _timeConverts.Duration.day, _timeConverts.Duration.ms) - oneDayDuration;
+  var initialZeroAxis = oneDayStartTime;
+
+  var _useState33 = (0, _react.useState)(initialZeroAxis),
+      _useState34 = (0, _slicedToArray2.default)(_useState33, 2),
+      zeroAxis = _useState34[0],
+      setZeroAxis = _useState34[1];
 
   return {
+    initialZeroAxis: initialZeroAxis,
     gridStepDuration: gridStepDuration,
     setGridStepDuration: setGridStepDuration,
     setZeroAxis: setZeroAxis,
-    zeroAxis: zeroAxis
+    zeroAxis: zeroAxis,
+    oneDayStartTime: oneDayStartTime,
+    oneDayStepsCount: oneDayStepsCount,
+    setOneDayStartTime: setOneDayStartTime,
+    setOneDayStepsCount: setOneDayStepsCount,
+    oneDayDuration: oneDayDuration,
+    oneDayDurationBlind: oneDayDurationBlind
   };
 }
 
 function useViewInterval() {
   var _GridInfo$useContaine = GridInfo.useContainer(),
       zeroAxis = _GridInfo$useContaine.zeroAxis,
-      gridStepDuration = _GridInfo$useContaine.gridStepDuration;
+      gridStepDuration = _GridInfo$useContaine.gridStepDuration,
+      oneDayDuration = _GridInfo$useContaine.oneDayDuration;
 
   var _ScrollInfo$useContai = ScrollInfo.useContainer(),
       scrollOffset = _ScrollInfo$useContai.scrollOffset,
@@ -58135,38 +58216,61 @@ function useViewInterval() {
   var pageScrollingEnded = isScrollingPrevious && !isScrolling;
   var onePageDuration = Math.round(pageWidth / columnWidth) * gridStepDuration.valueOf() || 0;
   var oneScrollDuration = onePageDuration * oneScrollSizeReal;
+  var normalizeTimestamp = (0, _react.useMemo)(function () {
+    return function (timestamp) {
+      var daysOffset = (0, _timeConverts.convertCustom)(timestamp, 1, oneDayDuration);
+      var daysOffsetDuration = (0, _timeConverts.convertCustom)(daysOffset, oneDayDuration, 1);
+      var daysOffsetDurationNormalized = (0, _timeConverts.convert)(daysOffset, _timeConverts.Duration.day, _timeConverts.Duration.ms);
+      var remainOffsetDuration = timestamp - daysOffsetDuration;
+      var totalOffsetDurationNormalized = daysOffsetDurationNormalized + remainOffsetDuration || 0;
+      return totalOffsetDurationNormalized;
+    };
+  }, [oneDayDuration]);
+  var totalOffsetDuration = -scrollOffset * oneScrollDuration;
+  var totalOffsetDurationEnd = totalOffsetDuration + onePageDuration;
+  var totalOffsetDurationNormalized = normalizeTimestamp(totalOffsetDuration);
+  var totalOffsetDurationEndNormalized = normalizeTimestamp(totalOffsetDurationEnd);
   var viewInterval = {
-    end: (0, _dateFns.addMilliseconds)(zeroAxis, -scrollOffset * oneScrollDuration + onePageDuration),
-    start: (0, _dateFns.addMilliseconds)(zeroAxis, -scrollOffset * oneScrollDuration)
-  };
+    end: (0, _dateFns.addMilliseconds)(zeroAxis, totalOffsetDurationEndNormalized).valueOf(),
+    start: (0, _dateFns.addMilliseconds)(zeroAxis, totalOffsetDurationNormalized).valueOf()
+  }; // console.log(
+  //   `view: ${format(viewInterval.start, "dd HH:mm")} - ${format(
+  //     viewInterval.end,
+  //     "dd HH:mm"
+  //   )}`
+  // );
 
-  var _useState31 = (0, _react.useState)(viewInterval),
-      _useState32 = (0, _slicedToArray2.default)(_useState31, 2),
-      viewIntervalAfterScrolling = _useState32[0],
-      setViewIntervalAfterScrolling = _useState32[1];
+  var currentDay = (0, _dateFns.startOfDay)(viewInterval.start + (viewInterval.end - viewInterval.start) / 2 || 0).valueOf();
+
+  var _useState35 = (0, _react.useState)(viewInterval),
+      _useState36 = (0, _slicedToArray2.default)(_useState35, 2),
+      viewIntervalAfterScrolling = _useState36[0],
+      setViewIntervalAfterScrolling = _useState36[1];
 
   if ((pageFirstLoaded || pageScrollingEnded) && (!(0, _dateFns.isEqual)(viewIntervalAfterScrolling.start, viewInterval.start) || !(0, _dateFns.isEqual)(viewIntervalAfterScrolling.end, viewInterval.end))) setViewIntervalAfterScrolling(viewInterval);
   return {
     onePageDuration: onePageDuration,
     oneScrollDuration: oneScrollDuration,
     viewInterval: viewInterval,
-    viewIntervalAfterScrolling: viewIntervalAfterScrolling
+    viewIntervalAfterScrolling: viewIntervalAfterScrolling,
+    currentDay: currentDay,
+    initialTime: initialTime
   };
 }
 
 function useDragged() {
-  var _useState33 = (0, _react.useState)(null),
-      _useState34 = (0, _slicedToArray2.default)(_useState33, 2),
-      draggingApp = _useState34[0],
-      setDraggingApp = _useState34[1];
+  var _useState37 = (0, _react.useState)(null),
+      _useState38 = (0, _slicedToArray2.default)(_useState37, 2),
+      draggingApp = _useState38[0],
+      setDraggingApp = _useState38[1];
 
-  var _useState35 = (0, _react.useState)({
+  var _useState39 = (0, _react.useState)({
     dx: 0,
     dy: 0
   }),
-      _useState36 = (0, _slicedToArray2.default)(_useState35, 2),
-      dragOffsetToAppCell = _useState36[0],
-      setDragOffsetToAppCell = _useState36[1];
+      _useState40 = (0, _slicedToArray2.default)(_useState39, 2),
+      dragOffsetToAppCell = _useState40[0],
+      setDragOffsetToAppCell = _useState40[1];
 
   var isDragging = draggingApp !== null;
   return {
@@ -58185,10 +58289,10 @@ function useDraggingAutoScroll() {
   var _RowsInfo$useContaine2 = RowsInfo.useContainer(),
       rowHeight = _RowsInfo$useContaine2.rowHeight;
 
-  var _useState37 = (0, _react.useState)(0.3),
-      _useState38 = (0, _slicedToArray2.default)(_useState37, 2),
-      threshold = _useState38[0],
-      setThreshold = _useState38[1];
+  var _useState41 = (0, _react.useState)(0.3),
+      _useState42 = (0, _slicedToArray2.default)(_useState41, 2),
+      threshold = _useState42[0],
+      setThreshold = _useState42[1];
 
   var thresholdPixelsHorizontal = columnWidth * threshold;
   var thresholdPixelsVertical = rowHeight * threshold;
@@ -58217,7 +58321,7 @@ var LeftColumnInfo = (0, _unstatedNext.createContainer)(useLeftColumn);
 exports.LeftColumnInfo = LeftColumnInfo;
 var DraggingAutoScrollInfo = (0, _unstatedNext.createContainer)(useDraggingAutoScroll);
 exports.DraggingAutoScrollInfo = DraggingAutoScrollInfo;
-},{"@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../stores/ui":"stores/ui.ts","./Calendar.variables.scss":"components/Calendar/Calendar.variables.scss"}],"stores/appointments.ts":[function(require,module,exports) {
+},{"@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../assembly/timeConverts":"assembly/timeConverts.ts","../../stores/ui":"stores/ui.ts","./Calendar.variables.scss":"components/Calendar/Calendar.variables.scss"}],"stores/appointments.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -58632,7 +58736,10 @@ function useAppointments() {
       return newAppBlocks;
     }, appBlocksAfterDrop);
     if (!result) return [Result.Fail];else return [Result.Success, result];
-  }, [getIntersectingApps, getVerticalNeighboursByApp, appointmentBlocks, rowsCount, shiftAppForBlocks, updateAppForBlocks]);
+  }, [getIntersectingApps, getVerticalNeighboursByApp, appointmentBlocks, rowsCount, shiftAppForBlocks, updateAppForBlocks]); // console.log(
+  //   appointmentBlocks.toArray().map(block => intervalToString(block.interval))
+  // );
+
   return {
     appointmentBlocks: appointmentBlocks,
     addAppointment: addAppointment,
@@ -58664,6 +58771,8 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _dateFns = require("date-fns");
@@ -58687,13 +58796,15 @@ function fetchAppointments(_x) {
 function _fetchAppointments() {
   _fetchAppointments = (0, _asyncToGenerator2.default)(
   /*#__PURE__*/
-  _regenerator.default.mark(function _callee(interval) {
+  _regenerator.default.mark(function _callee(intervals) {
     var stepDuration,
         densityPerDay,
         maxRowIndex,
         delay,
         possibleDuration,
         snapValue,
+        takeRandomInterval,
+        totalDuration,
         toGenerate,
         apps,
         _args = arguments;
@@ -58701,7 +58812,15 @@ function _fetchAppointments() {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            snapValue = function _ref(val) {
+            snapValue = function _ref3(val) {
+              // console.log(
+              //   format(val, "H:mm"),
+              //   "->",
+              //   format(
+              //     Math.floor(val / stepDuration.valueOf()) * stepDuration.valueOf(),
+              //     "H:mm"
+              //   )
+              // );
               return Math.floor(val / stepDuration.valueOf()) * stepDuration.valueOf();
             };
 
@@ -58710,24 +58829,41 @@ function _fetchAppointments() {
             maxRowIndex = _args.length > 3 && _args[3] !== undefined ? _args[3] : 10;
             delay = 0;
             possibleDuration = {
-              end: (0, _dateFns.addMinutes)(0, 120),
-              start: (0, _dateFns.addMinutes)(0, 40)
+              end: stepDuration.valueOf() * 2,
+              start: stepDuration.valueOf()
             };
             _context.next = 8;
             return (0, _timeout.timeout)(delay);
 
           case 8:
-            toGenerate = Math.round((0, _dateFns.differenceInMilliseconds)(interval.end, interval.start) * (densityPerDay / (0, _dateFns.addDays)(0, 1).valueOf()));
+            takeRandomInterval = function takeRandomInterval() {
+              return intervals[(0, _random.randomInt)(0, intervals.length - 1)];
+            };
+
+            totalDuration = intervals.reduce(function (acc, val) {
+              return acc + (val.end.valueOf() - val.start.valueOf());
+            }, 0);
+            toGenerate = Math.round(totalDuration * (densityPerDay / (0, _dateFns.addDays)(0, 1).valueOf()));
             apps = (0, _utility.shell)(toGenerate).map(function () {
-              return snapValue((0, _random.randomInt)(interval.start, Math.max(interval.start.valueOf(), interval.end.valueOf() - possibleDuration.start.valueOf())));
-            }).map(function (start) {
-              var duration = snapValue((0, _random.randomInt)(possibleDuration.start, possibleDuration.end));
-              var end = Math.min(start + duration, interval.end.valueOf());
+              var interval = takeRandomInterval();
+              return [interval, snapValue((0, _random.randomInt)(interval.start, Math.max(interval.start.valueOf(), interval.end.valueOf() - possibleDuration.start.valueOf())))];
+            }).map(function (_ref) {
+              var _ref2 = (0, _slicedToArray2.default)(_ref, 2),
+                  dayInterval = _ref2[0],
+                  start = _ref2[1];
+
+              var duration = snapValue((0, _random.randomInt)(possibleDuration.start, possibleDuration.end.valueOf() + (possibleDuration.end.valueOf() - possibleDuration.start.valueOf())));
+              var end = Math.min(start + duration, dayInterval.end.valueOf());
+              var interval = {
+                start: start,
+                end: end
+              }; // console.log(
+              //   format(interval.start, "dd HH:mm")
+              //   // format(interval.end, "HH:mm")
+              // );
+
               return (0, _appointments.createAppointment)({
-                interval: {
-                  start: start,
-                  end: end
-                },
+                interval: interval,
                 rowIndex: (0, _random.randomInt)(0, maxRowIndex),
                 userId: (0, _uuid.v4)()
               });
@@ -58739,7 +58875,7 @@ function _fetchAppointments() {
             console.log("".concat(apps.length, " apps fetched"));
             return _context.abrupt("return", apps);
 
-          case 12:
+          case 14:
           case "end":
             return _context.stop();
         }
@@ -58751,7 +58887,7 @@ function _fetchAppointments() {
 
 var _default = 0;
 exports.default = _default;
-},{"@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/asyncToGenerator":"../node_modules/@babel/runtime/helpers/asyncToGenerator.js","date-fns":"../node_modules/date-fns/esm/index.js","uuid":"../node_modules/uuid/index.js","../assembly/random":"assembly/random.ts","../assembly/timeout":"assembly/timeout.ts","../assembly/utility":"assembly/utility.ts","../stores/appointments":"stores/appointments.ts"}],"stores/users.ts":[function(require,module,exports) {
+},{"@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/asyncToGenerator":"../node_modules/@babel/runtime/helpers/asyncToGenerator.js","date-fns":"../node_modules/date-fns/esm/index.js","uuid":"../node_modules/uuid/index.js","../assembly/random":"assembly/random.ts","../assembly/timeout":"assembly/timeout.ts","../assembly/utility":"assembly/utility.ts","../stores/appointments":"stores/appointments.ts"}],"stores/users.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -59616,6 +59752,8 @@ exports.default = void 0;
 
 require("./AppointmentCell.scss");
 
+var _dateFns = require("date-fns");
+
 var _react = _interopRequireDefault(require("react"));
 
 var _CenteredHorizontally = _interopRequireDefault(require("../../../../../../../style-components/CenteredHorizontally"));
@@ -59635,7 +59773,7 @@ var AppointmentCell = function AppointmentCell(props) {
     className: "AppointmentCell__avatar__tRFru"
   })), _react.default.createElement(_CenteredVertically.default, null, _react.default.createElement("span", {
     className: ""
-  }, props.app.id.split("-")[0]))), _react.default.createElement("div", {
+  }, "".concat(props.app.id.split("-")[0], ", ").concat((0, _dateFns.format)(props.app.interval.start, "dd H:mm"))))), _react.default.createElement("div", {
     className: "AppointmentCell__rightBlock__1crxs"
   }, _react.default.createElement(_CenteredVertically.default, null, _react.default.createElement("span", {
     className: "AppointmentCell__points__16BwB"
@@ -59644,7 +59782,7 @@ var AppointmentCell = function AppointmentCell(props) {
 
 var _default = AppointmentCell;
 exports.default = _default;
-},{"./AppointmentCell.scss":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/AppointmentCell.scss","react":"../node_modules/react/index.js","../../../../../../../style-components/CenteredHorizontally":"style-components/CenteredHorizontally.tsx","../../../../../../../style-components/CenteredVertically":"style-components/CenteredVertically.tsx"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/index.ts":[function(require,module,exports) {
+},{"./AppointmentCell.scss":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/AppointmentCell.scss","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","../../../../../../../style-components/CenteredHorizontally":"style-components/CenteredHorizontally.tsx","../../../../../../../style-components/CenteredVertically":"style-components/CenteredVertically.tsx"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -59861,6 +59999,8 @@ var _dateFns = require("date-fns");
 
 var _react = _interopRequireWildcard(require("react"));
 
+var _timeConverts = require("../../../../../../assembly/timeConverts");
+
 var _AppointmentWrapper = _interopRequireDefault(require("../AppointmentWrapper"));
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
@@ -59878,13 +60018,22 @@ function generateApp(_ref) {
       rowHeight = _ref.rowHeight,
       columnWidth = _ref.columnWidth,
       zeroAxis = _ref.zeroAxis,
-      gridStepDuration = _ref.gridStepDuration;
+      gridStepDuration = _ref.gridStepDuration,
+      dayDuration = _ref.dayDuration,
+      dayStartTime = _ref.dayStartTime;
   var appDuration = app.interval.end - app.interval.start; // console.log(appDuration);
 
   var height = rowHeight;
   var width = columnWidth * (appDuration / gridStepDuration.valueOf());
-  var x = (0, _dateFns.differenceInMilliseconds)(app.interval.start, zeroAxis) / gridStepDuration.valueOf() * columnWidth;
-  var y = app.rowIndex * rowHeight;
+  var timeOffset = (0, _dateFns.differenceInMilliseconds)(app.interval.start, zeroAxis);
+  var daysOffset = (0, _timeConverts.convertMs)(timeOffset, _timeConverts.Duration.day);
+  var dayStartOffset = timeOffset - (0, _timeConverts.convert)(daysOffset, _timeConverts.Duration.day, _timeConverts.Duration.ms);
+  var dayColumns = dayDuration / gridStepDuration.valueOf();
+  var daysOffsetColumns = daysOffset * dayColumns;
+  var dayStartOffsetColumns = dayStartOffset / gridStepDuration.valueOf();
+  var x = (daysOffsetColumns + dayStartOffsetColumns) * columnWidth;
+  var y = app.rowIndex * rowHeight; // console.log(`${format(timeOffset, "dd HH:mm")} + ${daysOffset} -> ${x}`);
+
   return _react.default.createElement(_AppointmentWrapper.default, {
     key: app.id,
     height: height,
@@ -59901,7 +60050,9 @@ var AppointmentBlock = _react.default.memo(function (_ref2) {
       rowHeight = _ref2.rowHeight,
       gridStepDuration = _ref2.gridStepDuration,
       columnWidth = _ref2.columnWidth,
-      zeroAxis = _ref2.zeroAxis;
+      zeroAxis = _ref2.zeroAxis,
+      dayDuration = _ref2.dayDuration,
+      dayStartTime = _ref2.dayStartTime;
   //  console.log("app block updated");
   var cachedApps = (0, _react.useRef)({});
   var cachedByEnvironment = (0, _react.useMemo)(function () {
@@ -59911,17 +60062,21 @@ var AppointmentBlock = _react.default.memo(function (_ref2) {
         columnWidth: columnWidth,
         gridStepDuration: gridStepDuration,
         rowHeight: rowHeight,
-        zeroAxis: zeroAxis
+        zeroAxis: zeroAxis,
+        dayDuration: dayDuration,
+        dayStartTime: dayStartTime
       })));
     }, {});
-  }, [rowHeight, gridStepDuration, columnWidth, zeroAxis, appsBlock.elements]);
+  }, [rowHeight, gridStepDuration, columnWidth, zeroAxis, appsBlock.elements, dayDuration, dayStartTime]);
   var appElements = appsBlock.elements.reduce(function (acc, app) {
     return _objectSpread({}, acc, (0, _defineProperty2.default)({}, app.id, cachedByEnvironment[app.id] || cachedApps.current[app.id] || generateApp({
       app: app,
       columnWidth: columnWidth,
       gridStepDuration: gridStepDuration,
       rowHeight: rowHeight,
-      zeroAxis: zeroAxis
+      zeroAxis: zeroAxis,
+      dayDuration: dayDuration,
+      dayStartTime: dayStartTime
     })));
   }, {}); // tslint:disable-next-line:no-object-mutation
 
@@ -59931,7 +60086,7 @@ var AppointmentBlock = _react.default.memo(function (_ref2) {
 
 var _default = AppointmentBlock;
 exports.default = _default;
-},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","../AppointmentWrapper":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentBlock/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","../../../../../../assembly/timeConverts":"assembly/timeConverts.ts","../AppointmentWrapper":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentBlock/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -60088,7 +60243,9 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
 
   var _GridInfo$useContaine = _Calendar.GridInfo.useContainer(),
       zeroAxis = _GridInfo$useContaine.zeroAxis,
-      gridStepDuration = _GridInfo$useContaine.gridStepDuration;
+      gridStepDuration = _GridInfo$useContaine.gridStepDuration,
+      oneDayDuration = _GridInfo$useContaine.oneDayDuration,
+      oneDayStartTime = _GridInfo$useContaine.oneDayStartTime;
 
   var _ViewIntervalInfo$use = _Calendar.ViewIntervalInfo.useContainer(),
       viewInterval = _ViewIntervalInfo$use.viewIntervalAfterScrolling,
@@ -60102,7 +60259,9 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
       addBlock = _AppBlocksJSXInfo$use.addBlock,
       appBlocks = _AppBlocksJSXInfo$use.appBlocks,
       cleanFarBlocks = _AppBlocksJSXInfo$use.cleanFarBlocks,
-      renderedBlocks = _AppBlocksJSXInfo$use.renderedBlocks; // console.log("update");
+      renderedBlocks = _AppBlocksJSXInfo$use.renderedBlocks; // console.log(`appBlocksRendered: ${appBlocks.length}`);
+  // console.log(`appointmentBlocks: ${appointmentBlocks.count()}`);
+  // console.log("update");
   // const appBlocksCount = appBlocks.length;
   // const appBlocksCountPrevious = usePrevious(appBlocksCount);
 
@@ -60143,7 +60302,11 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
       var e2 = viewInterval.end.valueOf() + oneScrollDuration;
       return s1 > s2 && s1 < e2 || e1 > s2 && e1 < e2;
     });
-  }, [newAppBlocks, viewInterval, oneScrollDuration]); // (window as any).appBlocksInRange = appBlocksInRange;
+  }, [newAppBlocks, viewInterval, oneScrollDuration]); // console.log(appBlocksInRange.toArray());
+  // console.log(
+  //   appBlocksInRange.toArray().map(block => intervalToString(block.interval))
+  // );
+  // (window as any).appBlocksInRange = appBlocksInRange;
   // (window as any).newAppBlocks = newAppBlocks;
   // console.log(renderedBlocks);
   // console.log(Object.values(appBlocksInProcess.values()));
@@ -60175,7 +60338,9 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
             appsBlock: block,
             gridStepDuration: gridStepDuration,
             rowHeight: rowHeight,
-            zeroAxis: zeroAxis
+            zeroAxis: zeroAxis,
+            dayDuration: oneDayDuration,
+            dayStartTime: oneDayStartTime.valueOf()
           });
 
           performance.mark("blockJSX generating - end");
@@ -60341,17 +60506,7 @@ var BackGrid = function BackGrid() {
       pageWidth = _ScrollInfo$useContai.pageWidth,
       scrollOffset = _ScrollInfo$useContai.scrollOffset,
       isScrolling = _ScrollInfo$useContai.isScrolling,
-      scrollOffsetDone = _ScrollInfo$useContai.scrollOffsetDone; // useWhyDidYouUpdate("BackGrid", {
-  //   columnWidth,
-  //   columnsCount,
-  //   rowsCount,
-  //   rowHeight,
-  //   oneScrollSizePixels,
-  //   pageWidth,
-  //   scrollingJustStarted,
-  //   scrollingJustEnded
-  // });
-
+      scrollOffsetDone = _ScrollInfo$useContai.scrollOffsetDone;
 
   var buffer = oneScrollSizePixels;
   var additionalColumnsOneSide = Math.ceil(buffer / columnWidth) || 0;
@@ -60424,6 +60579,8 @@ require("./TimeLine.scss");
 
 var _dateFns = require("date-fns");
 
+var _esm = require("date-fns/esm");
+
 var _react = _interopRequireWildcard(require("react"));
 
 var _CenteredVertically = _interopRequireDefault(require("../../../../../style-components/CenteredVertically"));
@@ -60445,7 +60602,9 @@ var TimeLine = function TimeLine() {
       columnWidth = _ColumnsInfo$useConta.columnWidth;
 
   var _GridInfo$useContaine = _Calendar.GridInfo.useContainer(),
-      gridStepDuration = _GridInfo$useContaine.gridStepDuration;
+      gridStepDuration = _GridInfo$useContaine.gridStepDuration,
+      oneDayStartTime = _GridInfo$useContaine.oneDayStartTime,
+      oneDayStepsCount = _GridInfo$useContaine.oneDayStepsCount;
 
   var _ViewIntervalInfo$use = _Calendar.ViewIntervalInfo.useContainer(),
       oneScrollDuration = _ViewIntervalInfo$use.oneScrollDuration;
@@ -60458,28 +60617,41 @@ var TimeLine = function TimeLine() {
   var columnsCountBuffered = columnsCount + columnsPerScroll * 2;
   return (0, _react.useMemo)(function () {
     return _react.default.createElement("div", {
-      className: "TimeLine__timeLine__1CT7j" // timeLineHeight={timeLineHeight}
-      // columnWidth={columnWidth}
-      ,
+      className: "TimeLine__timeLine__1CT7j",
       style: {
         transform: "translateX(".concat((-scrollOffsetDone - 1) * oneScrollSizePixels, "px)"),
         height: timeLineHeight
       }
     }, new Array(columnsCountBuffered).fill(null).map(function (_, i) {
+      var iReal = i - columnsPerScroll;
+      var scrolledColumns = -scrollOffsetDone * columnsPerScroll;
+      var currentColumn = scrolledColumns + iReal;
+      var columnAtDay = currentColumn % oneDayStepsCount + (currentColumn < 0 ? oneDayStepsCount : 0);
+      var stampDayOffset = columnAtDay * gridStepDuration.valueOf();
+      var timestamp = (0, _esm.addMilliseconds)(oneDayStartTime, stampDayOffset); // console.log({
+      //   i,
+      //   iReal,
+      //   scrolledColumns,
+      //   currentColumn,
+      //   columnAtDay,
+      //   timestamp: format(timestamp, "H:mm")
+      // });
+
       return _react.default.createElement("span", {
         key: i,
         className: "TimeLine__timeMark__1eqLA",
         style: {
-          width: columnWidth
+          width: columnWidth,
+          background: !columnAtDay ? "lightgray" : "white"
         }
-      }, _react.default.createElement(_CenteredVertically.default, null, (0, _dateFns.format)((0, _dateFns.addMilliseconds)(0, gridStepDuration.valueOf() * (i - scrollOffsetDone * columnsPerScroll) - oneScrollDuration || 0), "h:mm")));
+      }, _react.default.createElement(_CenteredVertically.default, null, (0, _dateFns.format)((0, _dateFns.roundToNearestMinutes)(timestamp), "H:mm")));
     }));
-  }, [scrollOffsetDone, columnsCountBuffered, gridStepDuration, timeLineHeight, columnWidth, oneScrollDuration, oneScrollSizePixels, columnsPerScroll]);
+  }, [scrollOffsetDone, columnsCountBuffered, gridStepDuration, timeLineHeight, columnWidth, oneScrollSizePixels, columnsPerScroll, oneDayStartTime, oneDayStepsCount]);
 };
 
 var _default = TimeLine;
 exports.default = _default;
-},{"./TimeLine.scss":"components/Calendar/MainBlock/ScrollingLayer/TimeLine/TimeLine.scss","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","../../../../../style-components/CenteredVertically":"style-components/CenteredVertically.tsx","../../../Calendar.containers":"components/Calendar/Calendar.containers.ts"}],"components/Calendar/MainBlock/ScrollingLayer/TimeLine/index.ts":[function(require,module,exports) {
+},{"./TimeLine.scss":"components/Calendar/MainBlock/ScrollingLayer/TimeLine/TimeLine.scss","date-fns":"../node_modules/date-fns/esm/index.js","date-fns/esm":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","../../../../../style-components/CenteredVertically":"style-components/CenteredVertically.tsx","../../../Calendar.containers":"components/Calendar/Calendar.containers.ts"}],"components/Calendar/MainBlock/ScrollingLayer/TimeLine/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -60679,6 +60851,8 @@ var _animationController = require("../../../assembly/animationController");
 
 var _interval = require("../../../assembly/interval");
 
+var _timeConverts = require("../../../assembly/timeConverts");
+
 var _appointments = require("../../../stores/appointments");
 
 var _Calendar = require("../Calendar.containers");
@@ -60731,7 +60905,9 @@ var MainBlock = function MainBlock(_ref) {
 
   var _GridInfo$useContaine = _Calendar.GridInfo.useContainer(),
       zeroAxis = _GridInfo$useContaine.zeroAxis,
-      gridStepDuration = _GridInfo$useContaine.gridStepDuration;
+      gridStepDuration = _GridInfo$useContaine.gridStepDuration,
+      oneDayDurationBlind = _GridInfo$useContaine.oneDayDurationBlind,
+      oneDayDuration = _GridInfo$useContaine.oneDayDuration;
 
   var _DraggingAutoScrollIn = _Calendar.DraggingAutoScrollInfo.useContainer(),
       thresholdPixelsHorizontal = _DraggingAutoScrollIn.thresholdPixelsHorizontal,
@@ -60855,8 +61031,11 @@ var MainBlock = function MainBlock(_ref) {
     };
   }, [selfData, scrollOffset, oneScrollSizePixels, rowHeight, columnWidth, timeLineHeight, rowsCount]);
   var getDate = (0, _react.useCallback)(function (column) {
-    return zeroAxis.valueOf() + column * gridStepDuration.valueOf();
-  }, [zeroAxis, gridStepDuration]);
+    var offsetDuration = column * gridStepDuration.valueOf();
+    var daysOffset = (0, _timeConverts.convertCustomMs)(offsetDuration, oneDayDuration);
+    var daysDurationAddition = daysOffset * oneDayDurationBlind;
+    return zeroAxis.valueOf() + offsetDuration + daysDurationAddition;
+  }, [zeroAxis, gridStepDuration, oneDayDuration, oneDayDurationBlind]);
   var mouseDownHandler = (0, _react.useCallback)(function (event) {
     var pageX = event.pageX,
         pageY = event.pageY;
@@ -60942,7 +61121,7 @@ var MainBlock = function MainBlock(_ref) {
 
 var _default = MainBlock;
 exports.default = _default;
-},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","./MainBlock.scss":"components/Calendar/MainBlock/MainBlock.scss","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../../assembly/animationController":"assembly/animationController.ts","../../../assembly/interval":"assembly/interval.ts","../../../stores/appointments":"stores/appointments.ts","../Calendar.containers":"components/Calendar/Calendar.containers.ts","./ScrollingLayer":"components/Calendar/MainBlock/ScrollingLayer/index.ts","./StaticLayer":"components/Calendar/MainBlock/StaticLayer/index.ts"}],"components/Calendar/MainBlock/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","./MainBlock.scss":"components/Calendar/MainBlock/MainBlock.scss","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../../assembly/animationController":"assembly/animationController.ts","../../../assembly/interval":"assembly/interval.ts","../../../assembly/timeConverts":"assembly/timeConverts.ts","../../../stores/appointments":"stores/appointments.ts","../Calendar.containers":"components/Calendar/Calendar.containers.ts","./ScrollingLayer":"components/Calendar/MainBlock/ScrollingLayer/index.ts","./StaticLayer":"components/Calendar/MainBlock/StaticLayer/index.ts"}],"components/Calendar/MainBlock/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61014,99 +61193,101 @@ var reloadCSS = require('_css_loader');
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
 module.exports = {
+  "monthChunkSize": "25px",
+  "monthChunksGap": "15px",
   "monthRow": "MonthRow__monthRow__39hGQ"
 };
-},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.scss":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-module.exports = {
-  "monthChunk": "MonthChunk__monthChunk__2qRpI",
-  "monthday": "MonthChunk__monthday__j1tzI"
-};
-},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.tsx":[function(require,module,exports) {
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/TopBlock/MonthRow/MonthRow.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
-require("./MonthChunk.scss");
-
-var _dateFns = require("date-fns");
 
 var _react = _interopRequireDefault(require("react"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _Striped = _interopRequireDefault(require("../../../../style-components/Striped"));
 
-var MonthChunk = function MonthChunk(_ref) {
-  var date = _ref.date,
-      appsCount = _ref.appsCount;
-  return _react.default.createElement("span", {
-    className: "MonthChunk__monthChunk__2qRpI"
-  }, _react.default.createElement("div", {
-    className: "MonthChunk__weekday__3L4f2"
-  }, (0, _dateFns.format)(date, "EEEEEE")), _react.default.createElement("div", {
-    className: "MonthChunk__monthday__j1tzI"
-  }, (0, _dateFns.format)(date, "d")), _react.default.createElement("div", {
-    className: "MonthChunk__appsCount__1jeVZ"
-  }, appsCount));
-};
-
-var _default = MonthChunk;
-exports.default = _default;
-},{"./MonthChunk.scss":"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.scss","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js"}],"components/Calendar/TopBlock/MonthRow/MonthChunk/index.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _MonthChunk = _interopRequireDefault(require("./MonthChunk"));
+var _MonthRow = _interopRequireDefault(require("./MonthRow.scss"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _default = _MonthChunk.default;
-exports.default = _default;
-},{"./MonthChunk":"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.tsx"}],"components/Calendar/TopBlock/MonthRow/MonthRow.tsx":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-require("./MonthRow.scss");
-
-var _dateFns = require("date-fns");
-
-var _react = _interopRequireDefault(require("react"));
-
-var _random = require("../../../../assembly/random");
-
-var _MonthChunk = _interopRequireDefault(require("./MonthChunk"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var monthChunkSize = parseFloat(_MonthRow.default.monthChunkSize);
+var monthChunksGap = parseFloat(_MonthRow.default.monthChunksGap);
+var monthChunksSizeTotal = monthChunkSize + monthChunksGap;
 
 var MonthRow = function MonthRow() {
-  var now = new Date();
-  return _react.default.createElement("div", {
-    className: "MonthRow__monthRow__39hGQ"
-  }, new Array(20).fill(null).map(function (_, i) {
-    return _react.default.createElement(_MonthChunk.default, {
-      key: i,
-      date: (0, _dateFns.addDays)(now, i),
-      appsCount: (0, _random.randomInt)(0, 150)
-    });
-  }));
+  // const [selfData, setSelfData] = useState({
+  //   offsetHeight: 0,
+  //   offsetWidth: 0
+  // });
+  // const { width } = useWindowSize();
+  // const widthD = useDebounce(width, 500);
+  // const { currentDay, initialTime } = ViewIntervalInfo.useContainer();
+  // const { pageLoaded } = UIInfo.useContainer();
+  // const self = useRef<HTMLDivElement>(null);
+  // // self data collecting hook
+  // useEffect(() => {
+  //   if (self.current) {
+  //     const { offsetWidth, offsetHeight } = self.current;
+  //     setSelfData({ offsetWidth, offsetHeight });
+  //   }
+  // }, [widthD]);
+  // const chunksCount = Math.floor(selfData.offsetWidth / monthChunksSizeTotal);
+  // const daysDelta = pageLoaded ? differenceInDays(currentDay, initialTime) : 0;
+  // // console.log({ daysDelta, currentDay, initialTime });
+  // const translateX = -daysDelta * monthChunksSizeTotal;
+  // // console.log(
+  // //   selfData.offsetWidth
+  // //     ? selfData.offsetWidth + Math.max(daysDelta, 0)
+  // //     : "auto"
+  // // );
+  // return useMemo(
+  //   () => (
+  //     <div
+  //       styleName="monthRow"
+  //       ref={self}
+  //       style={{
+  //         transform: `translateX(${translateX}px)`,
+  //         width: `${
+  //           //   ((console.log({
+  //           //   offsetWidth: selfData.offsetWidth
+  //           // }) as any) ||
+  //           //   true) &&
+  //           selfData.offsetWidth
+  //             ? selfData.offsetWidth + Math.max(daysDelta, 0)
+  //             : "auto"
+  //         }`
+  //       }}
+  //     >
+  //       {/* {((console.log({ currentDay }) as any) || true) && */}
+  //       {new Array(chunksCount + Math.max(daysDelta, 0))
+  //         .fill(null)
+  //         .map((_, i) => (
+  //           <MonthChunk
+  //             key={i}
+  //             date={addDays(initialTime, i + Math.min(daysDelta, 0))}
+  //             appsCount={169}
+  //           />
+  //         ))}
+  //     </div>
+  //   ),
+  //   [
+  //     selfData.offsetWidth,
+  //     chunksCount,
+  //     // currentDay,
+  //     daysDelta,
+  //     initialTime,
+  //     translateX
+  //   ]
+  // );
+  return _react.default.createElement(_Striped.default, null);
 };
 
 var _default = MonthRow;
 exports.default = _default;
-},{"./MonthRow.scss":"components/Calendar/TopBlock/MonthRow/MonthRow.scss","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","../../../../assembly/random":"assembly/random.ts","./MonthChunk":"components/Calendar/TopBlock/MonthRow/MonthChunk/index.ts"}],"components/Calendar/TopBlock/MonthRow/index.ts":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","../../../../style-components/Striped":"style-components/Striped.tsx","./MonthRow.scss":"components/Calendar/TopBlock/MonthRow/MonthRow.scss"}],"components/Calendar/TopBlock/MonthRow/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61176,13 +61357,15 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 require("./Calendar.scss");
 
-var _dateFns = require("date-fns");
+var _esm = require("date-fns/esm");
 
 var _react = _interopRequireWildcard(require("react"));
 
 var _reactSwipeable = require("react-swipeable");
 
 var _useHooks = require("use-hooks");
+
+var _utility = require("../../assembly/utility");
 
 var _fetchAppointments = require("../../fetchers/fetchAppointments");
 
@@ -61219,7 +61402,9 @@ var Calendar = function Calendar() {
       addAppointments = _AppointmentsInfo$use.addAppointments;
 
   var _GridInfo$useContaine = _Calendar2.GridInfo.useContainer(),
-      gridStepDuration = _GridInfo$useContaine.gridStepDuration;
+      gridStepDuration = _GridInfo$useContaine.gridStepDuration,
+      oneDayDuration = _GridInfo$useContaine.oneDayDuration,
+      initialZeroAxis = _GridInfo$useContaine.initialZeroAxis;
 
   var _UIInfo$useContainer = _ui.UIInfo.useContainer(),
       setPageLoaded = _UIInfo$useContainer.setPageLoaded;
@@ -61239,24 +61424,33 @@ var Calendar = function Calendar() {
     (0, _asyncToGenerator2.default)(
     /*#__PURE__*/
     _regenerator.default.mark(function _callee() {
+      var daysCount, daysLeftCount, maxLeftTime, intervals;
       return _regenerator.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
+              daysCount = 10;
+              daysLeftCount = Math.floor(daysCount / 2);
+              maxLeftTime = (0, _esm.addDays)(initialZeroAxis, -daysLeftCount);
+              intervals = (0, _utility.shell)(daysCount).map(function (_, i) {
+                var start = (0, _esm.addDays)(maxLeftTime, i);
+                var end = (0, _esm.addMilliseconds)(start, oneDayDuration);
+                return {
+                  start: start,
+                  end: end
+                };
+              });
+              console.log(intervals);
               _context.t0 = addAppointments;
-              _context.next = 3;
-              return (0, _fetchAppointments.fetchAppointments)({
-                start: (0, _dateFns.addHours)(0, -65),
-                end: (0, _dateFns.addHours)(0, 145)
-              }, // { start: addHours(0, -2), end: addHours(0, 3) },
-              gridStepDuration, 500, rowsCount);
+              _context.next = 8;
+              return (0, _fetchAppointments.fetchAppointments)(intervals, gridStepDuration, 500, rowsCount);
 
-            case 3:
+            case 8:
               _context.t1 = _context.sent;
               (0, _context.t0)(_context.t1);
               setPageLoaded(true);
 
-            case 6:
+            case 11:
             case "end":
               return _context.stop();
           }
@@ -61265,13 +61459,13 @@ var Calendar = function Calendar() {
     }))(); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (0, _react.useMemo)(function () {
-    return _react.default.createElement("div", (0, _extends2.default)({
+    return _react.default.createElement(_Calendar2.ViewIntervalInfo.Provider, null, _react.default.createElement("div", (0, _extends2.default)({
       className: "Calendar__calendar__qh_12" + (" " + (handlers ? handlers.className || "" : ""))
     }, handlers), _react.default.createElement("div", {
       className: "Calendar__top__2DDTC"
     }, _react.default.createElement(_TopBlock.default, null)), _react.default.createElement("div", {
       className: "Calendar__bottom__2g2Yl"
-    }, _react.default.createElement(_LeftBlock.default, null), _react.default.createElement(_Calendar2.GridInfo.Provider, null, _react.default.createElement(_Calendar2.ViewIntervalInfo.Provider, null, _react.default.createElement(_Calendar2.TimeLineInfo.Provider, null, _react.default.createElement(_Calendar2.DraggingAutoScrollInfo.Provider, null, _react.default.createElement(_MainBlock.default, {
+    }, _react.default.createElement(_LeftBlock.default, null), _react.default.createElement(_Calendar2.GridInfo.Provider, null, _react.default.createElement(_Calendar2.TimeLineInfo.Provider, null, _react.default.createElement(_Calendar2.DraggingAutoScrollInfo.Provider, null, _react.default.createElement(_MainBlock.default, {
       minColumnWidth: 200
     })))))));
   }, [handlers]);
@@ -61287,7 +61481,7 @@ var Wrapper = function Wrapper() {
 
 var _default = Wrapper;
 exports.default = _default;
-},{"@babel/runtime/helpers/extends":"../node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/asyncToGenerator":"../node_modules/@babel/runtime/helpers/asyncToGenerator.js","./Calendar.scss":"components/Calendar/Calendar.scss","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","react-swipeable":"../node_modules/react-swipeable/es/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../fetchers/fetchAppointments":"fetchers/fetchAppointments.ts","../../stores/appointments":"stores/appointments.ts","../../stores/ui":"stores/ui.ts","../../stores/users":"stores/users.ts","./Calendar.containers":"components/Calendar/Calendar.containers.ts","./LeftBlock":"components/Calendar/LeftBlock/index.ts","./MainBlock":"components/Calendar/MainBlock/index.ts","./TopBlock":"components/Calendar/TopBlock/index.ts"}],"components/Calendar/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/extends":"../node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/asyncToGenerator":"../node_modules/@babel/runtime/helpers/asyncToGenerator.js","./Calendar.scss":"components/Calendar/Calendar.scss","date-fns/esm":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","react-swipeable":"../node_modules/react-swipeable/es/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../assembly/utility":"assembly/utility.ts","../../fetchers/fetchAppointments":"fetchers/fetchAppointments.ts","../../stores/appointments":"stores/appointments.ts","../../stores/ui":"stores/ui.ts","../../stores/users":"stores/users.ts","./Calendar.containers":"components/Calendar/Calendar.containers.ts","./LeftBlock":"components/Calendar/LeftBlock/index.ts","./MainBlock":"components/Calendar/MainBlock/index.ts","./TopBlock":"components/Calendar/TopBlock/index.ts"}],"components/Calendar/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61566,7 +61760,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34449" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "39875" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
