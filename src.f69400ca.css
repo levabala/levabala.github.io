@@ -46,6 +46,9 @@
   grid-template-rows: -webkit-min-content 1fr;
   grid-template-rows: min-content 1fr;
 }
+.ScrollingLayer__scrollingLayer__1ogmE.ScrollingLayer__scrollIsJustReset__1mWAK {
+  transition: none;
+}
 .ScrollingLayer__scrollingLayer__1ogmE .ScrollingLayer__bottomBlock__3OaJm {
   position: relative;
 }
@@ -188,6 +191,9 @@
 .MonthChunk__monthChunk__2qRpI:active > .MonthChunk__monthday__j1tzI {
   background: #858585;
   transition: background 0.1s ease-in-out;
+}
+.MonthChunk__monthChunk__2qRpI.MonthChunk__solid__2DQ-F > .MonthChunk__monthday__j1tzI {
+  border: solid black 1px;
 }
 .MonthChunk__monthChunk__2qRpI .MonthChunk__monthday__j1tzI {
   background: lightgray;

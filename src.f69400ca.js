@@ -58060,12 +58060,25 @@ function useScroll() {
       lastScrollDirection = _useState24[0],
       setLastScrollDirection = _useState24[1];
 
-  var _useState25 = (0, _react.useState)(scrollOffset),
+  var _useState25 = (0, _react.useState)(false),
       _useState26 = (0, _slicedToArray2.default)(_useState25, 2),
-      scrollOffsetDone = _useState26[0],
-      setScrollOffsetDone = _useState26[1];
+      scrollIsJustReset = _useState26[0],
+      setScrollIsJustReset = _useState26[1];
+
+  var scrollIsJustResetPrevious = (0, _useHooks.usePrevious)(scrollIsJustReset);
+  if (scrollIsJustResetPrevious && scrollIsJustReset) setScrollIsJustReset(false); // console.log({ scrollIsJustReset, scrollIsJustResetPrevious });
+
+  var _useState27 = (0, _react.useState)(scrollOffset),
+      _useState28 = (0, _slicedToArray2.default)(_useState27, 2),
+      scrollOffsetDone = _useState28[0],
+      setScrollOffsetDone = _useState28[1];
 
   var columnsPerScroll = Math.round(oneScrollSizePixels / columnWidth) || 0;
+  var resetScroll = (0, _react.useCallback)(function () {
+    setScrollOffset(0);
+    setScrollOffsetDone(0);
+    setScrollIsJustReset(true);
+  }, []);
   var scrollingEventsGenerator = (0, _react.useMemo)(function () {
     return (
       /*#__PURE__*/
@@ -58148,34 +58161,40 @@ function useScroll() {
     setOneScrollSizePixels: setOneScrollSizePixels,
     setOneScrollSizeReal: setOneScrollSizeReal,
     lastScrollDirection: lastScrollDirection,
-    scrollOffsetDone: scrollOffsetDone
+    scrollOffsetDone: scrollOffsetDone,
+    resetScroll: resetScroll,
+    scrollIsJustReset: scrollIsJustReset
   };
 }
 
 function useGrid() {
-  var _useState27 = (0, _react.useState)((0, _dateFns.addMinutes)(0, 40)),
-      _useState28 = (0, _slicedToArray2.default)(_useState27, 2),
-      gridStepDuration = _useState28[0],
-      setGridStepDuration = _useState28[1];
+  var getStartOfWorkDay = (0, _react.useCallback)(function (date) {
+    return (0, _dateFns.addHours)((0, _dateFns.addMinutes)((0, _dateFns.startOfDay)(date), 0), 7);
+  }, []);
 
-  var _useState29 = (0, _react.useState)((0, _dateFns.addHours)((0, _dateFns.addMinutes)(initialStartOfDay, 0), 7)),
+  var _useState29 = (0, _react.useState)((0, _dateFns.addMinutes)(0, 40)),
       _useState30 = (0, _slicedToArray2.default)(_useState29, 2),
-      oneDayStartTime = _useState30[0],
-      setOneDayStartTime = _useState30[1];
+      gridStepDuration = _useState30[0],
+      setGridStepDuration = _useState30[1];
 
-  var _useState31 = (0, _react.useState)(5),
+  var _useState31 = (0, _react.useState)(getStartOfWorkDay(initialTime)),
       _useState32 = (0, _slicedToArray2.default)(_useState31, 2),
-      oneDayStepsCount = _useState32[0],
-      setOneDayStepsCount = _useState32[1];
+      oneDayStartTime = _useState32[0],
+      setOneDayStartTime = _useState32[1];
+
+  var _useState33 = (0, _react.useState)(5),
+      _useState34 = (0, _slicedToArray2.default)(_useState33, 2),
+      oneDayStepsCount = _useState34[0],
+      setOneDayStepsCount = _useState34[1];
 
   var oneDayDuration = oneDayStepsCount * gridStepDuration.valueOf();
   var oneDayDurationBlind = (0, _timeConverts.convert)(1, _timeConverts.Duration.day, _timeConverts.Duration.ms) - oneDayDuration;
   var initialZeroAxis = oneDayStartTime;
 
-  var _useState33 = (0, _react.useState)(initialZeroAxis),
-      _useState34 = (0, _slicedToArray2.default)(_useState33, 2),
-      zeroAxis = _useState34[0],
-      setZeroAxis = _useState34[1];
+  var _useState35 = (0, _react.useState)(initialZeroAxis),
+      _useState36 = (0, _slicedToArray2.default)(_useState35, 2),
+      zeroAxis = _useState36[0],
+      setZeroAxis = _useState36[1];
 
   return {
     initialZeroAxis: initialZeroAxis,
@@ -58188,7 +58207,8 @@ function useGrid() {
     setOneDayStartTime: setOneDayStartTime,
     setOneDayStepsCount: setOneDayStepsCount,
     oneDayDuration: oneDayDuration,
-    oneDayDurationBlind: oneDayDurationBlind
+    oneDayDurationBlind: oneDayDurationBlind,
+    getStartOfWorkDay: getStartOfWorkDay
   };
 }
 
@@ -58202,7 +58222,8 @@ function useViewInterval() {
       scrollOffset = _ScrollInfo$useContai.scrollOffset,
       oneScrollSizeReal = _ScrollInfo$useContai.oneScrollSizeReal,
       pageWidth = _ScrollInfo$useContai.pageWidth,
-      isScrolling = _ScrollInfo$useContai.isScrolling;
+      isScrolling = _ScrollInfo$useContai.isScrolling,
+      scrollIsJustReset = _ScrollInfo$useContai.scrollIsJustReset;
 
   var _ColumnsInfo$useConta2 = ColumnsInfo.useContainer(),
       columnWidth = _ColumnsInfo$useConta2.columnWidth;
@@ -58233,17 +58254,24 @@ function useViewInterval() {
   var viewInterval = {
     end: (0, _dateFns.addMilliseconds)(zeroAxis, totalOffsetDurationEndNormalized).valueOf(),
     start: (0, _dateFns.addMilliseconds)(zeroAxis, totalOffsetDurationNormalized).valueOf()
-  }; // console.log(
+  };
+
+  var _useState37 = (0, _react.useState)(viewInterval),
+      _useState38 = (0, _slicedToArray2.default)(_useState37, 2),
+      viewIntervalAfterScrolling = _useState38[0],
+      setViewIntervalAfterScrolling = _useState38[1]; // console.log(
   //   `view: ${format(viewInterval.start, "dd HH:mm")} - ${format(
   //     viewInterval.end,
   //     "dd HH:mm"
   //   )}`
   // );
+  // console.log(
+  //   `view2: ${format(viewIntervalAfterScrolling.start, "dd HH:mm")} - ${format(
+  //     viewIntervalAfterScrolling.end,
+  //     "dd HH:mm"
+  //   )}`
+  // );
 
-  var _useState35 = (0, _react.useState)(viewInterval),
-      _useState36 = (0, _slicedToArray2.default)(_useState35, 2),
-      viewIntervalAfterScrolling = _useState36[0],
-      setViewIntervalAfterScrolling = _useState36[1];
 
   var currentDay = (0, _react.useMemo)(function () {
     return (0, _dateFns.startOfDay)(viewInterval.start + (viewInterval.end - viewInterval.start) / 2 || 0).valueOf();
@@ -58251,8 +58279,13 @@ function useViewInterval() {
   var currentDayAfterScrolling = (0, _react.useMemo)(function () {
     return (0, _dateFns.startOfDay)(viewIntervalAfterScrolling.start + (viewIntervalAfterScrolling.end - viewIntervalAfterScrolling.start) / 2 || 0).valueOf();
   }, [viewIntervalAfterScrolling]); // console.log(`currentDay: ${format(currentDay, "dd")}`);
+  // console.log(
+  //   pageFirstLoaded || pageScrollingEnded || scrollIsJustReset,
+  //   !isEqual(viewIntervalAfterScrolling.start, viewInterval.start) ||
+  //     !isEqual(viewIntervalAfterScrolling.end, viewInterval.end)
+  // );
 
-  if ((pageFirstLoaded || pageScrollingEnded) && (!(0, _dateFns.isEqual)(viewIntervalAfterScrolling.start, viewInterval.start) || !(0, _dateFns.isEqual)(viewIntervalAfterScrolling.end, viewInterval.end))) setViewIntervalAfterScrolling(viewInterval);
+  if ((pageFirstLoaded || pageScrollingEnded || scrollIsJustReset) && (!(0, _dateFns.isEqual)(viewIntervalAfterScrolling.start, viewInterval.start) || !(0, _dateFns.isEqual)(viewIntervalAfterScrolling.end, viewInterval.end))) setViewIntervalAfterScrolling(viewInterval);
   return {
     onePageDuration: onePageDuration,
     oneScrollDuration: oneScrollDuration,
@@ -58266,18 +58299,18 @@ function useViewInterval() {
 }
 
 function useDragged() {
-  var _useState37 = (0, _react.useState)(null),
-      _useState38 = (0, _slicedToArray2.default)(_useState37, 2),
-      draggingApp = _useState38[0],
-      setDraggingApp = _useState38[1];
+  var _useState39 = (0, _react.useState)(null),
+      _useState40 = (0, _slicedToArray2.default)(_useState39, 2),
+      draggingApp = _useState40[0],
+      setDraggingApp = _useState40[1];
 
-  var _useState39 = (0, _react.useState)({
+  var _useState41 = (0, _react.useState)({
     dx: 0,
     dy: 0
   }),
-      _useState40 = (0, _slicedToArray2.default)(_useState39, 2),
-      dragOffsetToAppCell = _useState40[0],
-      setDragOffsetToAppCell = _useState40[1];
+      _useState42 = (0, _slicedToArray2.default)(_useState41, 2),
+      dragOffsetToAppCell = _useState42[0],
+      setDragOffsetToAppCell = _useState42[1];
 
   var isDragging = draggingApp !== null;
   return {
@@ -58296,10 +58329,10 @@ function useDraggingAutoScroll() {
   var _RowsInfo$useContaine2 = RowsInfo.useContainer(),
       rowHeight = _RowsInfo$useContaine2.rowHeight;
 
-  var _useState41 = (0, _react.useState)(0.3),
-      _useState42 = (0, _slicedToArray2.default)(_useState41, 2),
-      threshold = _useState42[0],
-      setThreshold = _useState42[1];
+  var _useState43 = (0, _react.useState)(0.3),
+      _useState44 = (0, _slicedToArray2.default)(_useState43, 2),
+      threshold = _useState44[0],
+      setThreshold = _useState44[1];
 
   var thresholdPixelsHorizontal = columnWidth * threshold;
   var thresholdPixelsVertical = rowHeight * threshold;
@@ -59081,166 +59114,7 @@ var removeAnimation = function removeAnimation(animation) {
 };
 
 exports.removeAnimation = removeAnimation;
-},{}],"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.scss":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-module.exports = {
-  "scrollingLayer": "ScrollingLayer__scrollingLayer__1ogmE",
-  "bottomBlock": "ScrollingLayer__bottomBlock__3OaJm"
-};
-},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../node_modules/@use-it/interval/dist/interval.m.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = _default;
-
-var _react = require("react");
-
-function _default(t, e) {
-  var u = (0, _react.useRef)();
-  (0, _react.useEffect)(function () {
-    u.current = t;
-  }, [t]), (0, _react.useEffect)(function () {
-    if (null !== e) {
-      var r = setInterval(function () {
-        for (var r = [], n = arguments.length; n--;) r[n] = arguments[n];
-
-        return u.current.apply(u, r);
-      }, e);
-      return function () {
-        return clearInterval(r);
-      };
-    }
-  }, [e]);
-}
-},{"react":"../node_modules/react/index.js"}],"stores/lazytask.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.useLazyTask = useLazyTask;
-exports.LazyTaskContainer = void 0;
-
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
-
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
-
-var _unstatedNext = require("unstated-next");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function useLazyTask() {
-  var lazyTasks = {};
-  var postEffectTimeMap = {}; // let lastFrameEndTime = Date.now();
-
-  var loop = function loop() {
-    // const currentFrameTime = Date.now();
-    // const preFrameDuration = currentFrameTime - lastFrameEndTime;
-    // // console.log("preFrameDuration:", preFrameDuration);
-    // const totalTasksDuration = executeTasks(
-    //   lazyTasks,
-    //   postEffectTimeMap,
-    //   20,
-    //   preFrameDuration
-    // );
-    // lastFrameEndTime = Date.now() + totalTasksDuration;
-    executeTasks(lazyTasks, postEffectTimeMap, 20, 0);
-    requestAnimationFrame(loop);
-  };
-
-  loop();
-
-  var addLazyTask = function addLazyTask(task) {
-    return new Promise(function (_resolve) {
-      var taskPromised = _objectSpread({}, task, {
-        resolve: function resolve(value) {
-          return _resolve(value);
-        }
-      });
-
-      lazyTasks[task.priority] = [].concat((0, _toConsumableArray2.default)(lazyTasks[task.priority] || []), [taskPromised]);
-    });
-  };
-
-  var addLazyTasks = function addLazyTasks(tasks, priority, type) {
-    var tasksPromised = [];
-    var promises = tasks.map(function (task) {
-      var promise = new Promise(function (_resolve2) {
-        var taskPromised = _objectSpread({}, task, {
-          priority: priority,
-          type: type,
-          resolve: function resolve(value) {
-            return _resolve2(value);
-          }
-        });
-
-        tasksPromised.push(taskPromised);
-      });
-      return promise;
-    });
-    lazyTasks[priority] = [].concat((0, _toConsumableArray2.default)(lazyTasks[priority] || []), tasksPromised);
-    return Promise.all(promises);
-  };
-
-  var registerPostEffectDuration = function registerPostEffectDuration(type, duration, tasksExecuted) {
-    postEffectTimeMap[type] = (postEffectTimeMap[type] || []).concat(duration / tasksExecuted).slice(-10); // console.log(postEffectTimeMap[type]);
-  };
-
-  return {
-    addLazyTask: addLazyTask,
-    addLazyTasks: addLazyTasks,
-    registerPostEffectDuration: registerPostEffectDuration
-  };
-}
-
-function executeTasks(tasks, postEffectTimeMap, maxFrameDuration, preFrameDuration) {
-  var startTime = Date.now();
-  var layers = Object.entries(tasks).sort(function (_ref, _ref2) {
-    var _ref3 = (0, _slicedToArray2.default)(_ref, 1),
-        key1 = _ref3[0];
-
-    var _ref4 = (0, _slicedToArray2.default)(_ref2, 1),
-        key2 = _ref4[0];
-
-    return parseInt(key1, 10) > parseInt(key2, 10) ? -1 : 1;
-  });
-  var nowTime = Date.now();
-  var postEffectDuration = 0;
-
-  while (nowTime - startTime + postEffectDuration + preFrameDuration < maxFrameDuration && layers.length) {
-    var task = layers[0][1].shift();
-
-    if (task) {
-      var _result = task.callback();
-
-      task.resolve(_result);
-      var lastTimes = postEffectTimeMap[task.type] || [0];
-      postEffectDuration += lastTimes.reduce(function (acc, val) {
-        return acc + val;
-      }) / lastTimes.length;
-    } else layers.shift();
-
-    nowTime = Date.now();
-  } // console.log("posteffect:", postEffectDuration);
-
-
-  return Date.now() - startTime + postEffectDuration;
-}
-
-var LazyTaskContainer = (0, _unstatedNext.createContainer)(useLazyTask);
-exports.LazyTaskContainer = LazyTaskContainer;
-},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs"}],"../node_modules/babel-plugin-react-css-modules/dist/browser/schemas/optionsDefaults.js":[function(require,module,exports) {
+},{}],"../node_modules/babel-plugin-react-css-modules/dist/browser/schemas/optionsDefaults.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -59376,15 +59250,15 @@ var _default = function _default(styleNameValue, styleModuleImportMap, options) 
 };
 
 exports["default"] = _default;
-},{"./schemas/optionsDefaults":"../node_modules/babel-plugin-react-css-modules/dist/browser/schemas/optionsDefaults.js"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentWrapper.scss":[function(require,module,exports) {
+},{"./schemas/optionsDefaults":"../node_modules/babel-plugin-react-css-modules/dist/browser/schemas/optionsDefaults.js"}],"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
 module.exports = {
-  "appointmentWrapper": "AppointmentWrapper__appointmentWrapper__1Y-Le",
-  "dragging": "AppointmentWrapper__dragging__3TsqR",
-  "dragOrigin": "AppointmentWrapper__dragOrigin__3St2g"
+  "scrollingLayer": "ScrollingLayer__scrollingLayer__1ogmE",
+  "scrollIsJustReset": "ScrollingLayer__scrollIsJustReset__1mWAK",
+  "bottomBlock": "ScrollingLayer__bottomBlock__3OaJm"
 };
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../node_modules/classnames/index.js":[function(require,module,exports) {
 var define;
@@ -59441,239 +59315,669 @@ var define;
 	}
 }());
 
-},{}],"../node_modules/use-ssr/dist/useSSR.js":[function(require,module,exports) {
+},{}],"../node_modules/@use-it/interval/dist/interval.m.js":[function(require,module,exports) {
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var Device;
-(function (Device) {
-    Device["Browser"] = "browser";
-    Device["Server"] = "server";
-    Device["Native"] = "native";
-})(Device = exports.Device || (exports.Device = {}));
-var Browser = Device.Browser, Server = Device.Server, Native = Device.Native;
-var canUseDOM = !!(typeof window !== 'undefined' &&
-    window.document &&
-    window.document.createElement);
-var canUseNative = typeof navigator != 'undefined' && navigator.product == 'ReactNative';
-var device = canUseNative ? Native : canUseDOM ? Browser : Server;
-var SSRObject = {
-    isBrowser: device === Browser,
-    isServer: device === Server,
-    isNative: device === Native,
-    device: device,
-    canUseWorkers: typeof Worker !== 'undefined',
-    canUseEventListeners: device === Browser && !!window.addEventListener,
-    canUseViewport: device === Browser && !!window.screen,
-};
-var assign = function () {
-    var args = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        args[_i] = arguments[_i];
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = _default;
+
+var _react = require("react");
+
+function _default(t, e) {
+  var u = (0, _react.useRef)();
+  (0, _react.useEffect)(function () {
+    u.current = t;
+  }, [t]), (0, _react.useEffect)(function () {
+    if (null !== e) {
+      var r = setInterval(function () {
+        for (var r = [], n = arguments.length; n--;) r[n] = arguments[n];
+
+        return u.current.apply(u, r);
+      }, e);
+      return function () {
+        return clearInterval(r);
+      };
     }
-    return args.reduce(function (acc, obj) { return (__assign(__assign({}, acc), obj)); }, {});
-};
-var values = function (obj) { return Object.keys(obj).map(function (key) { return obj[key]; }); };
-var toArrayObject = function () { return assign((values(SSRObject), SSRObject)); };
-var useSSRObject = toArrayObject();
-exports.weAreServer = function () {
-    SSRObject.isServer = true;
-    useSSRObject = toArrayObject();
-};
-exports.useSSR = function () { return useSSRObject; };
-exports.default = exports.useSSR;
-
-},{}],"../node_modules/react-useportal/dist/usePortal.js":[function(require,module,exports) {
-"use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var react_1 = require("react");
-var react_dom_1 = require("react-dom");
-var use_ssr_1 = __importDefault(require("use-ssr"));
-exports.errorMessage1 = 'You must either add a `ref` to the element you are interacting with or pass an `event` to openPortal(e) or togglePortal(e).';
-function usePortal(_a) {
-    if (_a === void 0) { _a = {}; }
-    var _b = _a.closeOnOutsideClick, closeOnOutsideClick = _b === void 0 ? true : _b, _c = _a.closeOnEsc, closeOnEsc = _c === void 0 ? true : _c, bindTo = _a.bindTo, // attach the portal to this node in the DOM
-    _d = _a.isOpen, // attach the portal to this node in the DOM
-    defaultIsOpen = _d === void 0 ? false : _d, onOpen = _a.onOpen, onClose = _a.onClose, onPortalClick = _a.onPortalClick, eventHandlers = __rest(_a, ["closeOnOutsideClick", "closeOnEsc", "bindTo", "isOpen", "onOpen", "onClose", "onPortalClick"]);
-    var _e = use_ssr_1.default(), isServer = _e.isServer, isBrowser = _e.isBrowser;
-    var _f = react_1.useState(defaultIsOpen), isOpen = _f[0], makeOpen = _f[1];
-    // we use this ref because `isOpen` is stale for handleOutsideMouseClick
-    var open = react_1.useRef(isOpen);
-    var setOpen = react_1.useCallback(function (v) {
-        // workaround to not have stale `isOpen` in the handleOutsideMouseClick
-        open.current = v;
-        makeOpen(v);
-    }, []);
-    var targetEl = react_1.useRef(); // this is the element you are clicking/hovering/whatever, to trigger opening the portal
-    var portal = react_1.useRef(isBrowser ? document.createElement('div') : null);
-    react_1.useEffect(function () {
-        if (isBrowser && !portal.current)
-            portal.current = document.createElement('div');
-    }, [isBrowser, portal]);
-    var elToMountTo = react_1.useMemo(function () {
-        if (isServer)
-            return;
-        return (bindTo && react_dom_1.findDOMNode(bindTo)) || document.body;
-    }, [isServer, bindTo]);
-    var createCustomEvent = function (e) {
-        if (!e)
-            return { portal: portal, targetEl: targetEl, event: e };
-        var event = e || {};
-        if (event.persist)
-            event.persist();
-        event.portal = portal;
-        event.targetEl = targetEl;
-        event.event = e;
-        var currentTarget = e.currentTarget;
-        if (!targetEl.current && currentTarget && currentTarget !== document)
-            targetEl.current = event.currentTarget;
-        return event;
-    };
-    // this should handle all eventHandlers like onClick, onMouseOver, etc. passed into the config
-    var customEventHandlers = Object
-        .entries(eventHandlers)
-        .reduce(function (acc, _a) {
-        var handlerName = _a[0], eventHandler = _a[1];
-        acc[handlerName] = function (event) {
-            if (isServer)
-                return;
-            eventHandler(createCustomEvent(event));
-        };
-        return acc;
-    }, {});
-    var openPortal = react_1.useCallback(function (e) {
-        if (isServer)
-            return;
-        var customEvent = createCustomEvent(e);
-        // for some reason, when we don't have the event argument, there
-        // is a weird race condition. Would like to see if we can remove
-        // setTimeout, but for now this works
-        if (targetEl.current == null) {
-            setTimeout(function () { return setOpen(true); }, 0);
-            throw Error(exports.errorMessage1);
-        }
-        if (onOpen)
-            onOpen(customEvent);
-        setOpen(true);
-    }, [isServer, portal, setOpen, targetEl, onOpen]);
-    var closePortal = react_1.useCallback(function (e) {
-        if (isServer)
-            return;
-        var customEvent = createCustomEvent(e);
-        if (onClose && open.current)
-            onClose(customEvent);
-        if (open.current)
-            setOpen(false);
-    }, [isServer, onClose, setOpen]);
-    var togglePortal = react_1.useCallback(function (e) {
-        return open.current ? closePortal(e) : openPortal(e);
-    }, [closePortal, openPortal]);
-    var handleKeydown = react_1.useCallback(function (e) {
-        return (e.key === 'Escape' && closeOnEsc) ? closePortal(e) : undefined;
-    }, [closeOnEsc, closePortal]);
-    var handleOutsideMouseClick = react_1.useCallback(function (e) {
-        var containsTarget = function (target) { return target.current.contains(e.target); };
-        if (containsTarget(portal) || e.button !== 0 || !open.current || containsTarget(targetEl))
-            return;
-        if (closeOnOutsideClick)
-            closePortal(e);
-    }, [isServer, closePortal, closeOnOutsideClick, portal]);
-    var handleMouseDown = react_1.useCallback(function (e) {
-        if (isServer || !(portal.current instanceof HTMLElement))
-            return;
-        var customEvent = createCustomEvent(e);
-        if (portal.current.contains(customEvent.target) && onPortalClick)
-            onPortalClick(customEvent);
-        handleOutsideMouseClick(e);
-    }, [handleOutsideMouseClick]);
-    // used to remove the event listeners on unmount
-    var eventListeners = react_1.useRef({});
-    react_1.useEffect(function () {
-        if (isServer)
-            return;
-        if (!(elToMountTo instanceof HTMLElement) || !(portal.current instanceof HTMLElement))
-            return;
-        // TODO: eventually will need to figure out a better solution for this.
-        // Surely we can find a way to map onScroll/onWheel -> scroll/wheel better,
-        // but for all other event handlers. For now this works.
-        var eventHandlerMap = {
-            onScroll: 'scroll',
-            onWheel: 'wheel',
-        };
-        var node = portal.current;
-        elToMountTo.appendChild(portal.current);
-        // handles all special case handlers. Currently only onScroll and onWheel
-        Object.entries(eventHandlerMap).forEach(function (_a) {
-            var handlerName = _a[0] /* onScroll */, eventListenerName = _a[1] /* scroll */;
-            if (!eventHandlers[handlerName])
-                return;
-            eventListeners.current[handlerName] = function (e) { return eventHandlers[handlerName](createCustomEvent(e)); };
-            document.addEventListener(eventListenerName, eventListeners.current[handlerName]);
-        });
-        document.addEventListener('keydown', handleKeydown);
-        document.addEventListener('mousedown', handleMouseDown);
-        return function () {
-            // handles all special case handlers. Currently only onScroll and onWheel
-            Object.entries(eventHandlerMap).forEach(function (_a) {
-                var handlerName = _a[0], eventListenerName = _a[1];
-                if (!eventHandlers[handlerName])
-                    return;
-                document.removeEventListener(eventListenerName, eventListeners.current[handlerName]);
-                delete eventListeners.current[handlerName];
-            });
-            document.removeEventListener('keydown', handleKeydown);
-            document.removeEventListener('mousedown', handleMouseDown);
-            elToMountTo.removeChild(node);
-        };
-    }, [isServer, handleOutsideMouseClick, handleKeydown, elToMountTo, portal]);
-    var Portal = react_1.useCallback(function (_a) {
-        var children = _a.children;
-        if (portal.current != null)
-            return react_dom_1.createPortal(children, portal.current);
-        return null;
-    }, [portal]);
-    return Object.assign([openPortal, closePortal, open.current, Portal, togglePortal, targetEl, portal], __assign(__assign({ isOpen: open.current, openPortal: openPortal, ref: targetEl, closePortal: closePortal,
-        togglePortal: togglePortal,
-        Portal: Portal, portalRef: portal }, customEventHandlers), { bind: __assign({ ref: targetEl }, customEventHandlers) }));
+  }, [e]);
 }
-exports.default = usePortal;
+},{"react":"../node_modules/react/index.js"}],"stores/lazytask.ts":[function(require,module,exports) {
+"use strict";
 
-},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","use-ssr":"../node_modules/use-ssr/dist/useSSR.js"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/AppointmentCell.scss":[function(require,module,exports) {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.useLazyTask = useLazyTask;
+exports.LazyTaskContainer = void 0;
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
+
+var _unstatedNext = require("unstated-next");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function useLazyTask() {
+  var lazyTasks = {};
+  var postEffectTimeMap = {}; // let lastFrameEndTime = Date.now();
+
+  var loop = function loop() {
+    // const currentFrameTime = Date.now();
+    // const preFrameDuration = currentFrameTime - lastFrameEndTime;
+    // // console.log("preFrameDuration:", preFrameDuration);
+    // const totalTasksDuration = executeTasks(
+    //   lazyTasks,
+    //   postEffectTimeMap,
+    //   20,
+    //   preFrameDuration
+    // );
+    // lastFrameEndTime = Date.now() + totalTasksDuration;
+    executeTasks(lazyTasks, postEffectTimeMap, 16, 0);
+    requestAnimationFrame(loop);
+  };
+
+  loop();
+
+  var addLazyTask = function addLazyTask(task) {
+    return new Promise(function (_resolve) {
+      var taskPromised = _objectSpread({}, task, {
+        resolve: function resolve(value) {
+          return _resolve(value);
+        }
+      });
+
+      lazyTasks[task.priority] = [].concat((0, _toConsumableArray2.default)(lazyTasks[task.priority] || []), [taskPromised]);
+    });
+  };
+
+  var addLazyTasks = function addLazyTasks(tasks, priority, type) {
+    var tasksPromised = [];
+    var promises = tasks.map(function (task) {
+      var promise = new Promise(function (_resolve2) {
+        var taskPromised = _objectSpread({}, task, {
+          priority: priority,
+          type: type,
+          resolve: function resolve(value) {
+            return _resolve2(value);
+          }
+        });
+
+        tasksPromised.push(taskPromised);
+      });
+      return promise;
+    });
+    lazyTasks[priority] = [].concat((0, _toConsumableArray2.default)(lazyTasks[priority] || []), tasksPromised);
+    return Promise.all(promises);
+  };
+
+  var registerPostEffectDuration = function registerPostEffectDuration(type, duration, tasksExecuted) {
+    postEffectTimeMap[type] = (postEffectTimeMap[type] || []).concat(duration / tasksExecuted).slice(-10); // console.log(postEffectTimeMap[type]);
+  };
+
+  return {
+    addLazyTask: addLazyTask,
+    addLazyTasks: addLazyTasks,
+    registerPostEffectDuration: registerPostEffectDuration
+  };
+}
+
+function executeTasks(tasks, postEffectTimeMap, maxFrameDuration, preFrameDuration) {
+  var startTime = Date.now();
+  var layers = Object.entries(tasks).sort(function (_ref, _ref2) {
+    var _ref3 = (0, _slicedToArray2.default)(_ref, 1),
+        key1 = _ref3[0];
+
+    var _ref4 = (0, _slicedToArray2.default)(_ref2, 1),
+        key2 = _ref4[0];
+
+    return parseInt(key1, 10) > parseInt(key2, 10) ? -1 : 1;
+  });
+  var nowTime = Date.now();
+  var postEffectDuration = 0;
+
+  while (nowTime - startTime + postEffectDuration + preFrameDuration < maxFrameDuration && layers.length) {
+    var task = layers[0][1].shift();
+
+    if (task) {
+      var _result = task.callback();
+
+      task.resolve(_result);
+      var lastTimes = postEffectTimeMap[task.type] || [0];
+      postEffectDuration += lastTimes.reduce(function (acc, val) {
+        return acc + val;
+      }) / lastTimes.length;
+    } else layers.shift();
+
+    nowTime = Date.now();
+  } // console.log("posteffect:", postEffectDuration);
+
+
+  return Date.now() - startTime + postEffectDuration;
+}
+
+var LazyTaskContainer = (0, _unstatedNext.createContainer)(useLazyTask);
+exports.LazyTaskContainer = LazyTaskContainer;
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentWrapper.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "appointmentWrapper": "AppointmentWrapper__appointmentWrapper__1Y-Le",
+  "dragging": "AppointmentWrapper__dragging__3TsqR",
+  "dragOrigin": "AppointmentWrapper__dragOrigin__3St2g"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../node_modules/react-portal/es/utils.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.canUseDOM = void 0;
+var canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
+exports.canUseDOM = canUseDOM;
+},{}],"../node_modules/react-portal/es/Portal.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _propTypes = _interopRequireDefault(require("prop-types"));
+
+var _reactDom = _interopRequireDefault(require("react-dom"));
+
+var _utils = require("./utils");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
+
+var Portal = function (_React$Component) {
+  _inherits(Portal, _React$Component);
+
+  function Portal() {
+    _classCallCheck(this, Portal);
+
+    return _possibleConstructorReturn(this, (Portal.__proto__ || Object.getPrototypeOf(Portal)).apply(this, arguments));
+  }
+
+  _createClass(Portal, [{
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      if (this.defaultNode) {
+        document.body.removeChild(this.defaultNode);
+      }
+
+      this.defaultNode = null;
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      if (!_utils.canUseDOM) {
+        return null;
+      }
+
+      if (!this.props.node && !this.defaultNode) {
+        this.defaultNode = document.createElement('div');
+        document.body.appendChild(this.defaultNode);
+      }
+
+      return _reactDom.default.createPortal(this.props.children, this.props.node || this.defaultNode);
+    }
+  }]);
+
+  return Portal;
+}(_react.default.Component);
+
+Portal.propTypes = {
+  children: _propTypes.default.node.isRequired,
+  node: _propTypes.default.any
+};
+var _default = Portal;
+exports.default = _default;
+},{"react":"../node_modules/react/index.js","prop-types":"../node_modules/prop-types/index.js","react-dom":"../node_modules/react-dom/index.js","./utils":"../node_modules/react-portal/es/utils.js"}],"../node_modules/react-portal/es/LegacyPortal.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _reactDom = _interopRequireDefault(require("react-dom"));
+
+var _propTypes = _interopRequireDefault(require("prop-types"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+} // This file is a fallback for a consumer who is not yet on React 16
+// as createPortal was introduced in React 16
+
+
+var Portal = function (_React$Component) {
+  _inherits(Portal, _React$Component);
+
+  function Portal() {
+    _classCallCheck(this, Portal);
+
+    return _possibleConstructorReturn(this, (Portal.__proto__ || Object.getPrototypeOf(Portal)).apply(this, arguments));
+  }
+
+  _createClass(Portal, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.renderPortal();
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(props) {
+      this.renderPortal();
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      _reactDom.default.unmountComponentAtNode(this.defaultNode || this.props.node);
+
+      if (this.defaultNode) {
+        document.body.removeChild(this.defaultNode);
+      }
+
+      this.defaultNode = null;
+      this.portal = null;
+    }
+  }, {
+    key: 'renderPortal',
+    value: function renderPortal(props) {
+      if (!this.props.node && !this.defaultNode) {
+        this.defaultNode = document.createElement('div');
+        document.body.appendChild(this.defaultNode);
+      }
+
+      var children = this.props.children; // https://gist.github.com/jimfb/d99e0678e9da715ccf6454961ef04d1b
+
+      if (typeof this.props.children.type === 'function') {
+        children = _react.default.cloneElement(this.props.children);
+      }
+
+      this.portal = _reactDom.default.unstable_renderSubtreeIntoContainer(this, children, this.props.node || this.defaultNode);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return null;
+    }
+  }]);
+
+  return Portal;
+}(_react.default.Component);
+
+var _default = Portal;
+exports.default = _default;
+Portal.propTypes = {
+  children: _propTypes.default.node.isRequired,
+  node: _propTypes.default.any
+};
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","prop-types":"../node_modules/prop-types/index.js"}],"../node_modules/react-portal/es/PortalCompat.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _reactDom = _interopRequireDefault(require("react-dom"));
+
+var _Portal = _interopRequireDefault(require("./Portal"));
+
+var _LegacyPortal = _interopRequireDefault(require("./LegacyPortal"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Portal = void 0;
+
+if (_reactDom.default.createPortal) {
+  Portal = _Portal.default;
+} else {
+  Portal = _LegacyPortal.default;
+}
+
+var _default = Portal;
+exports.default = _default;
+},{"react-dom":"../node_modules/react-dom/index.js","./Portal":"../node_modules/react-portal/es/Portal.js","./LegacyPortal":"../node_modules/react-portal/es/LegacyPortal.js"}],"../node_modules/react-portal/es/PortalWithState.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _propTypes = _interopRequireDefault(require("prop-types"));
+
+var _PortalCompat = _interopRequireDefault(require("./PortalCompat"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
+
+var KEYCODES = {
+  ESCAPE: 27
+};
+
+var PortalWithState = function (_React$Component) {
+  _inherits(PortalWithState, _React$Component);
+
+  function PortalWithState(props) {
+    _classCallCheck(this, PortalWithState);
+
+    var _this = _possibleConstructorReturn(this, (PortalWithState.__proto__ || Object.getPrototypeOf(PortalWithState)).call(this, props));
+
+    _this.portalNode = null;
+    _this.state = {
+      active: !!props.defaultOpen
+    };
+    _this.openPortal = _this.openPortal.bind(_this);
+    _this.closePortal = _this.closePortal.bind(_this);
+    _this.wrapWithPortal = _this.wrapWithPortal.bind(_this);
+    _this.handleOutsideMouseClick = _this.handleOutsideMouseClick.bind(_this);
+    _this.handleKeydown = _this.handleKeydown.bind(_this);
+    return _this;
+  }
+
+  _createClass(PortalWithState, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      if (this.props.closeOnEsc) {
+        document.addEventListener('keydown', this.handleKeydown);
+      }
+
+      if (this.props.closeOnOutsideClick) {
+        document.addEventListener('click', this.handleOutsideMouseClick);
+      }
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      if (this.props.closeOnEsc) {
+        document.removeEventListener('keydown', this.handleKeydown);
+      }
+
+      if (this.props.closeOnOutsideClick) {
+        document.removeEventListener('click', this.handleOutsideMouseClick);
+      }
+    }
+  }, {
+    key: 'openPortal',
+    value: function openPortal(e) {
+      if (this.state.active) {
+        return;
+      }
+
+      if (e && e.nativeEvent) {
+        e.nativeEvent.stopImmediatePropagation();
+      }
+
+      this.setState({
+        active: true
+      }, this.props.onOpen);
+    }
+  }, {
+    key: 'closePortal',
+    value: function closePortal() {
+      if (!this.state.active) {
+        return;
+      }
+
+      this.setState({
+        active: false
+      }, this.props.onClose);
+    }
+  }, {
+    key: 'wrapWithPortal',
+    value: function wrapWithPortal(children) {
+      var _this2 = this;
+
+      if (!this.state.active) {
+        return null;
+      }
+
+      return _react.default.createElement(_PortalCompat.default, {
+        node: this.props.node,
+        key: 'react-portal',
+        ref: function ref(portalNode) {
+          return _this2.portalNode = portalNode;
+        }
+      }, children);
+    }
+  }, {
+    key: 'handleOutsideMouseClick',
+    value: function handleOutsideMouseClick(e) {
+      if (!this.state.active) {
+        return;
+      }
+
+      var root = this.portalNode.props.node || this.portalNode.defaultNode;
+
+      if (!root || root.contains(e.target) || e.button && e.button !== 0) {
+        return;
+      }
+
+      this.closePortal();
+    }
+  }, {
+    key: 'handleKeydown',
+    value: function handleKeydown(e) {
+      if (e.keyCode === KEYCODES.ESCAPE && this.state.active) {
+        this.closePortal();
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return this.props.children({
+        openPortal: this.openPortal,
+        closePortal: this.closePortal,
+        portal: this.wrapWithPortal,
+        isOpen: this.state.active
+      });
+    }
+  }]);
+
+  return PortalWithState;
+}(_react.default.Component);
+
+PortalWithState.propTypes = {
+  children: _propTypes.default.func.isRequired,
+  defaultOpen: _propTypes.default.bool,
+  node: _propTypes.default.any,
+  closeOnEsc: _propTypes.default.bool,
+  closeOnOutsideClick: _propTypes.default.bool,
+  onOpen: _propTypes.default.func,
+  onClose: _propTypes.default.func
+};
+PortalWithState.defaultProps = {
+  onOpen: function onOpen() {},
+  onClose: function onClose() {}
+};
+var _default = PortalWithState;
+exports.default = _default;
+},{"react":"../node_modules/react/index.js","prop-types":"../node_modules/prop-types/index.js","./PortalCompat":"../node_modules/react-portal/es/PortalCompat.js"}],"../node_modules/react-portal/es/index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "Portal", {
+  enumerable: true,
+  get: function () {
+    return _PortalCompat.default;
+  }
+});
+Object.defineProperty(exports, "PortalWithState", {
+  enumerable: true,
+  get: function () {
+    return _PortalWithState.default;
+  }
+});
+
+var _PortalCompat = _interopRequireDefault(require("./PortalCompat"));
+
+var _PortalWithState = _interopRequireDefault(require("./PortalWithState"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+},{"./PortalCompat":"../node_modules/react-portal/es/PortalCompat.js","./PortalWithState":"../node_modules/react-portal/es/PortalWithState.js"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/AppointmentCell.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
@@ -59821,7 +60125,7 @@ var _classnames = _interopRequireDefault(require("classnames"));
 
 var _react = _interopRequireWildcard(require("react"));
 
-var _reactUseportal = _interopRequireDefault(require("react-useportal"));
+var _reactPortal = require("react-portal");
 
 var _Calendar = require("../../../../Calendar.containers");
 
@@ -59869,15 +60173,13 @@ var AppointmentWrapper = function AppointmentWrapper(_ref) {
       coords = _useState6[0],
       setCoords = _useState6[1];
 
-  var _usePortal = (0, _reactUseportal.default)(),
-      ref = _usePortal.ref,
-      openPortal = _usePortal.openPortal,
-      closePortal = _usePortal.closePortal,
-      Portal = _usePortal.Portal;
-
   var _DraggedInfo$useConta = _Calendar.DraggedInfo.useContainer(),
       setDragOffsetToAppCell = _DraggedInfo$useConta.setDragOffsetToAppCell;
 
+  var appDraggablePortal = (0, _react.useMemo)(function () {
+    return document.getElementById("appDraggablePortal");
+  }, []);
+  var ref = (0, _react.useRef)();
   var isDragging = !!mouseDownCoords;
   var onMouseMove = (0, _react.useCallback)(function (event) {
     if (!mouseDownCoords) return;
@@ -59911,16 +60213,14 @@ var AppointmentWrapper = function AppointmentWrapper(_ref) {
       x: event.clientX,
       y: event.clientY
     });
-    openPortal();
-  }, [openPortal, ref, setDragOffsetToAppCell]);
+  }, [setDragOffsetToAppCell]);
   var onMouseUp = (0, _react.useCallback)(function () {
     setMouseDownCoords(null);
     setOffset({
       dx: 0,
       dy: 0
     });
-    closePortal();
-  }, [closePortal]);
+  }, []);
   (0, _react.useLayoutEffect)(function () {
     if (mouseDownCoords) {
       window.addEventListener("mousemove", onMouseMove);
@@ -59955,9 +60255,11 @@ var AppointmentWrapper = function AppointmentWrapper(_ref) {
         "handleMissingStyleName": "warn"
       })
     }, appCell);
-  }, [left, top, height, width, onMouseDown, onMouseUp, ref, appCell, isDragging]);
+  }, [left, top, height, width, onMouseDown, onMouseUp, appCell, isDragging]);
   var draggingAppWrapper = (0, _react.useMemo)(function () {
-    return isDragging ? _react.default.createElement(Portal, null, _react.default.createElement("div", {
+    return isDragging ? _react.default.createElement(_reactPortal.Portal, {
+      node: appDraggablePortal
+    }, _react.default.createElement("div", {
       style: {
         height: height,
         transform: "translate(".concat(coords.x + offset.dx, "px, ").concat(coords.y + offset.dy, "px)"),
@@ -59969,7 +60271,7 @@ var AppointmentWrapper = function AppointmentWrapper(_ref) {
         "handleMissingStyleName": "warn"
       })
     }, appCell)) : null;
-  }, [height, width, onMouseDown, onMouseUp, appCell, coords, isDragging, offset]);
+  }, [height, width, onMouseDown, onMouseUp, appCell, coords, isDragging, offset, appDraggablePortal]);
   return (0, _react.useMemo)(function () {
     return _react.default.createElement(_react.default.Fragment, null, staticAppWrapper, draggingAppWrapper);
   }, [staticAppWrapper, draggingAppWrapper]);
@@ -59978,7 +60280,7 @@ var AppointmentWrapper = function AppointmentWrapper(_ref) {
 var _default = _react.default.memo(AppointmentWrapper);
 
 exports.default = _default;
-},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","babel-plugin-react-css-modules/dist/browser/getClassName":"../node_modules/babel-plugin-react-css-modules/dist/browser/getClassName.js","./AppointmentWrapper.scss":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentWrapper.scss","classnames":"../node_modules/classnames/index.js","react":"../node_modules/react/index.js","react-useportal":"../node_modules/react-useportal/dist/usePortal.js","../../../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./AppointmentCell":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","babel-plugin-react-css-modules/dist/browser/getClassName":"../node_modules/babel-plugin-react-css-modules/dist/browser/getClassName.js","./AppointmentWrapper.scss":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentWrapper.scss","classnames":"../node_modules/classnames/index.js","react":"../node_modules/react/index.js","react-portal":"../node_modules/react-portal/es/index.js","../../../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./AppointmentCell":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -60026,8 +60328,7 @@ function generateApp(_ref) {
       columnWidth = _ref.columnWidth,
       zeroAxis = _ref.zeroAxis,
       gridStepDuration = _ref.gridStepDuration,
-      dayDuration = _ref.dayDuration,
-      dayStartTime = _ref.dayStartTime;
+      dayDuration = _ref.dayDuration;
   var appDuration = app.interval.end - app.interval.start; // console.log(appDuration);
 
   var height = rowHeight;
@@ -60167,15 +60468,22 @@ function useAppBlocksJSX() {
   var appBlocksDebounced = appBlocks; // useDebounce(appBlocks, 20);
 
   var renderedBlocksRef = (0, _react.useRef)({});
+  var renderedBlocksZeroAxisRef = (0, _react.useRef)({});
 
   var _DraggedInfo$useConta = _Calendar.DraggedInfo.useContainer(),
       draggingApp = _DraggedInfo$useConta.draggingApp;
 
-  var addBlock = (0, _react.useCallback)(function (blockJSX, block) {
+  var reset = function reset() {
+    setAppBlocks([]);
+    renderedBlocksRef.current = {};
+  };
+
+  var addBlock = (0, _react.useCallback)(function (blockJSX, block, zeroAxis) {
     // tslint:disable-next-line:no-object-mutation
     appBlocksRef.current[block.id] = blockJSX; // tslint:disable-next-line:no-object-mutation
 
     renderedBlocksRef.current[block.id] = block;
+    renderedBlocksZeroAxisRef.current[block.id] = zeroAxis;
     setAppBlocks(Object.values(appBlocksRef.current));
   }, []);
   var addBlocks = (0, _react.useCallback)(function (arr) {
@@ -60190,8 +60498,8 @@ function useAppBlocksJSX() {
     });
     setAppBlocks(Object.values(appBlocksRef.current));
   }, []);
-  var cleanFarBlocks = (0, _react.useCallback)(function (viewInterval) {
-    var clearDistanceScale = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+  var cleanFarBlocks = (0, _react.useCallback)(function (viewInterval, zeroAxisCurrent) {
+    var clearDistanceScale = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
     var clearDistance = (viewInterval.end.valueOf() - viewInterval.start.valueOf()) * clearDistanceScale;
     var amountWas = Object.keys(appBlocksRef.current).length; // tslint:disable-next-line:no-object-mutation
 
@@ -60205,6 +60513,7 @@ function useAppBlocksJSX() {
         return true;
       }
 
+      if (renderedBlocksZeroAxisRef.current[id] !== zeroAxisCurrent) return false;
       var interval = jsx.props.appsBlock.interval;
       var dists = [viewInterval.start.valueOf() - interval.start, viewInterval.end.valueOf() - interval.start, viewInterval.start.valueOf() - interval.start, viewInterval.end.valueOf() - interval.end].map(function (d) {
         return Math.abs(d);
@@ -60232,7 +60541,8 @@ function useAppBlocksJSX() {
     addBlock: addBlock,
     addBlocks: addBlocks,
     cleanFarBlocks: cleanFarBlocks,
-    renderedBlocks: renderedBlocksRef.current
+    renderedBlocks: renderedBlocksRef.current,
+    reset: reset
   };
 }
 
@@ -60258,6 +60568,9 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
       viewInterval = _ViewIntervalInfo$use.viewIntervalAfterScrolling,
       oneScrollDuration = _ViewIntervalInfo$use.oneScrollDuration;
 
+  var _ScrollInfo$useContai = _Calendar.ScrollInfo.useContainer(),
+      scrollIsJustReset = _ScrollInfo$useContai.scrollIsJustReset;
+
   var _LazyTaskContainer$us = _lazytask.LazyTaskContainer.useContainer(),
       addLazyTask = _LazyTaskContainer$us.addLazyTask,
       registerPostEffectDuration = _LazyTaskContainer$us.registerPostEffectDuration;
@@ -60273,7 +60586,7 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
   // const appBlocksCountPrevious = usePrevious(appBlocksCount);
 
 
-  var currentEnvironment = [columnWidth, gridStepDuration, rowHeight, viewInterval, zeroAxis];
+  var currentEnvironment = [columnWidth, gridStepDuration, rowHeight, viewInterval, zeroAxis, scrollIsJustReset];
   var appBlocksInProcessRef = (0, _react.useRef)(new Set());
   var appBlocksInProcess = appBlocksInProcessRef.current; // useWhyDidYouUpdate("AppointmentPlacer", {
   //   columnWidth,
@@ -60289,7 +60602,9 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
   //   cleanFarBlocks
   // });
 
-  var environmentChanged = useIsChanged(currentEnvironment);
+  var environmentChanged = useIsChanged(currentEnvironment); // console.log("appplacer update", environmentChanged);
+  // console.log(format(zeroAxis, "M dd"));
+
   var previousAppBlocks = (0, _useHooks.usePrevious)(appointmentBlocks);
   var newAppBlocks = (0, _react.useMemo)(function () {
     return !environmentChanged ? appointmentBlocks.filter(function (block) {
@@ -60353,7 +60668,7 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
           performance.mark("blockJSX generating - end");
           performance.measure("blockJSX generating", "blockJSX generating - start", "blockJSX generating - end");
           performance.mark("addBlock - start");
-          addBlock(blockJSX, block);
+          addBlock(blockJSX, block, zeroAxis.valueOf());
           appBlocksInProcess.delete(block.id);
           var diff = Date.now() - t1;
           registerPostEffectDuration("AppointBlock JSX Generation", diff, 1);
@@ -60406,7 +60721,7 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
   (0, _interval.default)(function () {
     return addLazyTask({
       callback: function callback() {
-        return cleanFarBlocks(viewInterval);
+        return cleanFarBlocks(viewInterval, zeroAxis.valueOf());
       },
       priority: 0,
       type: "cleanFarBlocks"
@@ -60613,9 +60928,6 @@ var TimeLine = function TimeLine() {
       oneDayStartTime = _GridInfo$useContaine.oneDayStartTime,
       oneDayStepsCount = _GridInfo$useContaine.oneDayStepsCount;
 
-  var _ViewIntervalInfo$use = _Calendar.ViewIntervalInfo.useContainer(),
-      oneScrollDuration = _ViewIntervalInfo$use.oneScrollDuration;
-
   var _ScrollInfo$useContai = _Calendar.ScrollInfo.useContainer(),
       scrollOffsetDone = _ScrollInfo$useContai.scrollOffsetDone,
       columnsPerScroll = _ScrollInfo$useContai.columnsPerScroll,
@@ -60682,7 +60994,11 @@ exports.default = void 0;
 
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
+var _getClassName2 = _interopRequireDefault(require("babel-plugin-react-css-modules/dist/browser/getClassName"));
+
 require("./ScrollingLayer.scss");
+
+var _classnames = _interopRequireDefault(require("classnames"));
 
 var _react = _interopRequireWildcard(require("react"));
 
@@ -60702,6 +61018,15 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var _styleModuleImportMap = {
+  "./ScrollingLayer.scss": {
+    "scrollingLayer": "ScrollingLayer__scrollingLayer__1ogmE",
+    "scrollIsJustReset": "ScrollingLayer__scrollIsJustReset__1mWAK",
+    "topBlock": "ScrollingLayer__topBlock__2O2Ed",
+    "bottomBlock": "ScrollingLayer__bottomBlock__3OaJm"
+  }
+};
+
 var ScrollingLayer = function ScrollingLayer() {
   var _ScrollInfo$useContai = _Calendar.ScrollInfo.useContainer(),
       scrollOffset = _ScrollInfo$useContai.scrollOffset,
@@ -60710,7 +61035,8 @@ var ScrollingLayer = function ScrollingLayer() {
       endScroll = _ScrollInfo$useContai.endScroll,
       setOneScrollSizePixels = _ScrollInfo$useContai.setOneScrollSizePixels,
       oneScrollSizePixels = _ScrollInfo$useContai.oneScrollSizePixels,
-      setOneScrollSizeReal = _ScrollInfo$useContai.setOneScrollSizeReal;
+      setOneScrollSizeReal = _ScrollInfo$useContai.setOneScrollSizeReal,
+      scrollIsJustReset = _ScrollInfo$useContai.scrollIsJustReset;
 
   var _ColumnsInfo$useConta = _Calendar.ColumnsInfo.useContainer(),
       columnWidth = _ColumnsInfo$useConta.columnWidth;
@@ -60777,20 +61103,22 @@ var ScrollingLayer = function ScrollingLayer() {
   }, []);
   return (0, _react.useMemo)(function () {
     return _react.default.createElement("div", {
-      className: "ScrollingLayer__scrollingLayer__1ogmE",
       ref: self,
       style: {
         transform: transform,
         transitionDuration: "".concat(scrollDuration, "s")
       },
-      onTransitionEnd: onTransitionEnd
+      onTransitionEnd: onTransitionEnd,
+      className: (0, _getClassName2.default)((0, _classnames.default)("scrollingLayer", scrollIsJustReset ? "scrollIsJustReset" : ""), _styleModuleImportMap, {
+        "handleMissingStyleName": "warn"
+      })
     }, content);
-  }, [self, transform, scrollDuration, onTransitionEnd, content]);
+  }, [self, transform, scrollDuration, onTransitionEnd, content, scrollIsJustReset]);
 };
 
 var _default = ScrollingLayer;
 exports.default = _default;
-},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","./ScrollingLayer.scss":"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.scss","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./AppointmentsPlacer":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/index.ts","./BackGrid":"components/Calendar/MainBlock/ScrollingLayer/BackGrid/index.ts","./TimeLine":"components/Calendar/MainBlock/ScrollingLayer/TimeLine/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","babel-plugin-react-css-modules/dist/browser/getClassName":"../node_modules/babel-plugin-react-css-modules/dist/browser/getClassName.js","./ScrollingLayer.scss":"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.scss","classnames":"../node_modules/classnames/index.js","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./AppointmentsPlacer":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/index.ts","./BackGrid":"components/Calendar/MainBlock/ScrollingLayer/BackGrid/index.ts","./TimeLine":"components/Calendar/MainBlock/ScrollingLayer/TimeLine/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61205,7 +61533,8 @@ module.exports = {
   "monthRow": "MonthChunk__monthRow__2CO4_",
   "offsetController": "MonthChunk__offsetController__2Iw9_",
   "monthChunk": "MonthChunk__monthChunk__2qRpI",
-  "monthday": "MonthChunk__monthday__j1tzI"
+  "monthday": "MonthChunk__monthday__j1tzI",
+  "solid": "MonthChunk__solid__2DQ-F"
 };
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.tsx":[function(require,module,exports) {
 "use strict";
@@ -61215,6 +61544,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+var _getClassName2 = _interopRequireDefault(require("babel-plugin-react-css-modules/dist/browser/getClassName"));
+
 require("./MonthChunk.scss");
 
 var _dateFns = require("date-fns");
@@ -61223,23 +61554,44 @@ var _react = _interopRequireDefault(require("react"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var _styleModuleImportMap = {
+  "./MonthChunk.scss": {
+    "monthChunk": "MonthChunk__monthChunk__2qRpI",
+    "monthday": "MonthChunk__monthday__j1tzI",
+    "solid": "MonthChunk__solid__2DQ-F",
+    "weekday": "MonthChunk__weekday__3L4f2",
+    "appsCount": "MonthChunk__appsCount__1jeVZ"
+  }
+};
+
 var MonthChunk = function MonthChunk(_ref) {
   var date = _ref.date,
-      appsCount = _ref.appsCount;
+      appsCount = _ref.appsCount,
+      solid = _ref.solid,
+      setCurrentDate = _ref.setCurrentDate;
+
+  var onClick = function onClick() {
+    return setCurrentDate(date);
+  };
+
   return _react.default.createElement("span", {
-    className: "MonthChunk__monthChunk__2qRpI"
+    className: (0, _getClassName2.default)("monthChunk ".concat(solid ? "solid" : ""), _styleModuleImportMap, {
+      "handleMissingStyleName": "warn"
+    })
   }, _react.default.createElement("div", {
     className: "MonthChunk__weekday__3L4f2"
   }, (0, _dateFns.format)(date, "EEEEEE")), _react.default.createElement("div", {
-    className: "MonthChunk__monthday__j1tzI"
+    className: "MonthChunk__monthday__j1tzI",
+    onClick: onClick
   }, (0, _dateFns.format)(date, "d")), _react.default.createElement("div", {
     className: "MonthChunk__appsCount__1jeVZ"
   }, appsCount));
 };
 
-var _default = MonthChunk;
+var _default = _react.default.memo(MonthChunk);
+
 exports.default = _default;
-},{"./MonthChunk.scss":"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.scss","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js"}],"components/Calendar/TopBlock/MonthRow/MonthChunk/index.ts":[function(require,module,exports) {
+},{"babel-plugin-react-css-modules/dist/browser/getClassName":"../node_modules/babel-plugin-react-css-modules/dist/browser/getClassName.js","./MonthChunk.scss":"components/Calendar/TopBlock/MonthRow/MonthChunk/MonthChunk.scss","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js"}],"components/Calendar/TopBlock/MonthRow/MonthChunk/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61320,6 +61672,13 @@ var MonthRow = function MonthRow() {
   var _UIInfo$useContainer = _ui.UIInfo.useContainer(),
       pageLoaded = _UIInfo$useContainer.pageLoaded;
 
+  var _GridInfo$useContaine = _Calendar.GridInfo.useContainer(),
+      setZeroAxis = _GridInfo$useContaine.setZeroAxis,
+      getStartOfWorkDay = _GridInfo$useContaine.getStartOfWorkDay;
+
+  var _ScrollInfo$useContai = _Calendar.ScrollInfo.useContainer(),
+      resetScroll = _ScrollInfo$useContai.resetScroll;
+
   var self = (0, _react.useRef)(null); // self data collecting hook
 
   (0, _react.useEffect)(function () {
@@ -61334,11 +61693,17 @@ var MonthRow = function MonthRow() {
     }
   }, [widthD]);
   var buffer = 1;
-  var chunksCount = Math.floor(selfData.offsetWidth / monthChunksSizeTotal) + buffer * 2;
+  var chunksCountVisible = Math.floor(selfData.offsetWidth / monthChunksSizeTotal);
+  var chunksCountTotal = chunksCountVisible + buffer * 2;
   var daysDelta = pageLoaded ? (0, _dateFns.differenceInDays)(currentDay, initialStartOfDay) : 0;
   var daysDeltaAfterScrolling = pageLoaded ? (0, _dateFns.differenceInDays)(currentDayAfterScrolling, initialStartOfDay) : 0;
   var translateXAnimated = -daysDelta * monthChunksSizeTotal;
   var translateXInstant = (daysDeltaAfterScrolling - buffer) * monthChunksSizeTotal;
+  var currentDayDate = new Date(currentDay);
+  var setCurrentDate = (0, _react.useCallback)(function (date) {
+    setZeroAxis(getStartOfWorkDay(date));
+    resetScroll();
+  }, [setZeroAxis, resetScroll, getStartOfWorkDay]);
   return (0, _react.useMemo)(function () {
     return _react.default.createElement("div", {
       className: "MonthRow__monthRow__39hGQ",
@@ -61352,14 +61717,18 @@ var MonthRow = function MonthRow() {
         transform: "translateX(".concat(translateXAnimated, "px)"),
         width: selfData.offsetWidth + buffer * 2 * monthChunksSizeTotal
       }
-    }, new Array(chunksCount).fill(null).map(function (_, i) {
+    }, new Array(chunksCountTotal).fill(null).map(function (_, i) {
+      var date = (0, _dateFns.addDays)(initialStartOfDay, i + daysDeltaAfterScrolling - buffer - Math.floor(chunksCountVisible / 2));
+      var current = currentDayDate.getDate() === date.getDate() && currentDayDate.getMonth() === date.getMonth();
       return _react.default.createElement(_MonthChunk.default, {
-        key: i,
-        date: (0, _dateFns.addDays)(initialStartOfDay, i + daysDeltaAfterScrolling + buffer),
-        appsCount: 169
+        key: date.valueOf(),
+        date: date.valueOf(),
+        solid: current,
+        appsCount: 169,
+        setCurrentDate: setCurrentDate
       });
     })));
-  }, [chunksCount, initialStartOfDay, translateXAnimated, translateXInstant, selfData.offsetWidth, daysDeltaAfterScrolling]);
+  }, [chunksCountTotal, initialStartOfDay, translateXAnimated, translateXInstant, selfData.offsetWidth, daysDeltaAfterScrolling, chunksCountVisible, currentDayDate, setCurrentDate]);
 };
 
 var _default = MonthRow;
@@ -61506,7 +61875,7 @@ var Calendar = function Calendar() {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              daysCount = 10;
+              daysCount = 20;
               daysLeftCount = Math.floor(daysCount / 2);
               maxLeftTime = (0, _esm.addDays)(initialZeroAxis, -daysLeftCount);
               intervals = (0, _utility.shell)(daysCount).map(function (_, i) {
@@ -61542,16 +61911,16 @@ var Calendar = function Calendar() {
       className: "Calendar__top__2DDTC"
     }, _react.default.createElement(_TopBlock.default, null)), _react.default.createElement("div", {
       className: "Calendar__bottom__2g2Yl"
-    }, _react.default.createElement(_LeftBlock.default, null), _react.default.createElement(_Calendar2.GridInfo.Provider, null, _react.default.createElement(_Calendar2.TimeLineInfo.Provider, null, _react.default.createElement(_Calendar2.DraggingAutoScrollInfo.Provider, null, _react.default.createElement(_MainBlock.default, {
+    }, _react.default.createElement(_LeftBlock.default, null), _react.default.createElement(_Calendar2.TimeLineInfo.Provider, null, _react.default.createElement(_Calendar2.DraggingAutoScrollInfo.Provider, null, _react.default.createElement(_MainBlock.default, {
       minColumnWidth: 200
-    })))))));
+    }))))));
   }, [handlers]);
 };
 
 var Wrapper = function Wrapper() {
   return _react.default.createElement(_users.UsersInfo.Provider, null, _react.default.createElement(_Calendar2.DraggedInfo.Provider, null, _react.default.createElement(_Calendar2.ColumnsInfo.Provider, null, _react.default.createElement(_Calendar2.ScrollInfo.Provider, null, _react.default.createElement(_Calendar2.GridInfo.Provider, null, _react.default.createElement(_Calendar2.RowsInfo.Provider, null, _react.default.createElement(_Calendar2.LeftColumnInfo.Provider, null, _react.default.createElement(_appointments.AppointmentsInfo.Provider, {
     initialState: {
-      blockSize: 20
+      blockSize: 10
     }
   }, _react.default.createElement(Calendar, null)))))))));
 };
@@ -61583,7 +61952,7 @@ module.exports = {
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"CurrentVersion.json":[function(require,module,exports) {
 module.exports = {
   "major": 0,
-  "minor": 2,
+  "minor": 4,
   "patch": 0
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
@@ -61803,7 +62172,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var App = function App() {
   return _react.default.useMemo(function () {
-    return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement(_mock.MockInfo.Provider, null, _react.default.createElement(_lazytask.LazyTaskContainer.Provider, null, _react.default.createElement(_ui.UIInfo.Provider, null, _react.default.createElement(_users.UsersInfo.Provider, null, _react.default.createElement(_Calendar.default, null))))), _react.default.createElement(_VersionBox.default, null));
+    return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement(_mock.MockInfo.Provider, null, _react.default.createElement(_lazytask.LazyTaskContainer.Provider, null, _react.default.createElement(_ui.UIInfo.Provider, null, _react.default.createElement(_users.UsersInfo.Provider, null, _react.default.createElement(_Calendar.default, null))))), _react.default.createElement(_VersionBox.default, null), _react.default.createElement("div", {
+      id: "appDraggablePortal" // style={{ position: "absolute", left: 0, top: 0 }}
+
+    }));
   }, []);
 };
 
@@ -61837,7 +62209,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "40615" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "42517" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
