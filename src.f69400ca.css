@@ -6,6 +6,9 @@
   overflow-x: hidden;
   background: #fdfdfd;
 }
+.Calendar__calendar__qh_12 .Calendar__top__2DDTC {
+  overflow-x: hidden;
+}
 .Calendar__calendar__qh_12 .Calendar__bottom__2g2Yl {
   display: -ms-grid;
   display: grid;
@@ -193,7 +196,7 @@
   transition: background 0.1s ease-in-out;
 }
 .MonthChunk__monthChunk__2qRpI.MonthChunk__solid__2DQ-F > .MonthChunk__monthday__j1tzI {
-  border: solid black 1px;
+  background: #a5a5a5;
 }
 .MonthChunk__monthChunk__2qRpI .MonthChunk__monthday__j1tzI {
   background: lightgray;

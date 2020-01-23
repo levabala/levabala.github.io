@@ -32848,6 +32848,7 @@ module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
 module.exports = {
   "calendar": "Calendar__calendar__qh_12",
+  "top": "Calendar__top__2DDTC",
   "bottom": "Calendar__bottom__2g2Yl"
 };
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../node_modules/date-fns/esm/toDate/index.js":[function(require,module,exports) {
@@ -50736,6 +50737,14 @@ exports.useHistory = useHistory;
 
 var _react = require("react");
 
+var __spreadArrays = void 0 && (void 0).__spreadArrays || function () {
+  for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+
+  for (var r = Array(s), k = 0, i = 0; i < il; i++) for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++) r[k] = a[j];
+
+  return r;
+};
+
 // Our reducer function to handle state changes based on action
 function reducer(state, action) {
   var past = state.past,
@@ -50749,14 +50758,14 @@ function reducer(state, action) {
       return {
         past: newPast,
         present: previous,
-        future: [present].concat(future)
+        future: __spreadArrays([present], future)
       };
 
     case 'REDO':
       var next = future[0];
       var newFuture = future.slice(1);
       return {
-        past: past.concat([present]),
+        past: __spreadArrays(past, [present]),
         present: next,
         future: newFuture
       };
@@ -50769,7 +50778,7 @@ function reducer(state, action) {
       }
 
       return {
-        past: past.concat([present]),
+        past: __spreadArrays(past, [present]),
         present: newPresent,
         future: []
       };
@@ -51286,7 +51295,7 @@ function useWhyDidYouUpdate(name, props) {
   (0, _react.useEffect)(function () {
     if (previousProps.current) {
       // Get all keys from previous and current props
-      var allKeys = Object.keys(__assign({}, previousProps.current, props)); // Use this object to keep track of changed props
+      var allKeys = Object.keys(__assign(__assign({}, previousProps.current), props)); // Use this object to keep track of changed props
 
       var changesObj_1 = {}; // Iterate through keys
 
@@ -61265,7 +61274,7 @@ var MainBlock = function MainBlock(_ref) {
 
   var self = (0, _react.useRef)(null);
 
-  var _useState3 = (0, _react.useState)(window.scrollY),
+  var _useState3 = (0, _react.useState)(0),
       _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
       dragStartScrollY = _useState4[0],
       setDragStartScrollY = _useState4[1];
@@ -61679,6 +61688,15 @@ var MonthRow = function MonthRow() {
   var _ScrollInfo$useContai = _Calendar.ScrollInfo.useContainer(),
       resetScroll = _ScrollInfo$useContai.resetScroll;
 
+  var currentDayPrevious = (0, _useHooks.usePrevious)(currentDay);
+  var daysDeltaSinceLast = (0, _dateFns.differenceInDays)(currentDay, currentDayPrevious) || 0; // console.log({ daysDeltaSinceLast });
+  // const jumpDeltaPrevious = usePrevious(jumpDelta);
+  // useEffect(
+  //   () =>
+  //     jumpDeltaPrevious !== 0 ? setJumpDelta(0) : undefined,
+  //   [jumpDelta, jumpDeltaPrevious]
+  // );
+
   var self = (0, _react.useRef)(null); // self data collecting hook
 
   (0, _react.useEffect)(function () {
@@ -61692,18 +61710,46 @@ var MonthRow = function MonthRow() {
       });
     }
   }, [widthD]);
-  var buffer = 1;
+  var buffer = Math.max(1, Math.abs(daysDeltaSinceLast)); // useEffect(() => (jumpDelta !== 0 ? setJumpDelta(0) : undefined), [jumpDelta]);
+  // console.log(buffer, jumpDelta);
+
   var chunksCountVisible = Math.floor(selfData.offsetWidth / monthChunksSizeTotal);
   var chunksCountTotal = chunksCountVisible + buffer * 2;
   var daysDelta = pageLoaded ? (0, _dateFns.differenceInDays)(currentDay, initialStartOfDay) : 0;
   var daysDeltaAfterScrolling = pageLoaded ? (0, _dateFns.differenceInDays)(currentDayAfterScrolling, initialStartOfDay) : 0;
   var translateXAnimated = -daysDelta * monthChunksSizeTotal;
   var translateXInstant = (daysDeltaAfterScrolling - buffer) * monthChunksSizeTotal;
-  var currentDayDate = new Date(currentDay);
   var setCurrentDate = (0, _react.useCallback)(function (date) {
     setZeroAxis(getStartOfWorkDay(date));
     resetScroll();
-  }, [setZeroAxis, resetScroll, getStartOfWorkDay]);
+  }, [setZeroAxis, resetScroll, getStartOfWorkDay]); // console.log({ buffer });
+  // useWhyDidYouUpdate("monthrow", {
+  //   chunksCountTotal,
+  //   initialStartOfDay,
+  //   translateXAnimated,
+  //   translateXInstant,
+  //   offsetWidth: selfData.offsetWidth,
+  //   daysDeltaAfterScrolling,
+  //   chunksCountVisible,
+  //   currentDay,
+  //   setCurrentDate,
+  //   buffer
+  // });
+
+  var chunks = (0, _react.useMemo)(function () {
+    var currentDayDate = new Date(currentDay);
+    return new Array(chunksCountTotal).fill(null).map(function (_, i) {
+      var date = (0, _dateFns.addDays)(initialStartOfDay, i + daysDeltaAfterScrolling - buffer - Math.floor(chunksCountVisible / 2));
+      var current = currentDayDate.getDate() === date.getDate() && currentDayDate.getMonth() === date.getMonth();
+      return _react.default.createElement(_MonthChunk.default, {
+        key: date.valueOf(),
+        date: date.valueOf(),
+        solid: current,
+        appsCount: 169,
+        setCurrentDate: setCurrentDate
+      });
+    });
+  }, [buffer, chunksCountTotal, chunksCountVisible, currentDay, daysDeltaAfterScrolling, initialStartOfDay, setCurrentDate]);
   return (0, _react.useMemo)(function () {
     return _react.default.createElement("div", {
       className: "MonthRow__monthRow__39hGQ",
@@ -61717,18 +61763,8 @@ var MonthRow = function MonthRow() {
         transform: "translateX(".concat(translateXAnimated, "px)"),
         width: selfData.offsetWidth + buffer * 2 * monthChunksSizeTotal
       }
-    }, new Array(chunksCountTotal).fill(null).map(function (_, i) {
-      var date = (0, _dateFns.addDays)(initialStartOfDay, i + daysDeltaAfterScrolling - buffer - Math.floor(chunksCountVisible / 2));
-      var current = currentDayDate.getDate() === date.getDate() && currentDayDate.getMonth() === date.getMonth();
-      return _react.default.createElement(_MonthChunk.default, {
-        key: date.valueOf(),
-        date: date.valueOf(),
-        solid: current,
-        appsCount: 169,
-        setCurrentDate: setCurrentDate
-      });
-    })));
-  }, [chunksCountTotal, initialStartOfDay, translateXAnimated, translateXInstant, selfData.offsetWidth, daysDeltaAfterScrolling, chunksCountVisible, currentDayDate, setCurrentDate]);
+    }, chunks));
+  }, [translateXAnimated, translateXInstant, selfData.offsetWidth, chunks, buffer]);
 };
 
 var _default = MonthRow;
@@ -61952,7 +61988,7 @@ module.exports = {
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"CurrentVersion.json":[function(require,module,exports) {
 module.exports = {
   "major": 0,
-  "minor": 4,
+  "minor": 5,
   "patch": 0
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
@@ -62209,7 +62245,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "42517" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37123" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
