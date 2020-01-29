@@ -57768,6 +57768,7 @@ exports.withinInterval = withinInterval;
 exports.offsetInterval = offsetInterval;
 exports.areIntervalsIntersects = areIntervalsIntersects;
 exports.intervalToString = intervalToString;
+exports.intervalsSubstract = intervalsSubstract;
 
 var _dateFns = require("date-fns");
 
@@ -57799,6 +57800,20 @@ function areIntervalsIntersects(i1, i2) {
 
 function intervalToString(interval) {
   return "view: ".concat((0, _dateFns.format)(interval.start, "dd HH:mm"), " - ").concat((0, _dateFns.format)(interval.end, "dd HH:mm"));
+}
+
+function intervalsSubstract(intervalFrom, intervalWhat) {
+  var left = {
+    start: Math.min(intervalFrom.start.valueOf(), intervalWhat.start.valueOf()),
+    end: Math.max(intervalFrom.start.valueOf(), intervalWhat.start.valueOf())
+  };
+  var right = {
+    start: Math.min(intervalFrom.end.valueOf(), intervalWhat.start.valueOf()),
+    end: Math.max(intervalFrom.end.valueOf(), intervalWhat.start.valueOf())
+  };
+  return [left, right].filter(function (interval) {
+    return interval.start < interval.end;
+  });
 }
 },{"date-fns":"../node_modules/date-fns/esm/index.js"}],"assembly/timeConverts.ts":[function(require,module,exports) {
 "use strict";
@@ -57893,7 +57908,9 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.DraggingAutoScrollInfo = exports.LeftColumnInfo = exports.ViewIntervalInfo = exports.GridInfo = exports.ScrollInfo = exports.RowsInfo = exports.ColumnsInfo = exports.TimeLineInfo = exports.DraggedInfo = void 0;
+exports.DraggingAutoScrollInfo = exports.LeftColumnInfo = exports.ViewIntervalInfo = exports.GridInfo = exports.ScrollInfo = exports.RowsInfo = exports.ColumnsInfo = exports.TimeLineInfo = exports.DraggedInfo = exports.RestrictedZonesInfo = exports.Weekday = void 0;
+
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -57906,6 +57923,8 @@ var _react = require("react");
 var _unstatedNext = require("unstated-next");
 
 var _useHooks = require("use-hooks");
+
+var _interval = require("../../assembly/interval");
 
 var _timeConverts = require("../../assembly/timeConverts");
 
@@ -58121,9 +58140,9 @@ function useScroll() {
       performance.mark("setScrollOffsetDone end");
       performance.mark("endScroll end");
       performance.measure("endScroll", "endScroll start", "endScroll end");
+      performance.measure("setScrollOffsetDone", "setScrollOffsetDone start", "setScrollOffsetDone end");
     });
     performance.measure("setIsScrolling", "setIsScrolling start", "setIsScrolling end");
-    performance.measure("setScrollOffsetDone", "setScrollOffsetDone start", "setScrollOffsetDone end");
   };
 
   performance.mark("scroll container update end");
@@ -58166,7 +58185,7 @@ function useGrid() {
       oneDayStartTime = _useState32[0],
       setOneDayStartTime = _useState32[1];
 
-  var _useState33 = (0, _react.useState)(5),
+  var _useState33 = (0, _react.useState)(10),
       _useState34 = (0, _slicedToArray2.default)(_useState33, 2),
       oneDayStepsCount = _useState34[0],
       setOneDayStepsCount = _useState34[1];
@@ -58243,7 +58262,9 @@ function useViewInterval() {
   var _useState37 = (0, _react.useState)(viewInterval),
       _useState38 = (0, _slicedToArray2.default)(_useState37, 2),
       viewIntervalAfterScrolling = _useState38[0],
-      setViewIntervalAfterScrolling = _useState38[1]; // console.log(
+      setViewIntervalAfterScrolling = _useState38[1];
+
+  var viewIntervalMax = (0, _interval.maxInterval)(viewInterval, viewIntervalAfterScrolling); // console.log(
   //   `view: ${format(viewInterval.start, "dd HH:mm")} - ${format(
   //     viewInterval.end,
   //     "dd HH:mm"
@@ -58255,7 +58276,6 @@ function useViewInterval() {
   //     "dd HH:mm"
   //   )}`
   // );
-
 
   var currentDay = (0, _react.useMemo)(function () {
     return (0, _dateFns.startOfDay)(viewInterval.start + (viewInterval.end - viewInterval.start) / 2 || 0).valueOf();
@@ -58278,7 +58298,8 @@ function useViewInterval() {
     currentDay: currentDay,
     currentDayAfterScrolling: currentDayAfterScrolling,
     initialTime: initialTime,
-    initialStartOfDay: initialStartOfDay
+    initialStartOfDay: initialStartOfDay,
+    viewIntervalMax: viewIntervalMax
   };
 }
 
@@ -58327,6 +58348,45 @@ function useDraggingAutoScroll() {
   };
 }
 
+var Weekday;
+exports.Weekday = Weekday;
+
+(function (Weekday) {
+  Weekday[Weekday["Sunday"] = 0] = "Sunday";
+  Weekday[Weekday["Monday"] = 1] = "Monday";
+  Weekday[Weekday["Tuesday"] = 2] = "Tuesday";
+  Weekday[Weekday["Wednesday"] = 3] = "Wednesday";
+  Weekday[Weekday["Thursday"] = 4] = "Thursday";
+  Weekday[Weekday["Friday"] = 5] = "Friday";
+  Weekday[Weekday["Saturday"] = 6] = "Saturday";
+})(Weekday || (exports.Weekday = Weekday = {}));
+
+var RestrictedZonesInfo = (0, _unstatedNext.createContainer)(function () {
+  var _useState47;
+
+  var _useState45 = (0, _react.useState)((_useState47 = {}, (0, _defineProperty2.default)(_useState47, Weekday.Sunday, []), (0, _defineProperty2.default)(_useState47, Weekday.Monday, [{
+    start: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 11), 0),
+    end: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 12), 20)
+  }]), (0, _defineProperty2.default)(_useState47, Weekday.Tuesday, [{
+    start: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 8), 20),
+    end: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 9), 0)
+  }]), (0, _defineProperty2.default)(_useState47, Weekday.Wednesday, [{
+    start: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 7), 0),
+    end: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 9), 0)
+  }, {
+    start: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 10), 20),
+    end: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 11), 0)
+  }]), (0, _defineProperty2.default)(_useState47, Weekday.Thursday, []), (0, _defineProperty2.default)(_useState47, Weekday.Friday, []), (0, _defineProperty2.default)(_useState47, Weekday.Saturday, []), _useState47)),
+      _useState46 = (0, _slicedToArray2.default)(_useState45, 2),
+      restrictedZones = _useState46[0],
+      setRestrictedZones = _useState46[1];
+
+  return {
+    restrictedZones: restrictedZones,
+    setRestrictedZones: setRestrictedZones
+  };
+});
+exports.RestrictedZonesInfo = RestrictedZonesInfo;
 var DraggedInfo = (0, _unstatedNext.createContainer)(useDragged);
 exports.DraggedInfo = DraggedInfo;
 var TimeLineInfo = (0, _unstatedNext.createContainer)(useTimeLine);
@@ -58345,7 +58405,7 @@ var LeftColumnInfo = (0, _unstatedNext.createContainer)(useLeftColumn);
 exports.LeftColumnInfo = LeftColumnInfo;
 var DraggingAutoScrollInfo = (0, _unstatedNext.createContainer)(useDraggingAutoScroll);
 exports.DraggingAutoScrollInfo = DraggingAutoScrollInfo;
-},{"@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../assembly/timeConverts":"assembly/timeConverts.ts","../../stores/ui":"stores/ui.ts","./Calendar.variables.scss":"components/Calendar/Calendar.variables.scss"}],"stores/appointments.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../assembly/interval":"assembly/interval.ts","../../assembly/timeConverts":"assembly/timeConverts.ts","../../stores/ui":"stores/ui.ts","./Calendar.variables.scss":"components/Calendar/Calendar.variables.scss"}],"stores/appointments.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -58966,13 +59026,13 @@ function fetchAppointments(_x) {
 function _fetchAppointments() {
   _fetchAppointments = (0, _asyncToGenerator2.default)(
   /*#__PURE__*/
-  _regenerator.default.mark(function _callee(dayIntervals) {
+  _regenerator.default.mark(function _callee(intervals) {
     var stepDuration,
         densityPerDay,
         maxRowIndex,
         returnAlreadyFetched,
         delay,
-        dayIntervalsFilled,
+        intervalsFilled,
         apps,
         _args = arguments;
     return _regenerator.default.wrap(function _callee$(_context) {
@@ -58988,10 +59048,10 @@ function _fetchAppointments() {
             return (0, _timeout.timeout)(delay);
 
           case 7:
-            dayIntervalsFilled = dayIntervals.map(function (dayInterval) {
-              return fetchAppointmentsAtInterval(dayInterval, returnAlreadyFetched, densityPerDay, stepDuration, maxRowIndex);
+            intervalsFilled = intervals.map(function (interval) {
+              return fetchAppointmentsAtInterval(interval, returnAlreadyFetched, densityPerDay, stepDuration, maxRowIndex);
             });
-            apps = dayIntervalsFilled.reduce(function (acc, val) {
+            apps = intervalsFilled.reduce(function (acc, val) {
               return [].concat((0, _toConsumableArray2.default)(acc), (0, _toConsumableArray2.default)(val));
             });
             return _context.abrupt("return", apps);
@@ -59024,8 +59084,6 @@ var _react = require("react");
 
 var _unstatedNext = require("unstated-next");
 
-var _interval = require("../../assembly/interval");
-
 var _utility = require("../../assembly/utility");
 
 var _fetchAppointments = require("../../fetchers/fetchAppointments");
@@ -59038,8 +59096,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function useAutoFetcherApps() {
   var _ViewIntervalInfo$use = _Calendar.ViewIntervalInfo.useContainer(),
-      viewInterval = _ViewIntervalInfo$use.viewInterval,
-      viewIntervalAfterScrolling = _ViewIntervalInfo$use.viewIntervalAfterScrolling;
+      viewIntervalMax = _ViewIntervalInfo$use.viewIntervalMax;
 
   var _GridInfo$useContaine = _Calendar.GridInfo.useContainer(),
       oneDayDuration = _GridInfo$useContaine.oneDayDuration,
@@ -59052,6 +59109,9 @@ function useAutoFetcherApps() {
   var _AppointmentsInfo$use = _appointments.AppointmentsInfo.useContainer(),
       addAppointments = _AppointmentsInfo$use.addAppointments;
 
+  var _RestrictedZonesInfo$ = _Calendar.RestrictedZonesInfo.useContainer(),
+      restrictedZones = _RestrictedZonesInfo$.restrictedZones;
+
   var _useState = (0, _react.useState)([]),
       _useState2 = (0, _slicedToArray2.default)(_useState, 2),
       nextPusingApps = _useState2[0],
@@ -59063,7 +59123,6 @@ function useAutoFetcherApps() {
     setNextPusingApps([]);
   }
 
-  var viewIntervalMax = (0, _interval.maxInterval)(viewInterval, viewIntervalAfterScrolling);
   (0, _react.useMemo)(function () {
     var viewIntervalMaxToDays = {
       start: getStartOfWorkDay(viewIntervalMax.start),
@@ -59088,7 +59147,7 @@ function useAutoFetcherApps() {
 
 var AutoFetcherApps = (0, _unstatedNext.createContainer)(useAutoFetcherApps);
 exports.AutoFetcherApps = AutoFetcherApps;
-},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","../../assembly/interval":"assembly/interval.ts","../../assembly/utility":"assembly/utility.ts","../../fetchers/fetchAppointments":"fetchers/fetchAppointments.ts","../../stores/appointments":"stores/appointments.ts","./Calendar.containers":"components/Calendar/Calendar.containers.ts"}],"components/Calendar/LeftBlock/LeftBlock.scss":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","../../assembly/utility":"assembly/utility.ts","../../fetchers/fetchAppointments":"fetchers/fetchAppointments.ts","../../stores/appointments":"stores/appointments.ts","./Calendar.containers":"components/Calendar/Calendar.containers.ts"}],"components/Calendar/LeftBlock/LeftBlock.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
@@ -60984,7 +61043,181 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = _BackGrid.default;
 exports.default = _default;
-},{"./BackGrid":"components/Calendar/MainBlock/ScrollingLayer/BackGrid/BackGrid.tsx"}],"components/Calendar/MainBlock/ScrollingLayer/TimeLine/TimeLine.scss":[function(require,module,exports) {
+},{"./BackGrid":"components/Calendar/MainBlock/ScrollingLayer/BackGrid/BackGrid.tsx"}],"components/Calendar/MainBlock/ScrollingLayer/RestrictedZones/RestrictedZones.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "restrictedZone": "RestrictedZones__restrictedZone__3WJtQ"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/MainBlock/ScrollingLayer/RestrictedZones/RestrictedZone/RestrictedZone.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "restrictedZone": "RestrictedZone__restrictedZone__3DsBu"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/MainBlock/ScrollingLayer/RestrictedZones/RestrictedZone/RestrictedZone.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+require("./RestrictedZone.scss");
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var RestrictedZone = function RestrictedZone(_ref) {
+  var width = _ref.width,
+      height = _ref.height,
+      x = _ref.x,
+      y = _ref.y;
+  return _react.default.createElement("div", {
+    className: "RestrictedZone__restrictedZone__3DsBu",
+    style: {
+      width: width,
+      height: height,
+      left: x,
+      top: y
+    }
+  });
+};
+
+var _default = _react.default.memo(RestrictedZone);
+
+exports.default = _default;
+},{"./RestrictedZone.scss":"components/Calendar/MainBlock/ScrollingLayer/RestrictedZones/RestrictedZone/RestrictedZone.scss","react":"../node_modules/react/index.js"}],"components/Calendar/MainBlock/ScrollingLayer/RestrictedZones/RestrictedZones.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+
+var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
+
+require("./RestrictedZones.scss");
+
+var _dateFns = require("date-fns");
+
+var _react = _interopRequireWildcard(require("react"));
+
+var _timeConverts = require("../../../../../assembly/timeConverts");
+
+var _Calendar = require("../../../Calendar.containers");
+
+var _RestrictedZone = _interopRequireDefault(require("./RestrictedZone/RestrictedZone"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; if (obj != null) { var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var RestrictedZones = function RestrictedZones() {
+  var _RestrictedZonesInfo$ = _Calendar.RestrictedZonesInfo.useContainer(),
+      restrictedZones = _RestrictedZonesInfo$.restrictedZones;
+
+  var _ViewIntervalInfo$use = _Calendar.ViewIntervalInfo.useContainer(),
+      viewIntervalMax = _ViewIntervalInfo$use.viewIntervalMax;
+
+  var _GridInfo$useContaine = _Calendar.GridInfo.useContainer(),
+      zeroAxis = _GridInfo$useContaine.zeroAxis,
+      gridStepDuration = _GridInfo$useContaine.gridStepDuration,
+      oneDayDuration = _GridInfo$useContaine.oneDayDuration,
+      getStartOfWorkDay = _GridInfo$useContaine.getStartOfWorkDay;
+
+  var _ColumnsInfo$useConta = _Calendar.ColumnsInfo.useContainer(),
+      columnWidth = _ColumnsInfo$useConta.columnWidth;
+
+  var _RowsInfo$useContaine = _Calendar.RowsInfo.useContainer(),
+      rowHeight = _RowsInfo$useContaine.rowHeight,
+      rowsCount = _RowsInfo$useContaine.rowsCount;
+
+  var generateZone = (0, _react.useCallback)(function (interval) {
+    var duration = (0, _dateFns.differenceInMilliseconds)(interval.end.valueOf(), interval.start);
+    var height = rowHeight * (rowsCount + 1);
+    var width = columnWidth * (duration / gridStepDuration.valueOf());
+    var timeOffset = (0, _dateFns.differenceInMilliseconds)(interval.start, zeroAxis);
+    var daysOffset = (0, _timeConverts.convertMs)(timeOffset, _timeConverts.Duration.day);
+    var dayStartOffset = timeOffset - (0, _timeConverts.convert)(daysOffset, _timeConverts.Duration.day, _timeConverts.Duration.ms);
+    var dayColumns = oneDayDuration / gridStepDuration.valueOf();
+    var daysOffsetColumns = daysOffset * dayColumns;
+    var dayStartOffsetColumns = dayStartOffset / gridStepDuration.valueOf();
+    var x = (daysOffsetColumns + dayStartOffsetColumns) * columnWidth;
+    var y = 0; // console.log(
+    //   `zone spawned at ${x} for ${format(interval.start, "dd HH:mm")}`
+    // );
+
+    return _react.default.createElement(_RestrictedZone.default, (0, _extends2.default)({
+      x: x,
+      y: y,
+      width: width,
+      height: height
+    }, {
+      key: interval.start.valueOf()
+    }));
+  }, [columnWidth, rowsCount, gridStepDuration, oneDayDuration, rowHeight, zeroAxis]);
+  var zones = (0, _react.useMemo)(function () {
+    return (0, _dateFns.eachDayOfInterval)(viewIntervalMax).reduce(function (acc, day) {
+      var dayStart = getStartOfWorkDay(day);
+      var weekday = (0, _dateFns.getDay)(dayStart);
+      var restrictedIntervals = restrictedZones[weekday];
+      var dayOffset = (0, _dateFns.differenceInDays)(dayStart, zeroAxis);
+      var dayOffsetDuration = dayOffset * oneDayDuration; // console.log({
+      //   millisOffset: differenceInMilliseconds(dayStart, zeroAxis),
+      //   dayOffset,
+      //   dayOffsetDuration,
+      //   weekday: format(setDay(Date.now(), weekday), "EE"),
+      //   restrictedIntervals: restrictedIntervals.length,
+      //   intervalStart: restrictedIntervals.length
+      //     ? format(restrictedIntervals[0].start, "dd HH:mm")
+      //     : null,
+      //   day: dayStart,
+      //   zeroAxis
+      // });
+
+      return [].concat((0, _toConsumableArray2.default)(acc), (0, _toConsumableArray2.default)(restrictedIntervals.map(function (interval) {
+        return generateZone({
+          start: (0, _dateFns.addDays)(interval.start, dayOffset),
+          end: (0, _dateFns.addDays)(interval.end, dayOffset)
+        });
+      })));
+    }, []);
+  }, [generateZone, restrictedZones, viewIntervalMax, zeroAxis, oneDayDuration, getStartOfWorkDay]);
+  return (0, _react.useMemo)(function () {
+    // console.log(zones.length);
+    return _react.default.createElement("div", {
+      className: "RestrictedZones__restrictedZone__3WJtQ"
+    }, zones);
+  }, [zones]);
+};
+
+var _default = RestrictedZones;
+exports.default = _default;
+},{"@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/extends":"../node_modules/@babel/runtime/helpers/extends.js","./RestrictedZones.scss":"components/Calendar/MainBlock/ScrollingLayer/RestrictedZones/RestrictedZones.scss","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","../../../../../assembly/timeConverts":"assembly/timeConverts.ts","../../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./RestrictedZone/RestrictedZone":"components/Calendar/MainBlock/ScrollingLayer/RestrictedZones/RestrictedZone/RestrictedZone.tsx"}],"components/Calendar/MainBlock/ScrollingLayer/RestrictedZones/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _RestrictedZones = _interopRequireDefault(require("./RestrictedZones"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _default = _RestrictedZones.default;
+exports.default = _default;
+},{"./RestrictedZones":"components/Calendar/MainBlock/ScrollingLayer/RestrictedZones/RestrictedZones.tsx"}],"components/Calendar/MainBlock/ScrollingLayer/TimeLine/TimeLine.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
@@ -61050,13 +61283,15 @@ var TimeLine = function TimeLine() {
       var scrolledColumns = -scrollOffsetDone * columnsPerScroll;
       var currentColumn = scrolledColumns + iReal;
       var columnAtDay = currentColumn % oneDayStepsCount + (currentColumn < 0 ? oneDayStepsCount : 0);
-      var stampDayOffset = columnAtDay * gridStepDuration.valueOf();
+      var columnAtDayNormalized = columnAtDay >= oneDayStepsCount ? columnAtDay - oneDayStepsCount : columnAtDay;
+      var stampDayOffset = columnAtDayNormalized * gridStepDuration.valueOf();
       var timestamp = (0, _esm.addMilliseconds)(oneDayStartTime, stampDayOffset); // console.log({
       //   i,
       //   iReal,
       //   scrolledColumns,
       //   currentColumn,
       //   columnAtDay,
+      //   columnAtDayNormalized,
       //   timestamp: format(timestamp, "H:mm")
       // });
 
@@ -61065,7 +61300,7 @@ var TimeLine = function TimeLine() {
         className: "TimeLine__timeMark__1eqLA",
         style: {
           width: columnWidth,
-          background: !columnAtDay ? "lightgray" : "white"
+          background: !columnAtDayNormalized ? "lightgray" : "white"
         }
       }, _react.default.createElement(_CenteredVertically.default, null, (0, _dateFns.format)((0, _dateFns.roundToNearestMinutes)(timestamp), "H:mm")));
     }));
@@ -61113,6 +61348,8 @@ var _Calendar = require("../../Calendar.containers");
 var _AppointmentsPlacer = _interopRequireDefault(require("./AppointmentsPlacer"));
 
 var _BackGrid = _interopRequireDefault(require("./BackGrid"));
+
+var _RestrictedZones = _interopRequireDefault(require("./RestrictedZones"));
 
 var _TimeLine = _interopRequireDefault(require("./TimeLine"));
 
@@ -61203,7 +61440,7 @@ var ScrollingLayer = function ScrollingLayer() {
       className: "ScrollingLayer__topBlock__2O2Ed"
     }, _react.default.createElement(_TimeLine.default, null)), _react.default.createElement("div", {
       className: "ScrollingLayer__bottomBlock__3OaJm"
-    }, _react.default.createElement(_BackGrid.default, null), _react.default.createElement(_AppointmentsPlacer.default, null)));
+    }, _react.default.createElement(_BackGrid.default, null), _react.default.createElement(_AppointmentsPlacer.default, null), _react.default.createElement(_RestrictedZones.default, null)));
   }, []);
   return (0, _react.useMemo)(function () {
     return _react.default.createElement("div", {
@@ -61222,7 +61459,7 @@ var ScrollingLayer = function ScrollingLayer() {
 
 var _default = ScrollingLayer;
 exports.default = _default;
-},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","babel-plugin-react-css-modules/dist/browser/getClassName":"../node_modules/babel-plugin-react-css-modules/dist/browser/getClassName.js","./ScrollingLayer.scss":"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.scss","classnames":"../node_modules/classnames/index.js","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./AppointmentsPlacer":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/index.ts","./BackGrid":"components/Calendar/MainBlock/ScrollingLayer/BackGrid/index.ts","./TimeLine":"components/Calendar/MainBlock/ScrollingLayer/TimeLine/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","babel-plugin-react-css-modules/dist/browser/getClassName":"../node_modules/babel-plugin-react-css-modules/dist/browser/getClassName.js","./ScrollingLayer.scss":"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.scss","classnames":"../node_modules/classnames/index.js","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./AppointmentsPlacer":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/index.ts","./BackGrid":"components/Calendar/MainBlock/ScrollingLayer/BackGrid/index.ts","./RestrictedZones":"components/Calendar/MainBlock/ScrollingLayer/RestrictedZones/index.ts","./TimeLine":"components/Calendar/MainBlock/ScrollingLayer/TimeLine/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -62041,11 +62278,11 @@ var Calendar = function Calendar() {
 };
 
 var Wrapper = function Wrapper() {
-  return _react.default.createElement(_users.UsersInfo.Provider, null, _react.default.createElement(_Calendar2.DraggedInfo.Provider, null, _react.default.createElement(_Calendar2.ColumnsInfo.Provider, null, _react.default.createElement(_Calendar2.GridInfo.Provider, null, _react.default.createElement(_Calendar2.RowsInfo.Provider, null, _react.default.createElement(_Calendar2.LeftColumnInfo.Provider, null, _react.default.createElement(_appointments.AppointmentsInfo.Provider, {
+  return _react.default.createElement(_Calendar2.RestrictedZonesInfo.Provider, null, _react.default.createElement(_users.UsersInfo.Provider, null, _react.default.createElement(_Calendar2.DraggedInfo.Provider, null, _react.default.createElement(_Calendar2.ColumnsInfo.Provider, null, _react.default.createElement(_Calendar2.GridInfo.Provider, null, _react.default.createElement(_Calendar2.RowsInfo.Provider, null, _react.default.createElement(_Calendar2.LeftColumnInfo.Provider, null, _react.default.createElement(_appointments.AppointmentsInfo.Provider, {
     initialState: {
       blockSize: 10
     }
-  }, _react.default.createElement(_Calendar2.ScrollInfo.Provider, null, _react.default.createElement(Calendar, null)))))))));
+  }, _react.default.createElement(_Calendar2.ScrollInfo.Provider, null, _react.default.createElement(Calendar, null))))))))));
 };
 
 var _default = Wrapper;
@@ -62559,7 +62796,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33689" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "40071" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

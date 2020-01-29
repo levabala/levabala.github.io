@@ -145,6 +145,16 @@
 .BackGrid__backGrid__1gvrC .BackGrid__border__2l_PZ.BackGrid__horizontal__cEWYm {
   border-top: solid black 1px;
 }
+.RestrictedZones__restrictedZone__3WJtQ {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.RestrictedZone__restrictedZone__3DsBu {
+  position: absolute;
+  background: darkred;
+  opacity: 0.3;
+}
 .TimeLine__timeLine__1CT7j {
   height: 100px;
   display: flex;
