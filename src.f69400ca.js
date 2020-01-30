@@ -59221,41 +59221,10 @@ var reloadCSS = require('_css_loader');
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
 module.exports = {
-  "leftBlock": "LeftBlock__leftBlock__21Twx"
+  "leftBlock": "LeftBlock__leftBlock__21Twx",
+  "chunk": "LeftBlock__chunk__2u0KB"
 };
-},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"style-components/Striped.scss":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-module.exports = {
-  "striped": "Striped__striped__1glFa"
-};
-},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"style-components/Striped.tsx":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
-
-require("./Striped.scss");
-
-var _react = _interopRequireDefault(require("react"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Striped = function Striped(props) {
-  return _react.default.createElement("div", (0, _extends2.default)({
-    className: "Striped__striped__1glFa" + (" " + (props ? props.className || "" : ""))
-  }, props));
-};
-
-var _default = Striped;
-exports.default = _default;
-},{"@babel/runtime/helpers/extends":"../node_modules/@babel/runtime/helpers/extends.js","./Striped.scss":"style-components/Striped.scss","react":"../node_modules/react/index.js"}],"components/Calendar/LeftBlock/LeftBlock.tsx":[function(require,module,exports) {
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/LeftBlock/LeftBlock.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -59267,30 +59236,37 @@ require("./LeftBlock.scss");
 
 var _react = _interopRequireWildcard(require("react"));
 
-var _Striped = _interopRequireDefault(require("../../../style-components/Striped"));
+var _utility = require("../../../assembly/utility");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _Calendar = require("../Calendar.containers");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; if (obj != null) { var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 var LeftBlock = function LeftBlock() {
+  var _RowsInfo$useContaine = _Calendar.RowsInfo.useContainer(),
+      rowsCount = _RowsInfo$useContaine.rowsCount,
+      rowHeight = _RowsInfo$useContaine.rowHeight;
+
   return (0, _react.useMemo)(function () {
     return _react.default.createElement("div", {
       className: "LeftBlock__leftBlock__21Twx"
-    }, _react.default.createElement(_Striped.default, {
-      style: {
-        width: "100%",
-        height: "100%"
-      }
+    }, (0, _utility.shell)(rowsCount + 2).map(function (_, i) {
+      return _react.default.createElement("span", {
+        className: "LeftBlock__chunk__2u0KB",
+        key: i,
+        style: {
+          height: rowHeight
+        }
+      }, i);
     }));
-  }, []);
+  }, [rowsCount, rowHeight]);
 };
 
 var _default = LeftBlock;
 exports.default = _default;
-},{"./LeftBlock.scss":"components/Calendar/LeftBlock/LeftBlock.scss","react":"../node_modules/react/index.js","../../../style-components/Striped":"style-components/Striped.tsx"}],"components/Calendar/LeftBlock/index.ts":[function(require,module,exports) {
+},{"./LeftBlock.scss":"components/Calendar/LeftBlock/LeftBlock.scss","react":"../node_modules/react/index.js","../../../assembly/utility":"assembly/utility.ts","../Calendar.containers":"components/Calendar/Calendar.containers.ts"}],"components/Calendar/LeftBlock/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61957,12 +61933,12 @@ var MonthLabel = function MonthLabel() {
   var _ViewIntervalInfo$use = _Calendar.ViewIntervalInfo.useContainer(),
       currentDay = _ViewIntervalInfo$use.currentDay;
 
-  var currentMonth = (0, _esm.format)(new Date(currentDay), "MMMM");
+  var currentDate = (0, _esm.format)(new Date(currentDay), "MMMM, do");
   return (0, _react.useMemo)(function () {
     return _react.default.createElement("div", {
       className: "MonthLabel__monthLabel__2zhQu"
-    }, currentMonth);
-  }, [currentMonth]);
+    }, currentDate);
+  }, [currentDate]);
 };
 
 var _default = MonthLabel;
@@ -62416,7 +62392,7 @@ module.exports = {
 module.exports = {
   "major": 0,
   "minor": 7,
-  "patch": 3
+  "patch": 5
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
@@ -62899,7 +62875,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37509" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "40923" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

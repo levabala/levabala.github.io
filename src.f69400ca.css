@@ -20,12 +20,11 @@
 .LeftBlock__leftBlock__21Twx {
   z-index: 10;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
-.Striped__striped__1glFa {
-  background-image: linear-gradient(45deg, #828282 38.46%, #bababa 38.46%, #bababa 50%, #828282 50%, #828282 88.46%, #bababa 88.46%, #bababa 100%);
-  background-size: 18.38px 18.38px;
-  outline: solid rgba(0, 0, 0, 0.3) 2px;
-  outline-offset: -1px;
+.LeftBlock__leftBlock__21Twx .LeftBlock__chunk__2u0KB {
+  text-align: center;
 }
 .MainBlock__mainBlock__3lG9a {
   position: relative;
