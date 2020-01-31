@@ -57880,7 +57880,23 @@ function convert(value, from, to, postProcessor) {
 function convertMs(value, to, postProcessor) {
   return convert(value, Duration.ms, to, postProcessor);
 }
-},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js"}],"stores/ui.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js"}],"assembly/utility.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.last = last;
+exports.shell = shell;
+
+function last(arr) {
+  return arr[arr.length - 1];
+}
+
+function shell(size) {
+  return new Array(size).fill(null);
+}
+},{}],"stores/ui.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -57924,7 +57940,9 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.DraggingAutoScrollInfo = exports.LeftColumnInfo = exports.ViewIntervalInfo = exports.GridInfo = exports.ScrollInfo = exports.RowsInfo = exports.ColumnsInfo = exports.TimeLineInfo = exports.DraggedInfo = exports.RestrictedZonesInfo = exports.Weekday = void 0;
+exports.DraggingAutoScrollInfo = exports.LeftColumnInfo = exports.ViewIntervalInfo = exports.GridInfo = exports.ScrollInfo = exports.RowsInfo = exports.ColumnsInfo = exports.TimeLineInfo = exports.DraggedInfo = exports.RowBlocksInfo = exports.RestrictedZonesInfo = exports.Weekday = void 0;
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
@@ -57943,6 +57961,8 @@ var _useHooks = require("use-hooks");
 var _interval = require("../../assembly/interval");
 
 var _timeConverts = require("../../assembly/timeConverts");
+
+var _utility = require("../../assembly/utility");
 
 var _ui = require("../../stores/ui");
 
@@ -58418,6 +58438,60 @@ var RestrictedZonesInfo = (0, _unstatedNext.createContainer)(function () {
   };
 });
 exports.RestrictedZonesInfo = RestrictedZonesInfo;
+var RowBlocksInfo = (0, _unstatedNext.createContainer)(function () {
+  var _RowsInfo$useContaine3 = RowsInfo.useContainer(),
+      rowsCount = _RowsInfo$useContaine3.rowsCount;
+
+  var _useState48 = (0, _react.useState)([{
+    start: 0,
+    end: 3,
+    name: "Just the first block"
+  }, {
+    start: 4,
+    end: 5,
+    name: "Just the second block"
+  }, {
+    start: 6,
+    end: 8,
+    name: "Or third one?"
+  }, {
+    start: 9,
+    end: 13,
+    name: "Ok, that's the last one"
+  }, {
+    start: 14,
+    end: 36,
+    name: "Or not?"
+  }, {
+    start: 37,
+    end: 40,
+    name: "Or not not?"
+  }]),
+      _useState49 = (0, _slicedToArray2.default)(_useState48, 2),
+      rowBlocks = _useState49[0],
+      setRowBlocks = _useState49[1];
+
+  var indexesMap = (0, _react.useMemo)(function () {
+    var counter = 0;
+    var wasPrevious = false;
+    var result = (0, _utility.shell)(rowsCount + rowBlocks.length + 2).reduce(function (acc, _, i) {
+      var isStartOfSomething = rowBlocks.some(function (block) {
+        return block.start === counter;
+      }) && !wasPrevious;
+      wasPrevious = isStartOfSomething;
+      var newAcc = [].concat((0, _toConsumableArray2.default)(acc), [counter]);
+      if (!isStartOfSomething) counter++;
+      return newAcc;
+    }, []);
+    return result;
+  }, [rowsCount, rowBlocks]);
+  return {
+    rowBlocks: rowBlocks,
+    setRowBlocks: setRowBlocks,
+    indexesMap: indexesMap
+  };
+});
+exports.RowBlocksInfo = RowBlocksInfo;
 var DraggedInfo = (0, _unstatedNext.createContainer)(useDragged);
 exports.DraggedInfo = DraggedInfo;
 var TimeLineInfo = (0, _unstatedNext.createContainer)(useTimeLine);
@@ -58436,7 +58510,7 @@ var LeftColumnInfo = (0, _unstatedNext.createContainer)(useLeftColumn);
 exports.LeftColumnInfo = LeftColumnInfo;
 var DraggingAutoScrollInfo = (0, _unstatedNext.createContainer)(useDraggingAutoScroll);
 exports.DraggingAutoScrollInfo = DraggingAutoScrollInfo;
-},{"@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../assembly/interval":"assembly/interval.ts","../../assembly/timeConverts":"assembly/timeConverts.ts","../../stores/ui":"stores/ui.ts","./Calendar.variables.scss":"components/Calendar/Calendar.variables.scss"}],"stores/appointments.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../assembly/interval":"assembly/interval.ts","../../assembly/timeConverts":"assembly/timeConverts.ts","../../assembly/utility":"assembly/utility.ts","../../stores/ui":"stores/ui.ts","./Calendar.variables.scss":"components/Calendar/Calendar.variables.scss"}],"stores/appointments.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -58935,23 +59009,7 @@ function useUsers() {
 
 var UsersInfo = (0, _unstatedNext.createContainer)(useUsers);
 exports.UsersInfo = UsersInfo;
-},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","uuid":"../node_modules/uuid/index.js"}],"assembly/utility.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.last = last;
-exports.shell = shell;
-
-function last(arr) {
-  return arr[arr.length - 1];
-}
-
-function shell(size) {
-  return new Array(size).fill(null);
-}
-},{}],"assembly/random.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/defineProperty":"../node_modules/@babel/runtime/helpers/defineProperty.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","uuid":"../node_modules/uuid/index.js"}],"assembly/random.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -59215,113 +59273,7 @@ function useAutoFetcherApps() {
 
 var AutoFetcherApps = (0, _unstatedNext.createContainer)(useAutoFetcherApps);
 exports.AutoFetcherApps = AutoFetcherApps;
-},{"@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","../../assembly/interval":"assembly/interval.ts","../../assembly/utility":"assembly/utility.ts","../../fetchers/fetchAppointments":"fetchers/fetchAppointments.ts","../../stores/appointments":"stores/appointments.ts","./Calendar.containers":"components/Calendar/Calendar.containers.ts"}],"components/Calendar/LeftBlock/LeftBlock.scss":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-module.exports = {
-  "leftBlock": "LeftBlock__leftBlock__21Twx",
-  "chunk": "LeftBlock__chunk__2u0KB"
-};
-},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/LeftBlock/LeftBlock.tsx":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-require("./LeftBlock.scss");
-
-var _react = _interopRequireWildcard(require("react"));
-
-var _utility = require("../../../assembly/utility");
-
-var _Calendar = require("../Calendar.containers");
-
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; if (obj != null) { var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-var LeftBlock = function LeftBlock() {
-  var _RowsInfo$useContaine = _Calendar.RowsInfo.useContainer(),
-      rowsCount = _RowsInfo$useContaine.rowsCount,
-      rowHeight = _RowsInfo$useContaine.rowHeight;
-
-  return (0, _react.useMemo)(function () {
-    return _react.default.createElement("div", {
-      className: "LeftBlock__leftBlock__21Twx"
-    }, (0, _utility.shell)(rowsCount + 2).map(function (_, i) {
-      return _react.default.createElement("span", {
-        className: "LeftBlock__chunk__2u0KB",
-        key: i,
-        style: {
-          height: rowHeight
-        }
-      }, i);
-    }));
-  }, [rowsCount, rowHeight]);
-};
-
-var _default = LeftBlock;
-exports.default = _default;
-},{"./LeftBlock.scss":"components/Calendar/LeftBlock/LeftBlock.scss","react":"../node_modules/react/index.js","../../../assembly/utility":"assembly/utility.ts","../Calendar.containers":"components/Calendar/Calendar.containers.ts"}],"components/Calendar/LeftBlock/index.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _LeftBlock = _interopRequireDefault(require("./LeftBlock"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var _default = _LeftBlock.default;
-exports.default = _default;
-},{"./LeftBlock":"components/Calendar/LeftBlock/LeftBlock.tsx"}],"components/Calendar/MainBlock/MainBlock.scss":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-module.exports = {
-  "mainBlock": "MainBlock__mainBlock__3lG9a"
-};
-},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"assembly/animationController.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.removeAnimation = exports.addAnimation = void 0;
-var animations = new Map();
-var lastTime = Date.now();
-
-var loop = function loop() {
-  var nowTime = Date.now();
-  var delta = nowTime - lastTime;
-  lastTime = nowTime;
-  animations.forEach(function (anim) {
-    return anim(delta);
-  });
-  requestAnimationFrame(loop);
-};
-
-loop();
-
-var addAnimation = function addAnimation(animation) {
-  animations.set(animation, animation);
-};
-
-exports.addAnimation = addAnimation;
-
-var removeAnimation = function removeAnimation(animation) {
-  animations.delete(animation);
-};
-
-exports.removeAnimation = removeAnimation;
-},{}],"../node_modules/babel-plugin-react-css-modules/dist/browser/schemas/optionsDefaults.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/toConsumableArray":"../node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","unstated-next":"../node_modules/unstated-next/dist/unstated-next.mjs","../../assembly/interval":"assembly/interval.ts","../../assembly/utility":"assembly/utility.ts","../../fetchers/fetchAppointments":"fetchers/fetchAppointments.ts","../../stores/appointments":"stores/appointments.ts","./Calendar.containers":"components/Calendar/Calendar.containers.ts"}],"../node_modules/babel-plugin-react-css-modules/dist/browser/schemas/optionsDefaults.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -59457,15 +59409,16 @@ var _default = function _default(styleNameValue, styleModuleImportMap, options) 
 };
 
 exports["default"] = _default;
-},{"./schemas/optionsDefaults":"../node_modules/babel-plugin-react-css-modules/dist/browser/schemas/optionsDefaults.js"}],"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.scss":[function(require,module,exports) {
+},{"./schemas/optionsDefaults":"../node_modules/babel-plugin-react-css-modules/dist/browser/schemas/optionsDefaults.js"}],"components/Calendar/LeftBlock/LeftBlock.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
 module.exports = {
-  "scrollingLayer": "ScrollingLayer__scrollingLayer__1ogmE",
-  "scrollIsJustReset": "ScrollingLayer__scrollIsJustReset__1mWAK",
-  "bottomBlock": "ScrollingLayer__bottomBlock__3OaJm"
+  "leftBlock": "LeftBlock__leftBlock__21Twx",
+  "chunk": "LeftBlock__chunk__2u0KB",
+  "first": "LeftBlock__first__15gy5",
+  "blank": "LeftBlock__blank__2qPhu"
 };
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../node_modules/classnames/index.js":[function(require,module,exports) {
 var define;
@@ -59522,7 +59475,133 @@ var define;
 	}
 }());
 
-},{}],"../node_modules/@use-it/interval/dist/interval.m.js":[function(require,module,exports) {
+},{}],"components/Calendar/LeftBlock/LeftBlock.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _getClassName2 = _interopRequireDefault(require("babel-plugin-react-css-modules/dist/browser/getClassName"));
+
+require("./LeftBlock.scss");
+
+var _classnames = _interopRequireDefault(require("classnames"));
+
+var _react = _interopRequireWildcard(require("react"));
+
+var _Calendar = require("../Calendar.containers");
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; if (obj != null) { var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _styleModuleImportMap = {
+  "./LeftBlock.scss": {
+    "leftBlock": "LeftBlock__leftBlock__21Twx",
+    "chunk": "LeftBlock__chunk__2u0KB",
+    "first": "LeftBlock__first__15gy5",
+    "blank": "LeftBlock__blank__2qPhu"
+  }
+};
+
+var LeftBlock = function LeftBlock() {
+  var _RowsInfo$useContaine = _Calendar.RowsInfo.useContainer(),
+      rowsCount = _RowsInfo$useContaine.rowsCount,
+      rowHeight = _RowsInfo$useContaine.rowHeight;
+
+  var _RowBlocksInfo$useCon = _Calendar.RowBlocksInfo.useContainer(),
+      indexesMap = _RowBlocksInfo$useCon.indexesMap;
+
+  return (0, _react.useMemo)(function () {
+    return _react.default.createElement("div", {
+      className: "LeftBlock__leftBlock__21Twx"
+    }, indexesMap.map(function (index, i) {
+      var isBlank = indexesMap[i - 1] === index;
+      return _react.default.createElement("span", {
+        key: i,
+        style: {
+          height: rowHeight
+        },
+        className: (0, _getClassName2.default)((0, _classnames.default)("chunk", i === 0 ? "first" : "", isBlank ? "blank" : ""), _styleModuleImportMap, {
+          "handleMissingStyleName": "warn"
+        })
+      }, index - 1);
+    }));
+  }, [rowHeight, indexesMap]);
+};
+
+var _default = LeftBlock;
+exports.default = _default;
+},{"babel-plugin-react-css-modules/dist/browser/getClassName":"../node_modules/babel-plugin-react-css-modules/dist/browser/getClassName.js","./LeftBlock.scss":"components/Calendar/LeftBlock/LeftBlock.scss","classnames":"../node_modules/classnames/index.js","react":"../node_modules/react/index.js","../Calendar.containers":"components/Calendar/Calendar.containers.ts"}],"components/Calendar/LeftBlock/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _LeftBlock = _interopRequireDefault(require("./LeftBlock"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _default = _LeftBlock.default;
+exports.default = _default;
+},{"./LeftBlock":"components/Calendar/LeftBlock/LeftBlock.tsx"}],"components/Calendar/MainBlock/MainBlock.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "mainBlock": "MainBlock__mainBlock__3lG9a"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"assembly/animationController.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.removeAnimation = exports.addAnimation = void 0;
+var animations = new Map();
+var lastTime = Date.now();
+
+var loop = function loop() {
+  var nowTime = Date.now();
+  var delta = nowTime - lastTime;
+  lastTime = nowTime;
+  animations.forEach(function (anim) {
+    return anim(delta);
+  });
+  requestAnimationFrame(loop);
+};
+
+loop();
+
+var addAnimation = function addAnimation(animation) {
+  animations.set(animation, animation);
+};
+
+exports.addAnimation = addAnimation;
+
+var removeAnimation = function removeAnimation(animation) {
+  animations.delete(animation);
+};
+
+exports.removeAnimation = removeAnimation;
+},{}],"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "scrollingLayer": "ScrollingLayer__scrollingLayer__1ogmE",
+  "scrollIsJustReset": "ScrollingLayer__scrollIsJustReset__1mWAK",
+  "bottomBlock": "ScrollingLayer__bottomBlock__3OaJm"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../node_modules/@use-it/interval/dist/interval.m.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -60291,7 +60370,7 @@ var AppointmentCell = function AppointmentCell(props) {
     className: "AppointmentCell__avatar__tRFru"
   })), _react.default.createElement(_CenteredVertically.default, null, _react.default.createElement("span", {
     className: ""
-  }, "".concat(props.app.id.split("-")[0], ", ").concat((0, _dateFns.format)(props.app.interval.start, "dd H:mm"))))), _react.default.createElement("div", {
+  }, "".concat(props.app.id.split("-")[0], ", ").concat((0, _dateFns.format)(props.app.interval.start, "dd H:mm"), ", ").concat(props.app.rowIndex)))), _react.default.createElement("div", {
     className: "AppointmentCell__rightBlock__1crxs"
   }, _react.default.createElement(_CenteredVertically.default, null, _react.default.createElement("span", {
     className: "AppointmentCell__points__16BwB"
@@ -60535,7 +60614,8 @@ function generateApp(_ref) {
       columnWidth = _ref.columnWidth,
       zeroAxis = _ref.zeroAxis,
       gridStepDuration = _ref.gridStepDuration,
-      dayDuration = _ref.dayDuration;
+      dayDuration = _ref.dayDuration,
+      rowBlocks = _ref.rowBlocks;
   var appDuration = app.interval.end - app.interval.start; // console.log(appDuration);
 
   var height = rowHeight;
@@ -60544,10 +60624,13 @@ function generateApp(_ref) {
   var daysOffset = (0, _timeConverts.convertMs)(timeOffset, _timeConverts.Duration.day);
   var dayStartOffset = timeOffset - (0, _timeConverts.convert)(daysOffset, _timeConverts.Duration.day, _timeConverts.Duration.ms);
   var dayColumns = dayDuration / gridStepDuration.valueOf();
+  var rowBlocksPast = Math.max(rowBlocks.filter(function (block) {
+    return block.start <= app.rowIndex;
+  }).length, 1);
   var daysOffsetColumns = daysOffset * dayColumns;
   var dayStartOffsetColumns = dayStartOffset / gridStepDuration.valueOf();
   var x = (daysOffsetColumns + dayStartOffsetColumns) * columnWidth;
-  var y = app.rowIndex * rowHeight; // console.log(`${format(timeOffset, "dd HH:mm")} + ${daysOffset} -> ${x}`);
+  var y = (app.rowIndex + rowBlocksPast) * rowHeight; // console.log(`${format(timeOffset, "dd HH:mm")} + ${daysOffset} -> ${x}`);
 
   return _react.default.createElement(_AppointmentWrapper.default, {
     key: app.id,
@@ -60567,7 +60650,8 @@ var AppointmentBlock = _react.default.memo(function (_ref2) {
       columnWidth = _ref2.columnWidth,
       zeroAxis = _ref2.zeroAxis,
       dayDuration = _ref2.dayDuration,
-      dayStartTime = _ref2.dayStartTime;
+      dayStartTime = _ref2.dayStartTime,
+      rowBlocks = _ref2.rowBlocks;
   //  console.log("app block updated");
   var cachedApps = (0, _react.useRef)({});
   var cachedByEnvironment = (0, _react.useMemo)(function () {
@@ -60579,10 +60663,11 @@ var AppointmentBlock = _react.default.memo(function (_ref2) {
         rowHeight: rowHeight,
         zeroAxis: zeroAxis,
         dayDuration: dayDuration,
-        dayStartTime: dayStartTime
+        dayStartTime: dayStartTime,
+        rowBlocks: rowBlocks
       })));
     }, {});
-  }, [rowHeight, gridStepDuration, columnWidth, zeroAxis, appsBlock.elements, dayDuration, dayStartTime]);
+  }, [rowHeight, gridStepDuration, columnWidth, zeroAxis, appsBlock.elements, dayDuration, dayStartTime, rowBlocks]);
   var appElements = appsBlock.elements.reduce(function (acc, app) {
     return _objectSpread({}, acc, (0, _defineProperty2.default)({}, app.id, cachedByEnvironment[app.id] || cachedApps.current[app.id] || generateApp({
       app: app,
@@ -60591,7 +60676,8 @@ var AppointmentBlock = _react.default.memo(function (_ref2) {
       rowHeight: rowHeight,
       zeroAxis: zeroAxis,
       dayDuration: dayDuration,
-      dayStartTime: dayStartTime
+      dayStartTime: dayStartTime,
+      rowBlocks: rowBlocks
     })));
   }, {}); // tslint:disable-next-line:no-object-mutation
 
@@ -60777,6 +60863,9 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
   var _AppointmentsInfo$use = _appointments.AppointmentsInfo.useContainer(),
       appointmentBlocks = _AppointmentsInfo$use.appointmentBlocks;
 
+  var _RowBlocksInfo$useCon = _Calendar.RowBlocksInfo.useContainer(),
+      rowBlocks = _RowBlocksInfo$useCon.rowBlocks;
+
   var _GridInfo$useContaine = _Calendar.GridInfo.useContainer(),
       zeroAxis = _GridInfo$useContaine.zeroAxis,
       gridStepDuration = _GridInfo$useContaine.gridStepDuration,
@@ -60881,7 +60970,8 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
             rowHeight: rowHeight,
             zeroAxis: zeroAxis,
             dayDuration: oneDayDuration,
-            dayStartTime: oneDayStartTime.valueOf()
+            dayStartTime: oneDayStartTime.valueOf(),
+            rowBlocks: rowBlocks
           });
 
           performance.mark("blockJSX generating - end");
@@ -61049,11 +61139,14 @@ var BackGrid = function BackGrid() {
       isScrolling = _ScrollInfo$useContai.isScrolling,
       scrollOffsetDone = _ScrollInfo$useContai.scrollOffsetDone;
 
+  var _RowBlocksInfo$useCon = _Calendar.RowBlocksInfo.useContainer(),
+      rowBlocks = _RowBlocksInfo$useCon.rowBlocks;
+
   var buffer = oneScrollSizePixels;
   var additionalColumnsOneSide = Math.ceil(buffer / columnWidth) || 0;
   var columns = (0, _react.useMemo)(function () {
-    return new Array(columnsCount + additionalColumnsOneSide * 2 + rowsCount + 2).fill(null).map(function (_, i) {
-      return i <= rowsCount + 1 ? _react.default.createElement("div", {
+    return new Array(columnsCount + additionalColumnsOneSide * 2 + rowsCount + 2 + rowBlocks.length).fill(null).map(function (_, i) {
+      return i <= rowsCount + rowBlocks.length ? _react.default.createElement("div", {
         key: i,
         className: "BackGrid__border__2l_PZ BackGrid__horizontal__cEWYm",
         style: {
@@ -61182,6 +61275,9 @@ var RestrictedZones = function RestrictedZones() {
   var _RestrictedZonesInfo$ = _Calendar.RestrictedZonesInfo.useContainer(),
       restrictedZones = _RestrictedZonesInfo$.restrictedZones;
 
+  var _RowBlocksInfo$useCon = _Calendar.RowBlocksInfo.useContainer(),
+      rowBlocks = _RowBlocksInfo$useCon.rowBlocks;
+
   var _ViewIntervalInfo$use = _Calendar.ViewIntervalInfo.useContainer(),
       viewIntervalMax = _ViewIntervalInfo$use.viewIntervalMax;
 
@@ -61200,7 +61296,7 @@ var RestrictedZones = function RestrictedZones() {
 
   var generateZone = (0, _react.useCallback)(function (interval) {
     var duration = (0, _dateFns.differenceInMilliseconds)(interval.end.valueOf(), interval.start);
-    var height = rowHeight * (rowsCount + 1);
+    var height = rowHeight * (rowsCount + 1 + rowBlocks.length);
     var width = columnWidth * (duration / gridStepDuration.valueOf());
     var timeOffset = (0, _dateFns.differenceInMilliseconds)(interval.start, zeroAxis);
     var daysOffset = (0, _timeConverts.convertMs)(timeOffset, _timeConverts.Duration.day);
@@ -61532,7 +61628,25 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = _ScrollingLayer.default;
 exports.default = _default;
-},{"./ScrollingLayer":"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.tsx"}],"components/Calendar/MainBlock/StaticLayer/StaticLayer.tsx":[function(require,module,exports) {
+},{"./ScrollingLayer":"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.tsx"}],"components/Calendar/MainBlock/StaticLayer/StaticLayer.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "staticLayer": "StaticLayer__staticLayer__kmzSR"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/MainBlock/StaticLayer/RowBlocks/RowBlocks.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "rowBlocks": "RowBlocks__rowBlocks__PLQqd",
+  "block": "RowBlocks__block__5SeXy",
+  "label": "RowBlocks__label__14oxL"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/MainBlock/StaticLayer/RowBlocks/RowBlocks.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61540,17 +61654,79 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+require("./RowBlocks.scss");
+
 var _react = _interopRequireDefault(require("react"));
+
+var _Calendar = require("../../../Calendar.containers");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var RowBlocks = function RowBlocks() {
+  var _RowBlocksInfo$useCon = _Calendar.RowBlocksInfo.useContainer(),
+      rowBlocks = _RowBlocksInfo$useCon.rowBlocks;
+
+  var _RowsInfo$useContaine = _Calendar.RowsInfo.useContainer(),
+      rowHeight = _RowsInfo$useContaine.rowHeight;
+
+  return _react.default.createElement("div", {
+    className: "RowBlocks__rowBlocks__PLQqd"
+  }, rowBlocks.map(function (block, i) {
+    var y = (block.start + i + 1) * rowHeight;
+    return _react.default.createElement("div", {
+      className: "RowBlocks__block__5SeXy",
+      key: block.name,
+      style: {
+        top: y,
+        height: rowHeight
+      }
+    }, _react.default.createElement("span", {
+      className: "RowBlocks__label__14oxL"
+    }, block.name));
+  }));
+};
+
+var _default = RowBlocks;
+exports.default = _default;
+},{"./RowBlocks.scss":"components/Calendar/MainBlock/StaticLayer/RowBlocks/RowBlocks.scss","react":"../node_modules/react/index.js","../../../Calendar.containers":"components/Calendar/Calendar.containers.ts"}],"components/Calendar/MainBlock/StaticLayer/RowBlocks/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _RowBlocks = _interopRequireDefault(require("./RowBlocks"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _default = _RowBlocks.default;
+exports.default = _default;
+},{"./RowBlocks":"components/Calendar/MainBlock/StaticLayer/RowBlocks/RowBlocks.tsx"}],"components/Calendar/MainBlock/StaticLayer/StaticLayer.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+require("./StaticLayer.scss");
+
+var _react = _interopRequireDefault(require("react"));
+
+var _RowBlocks = _interopRequireDefault(require("./RowBlocks"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var StaticLayer = function StaticLayer() {
-  return _react.default.createElement("div", null);
+  return _react.default.createElement("div", {
+    className: "StaticLayer__staticLayer__kmzSR"
+  }, _react.default.createElement(_RowBlocks.default, null));
 };
 
 var _default = StaticLayer;
 exports.default = _default;
-},{"react":"../node_modules/react/index.js"}],"components/Calendar/MainBlock/StaticLayer/index.ts":[function(require,module,exports) {
+},{"./StaticLayer.scss":"components/Calendar/MainBlock/StaticLayer/StaticLayer.scss","react":"../node_modules/react/index.js","./RowBlocks":"components/Calendar/MainBlock/StaticLayer/RowBlocks/index.ts"}],"components/Calendar/MainBlock/StaticLayer/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -61621,6 +61797,10 @@ var MainBlock = function MainBlock(_ref) {
 
   var _RestrictedZonesInfo$ = _Calendar.RestrictedZonesInfo.useContainer(),
       restrictedZones = _RestrictedZonesInfo$.restrictedZones;
+
+  var _RowBlocksInfo$useCon = _Calendar.RowBlocksInfo.useContainer(),
+      rowBlocks = _RowBlocksInfo$useCon.rowBlocks,
+      indexesMap = _RowBlocksInfo$useCon.indexesMap;
 
   var _ScrollInfo$useContai = _Calendar.ScrollInfo.useContainer(),
       scrollOffset = _ScrollInfo$useContai.scrollOffset,
@@ -61763,14 +61943,15 @@ var MainBlock = function MainBlock(_ref) {
     var absoluteY = realY - timeLineHeight;
     var row = processor(absoluteY / rowHeight);
     var column = processor(absoluteX / columnWidth);
-    var rowNormalized = Math.min(Math.max(row, 0), rowsCount);
+    var rowNormalized = indexesMap[row];
+    var rowNormalizedNormalized = Math.min(Math.max(rowNormalized, 0), rowsCount);
     var columnNormalized = column;
     return {
-      row: rowNormalized,
+      row: rowNormalizedNormalized,
       column: columnNormalized,
-      outOfBoundary: rowNormalized !== row
+      outOfBoundary: rowNormalizedNormalized !== rowNormalized
     };
-  }, [selfData, scrollOffset, oneScrollSizePixels, rowHeight, columnWidth, timeLineHeight, rowsCount]);
+  }, [selfData, scrollOffset, oneScrollSizePixels, rowHeight, columnWidth, timeLineHeight, rowsCount, indexesMap]);
   var getDate = (0, _react.useCallback)(function (column) {
     var offsetDuration = column * gridStepDuration.valueOf();
     var daysOffset = (0, _timeConverts.convertCustomMs)(offsetDuration, oneDayDuration);
@@ -61788,7 +61969,7 @@ var MainBlock = function MainBlock(_ref) {
 
     if (outOfBoundary) return;
     var date = getDate(column);
-    var app = getApp(date, row);
+    var app = getApp(date, row); // console.log({ row, column, app, outOfBoundary });
 
     if (app) {
       setDraggingApp(app);
@@ -61859,9 +62040,9 @@ var MainBlock = function MainBlock(_ref) {
   }, [isDragging]); // console.log(selfData);
 
   var innerJSX = (0, _react.useMemo)(function () {
-    return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement(_StaticLayer.default, null), _react.default.createElement(_ScrollingLayer.default, null));
+    return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement(_ScrollingLayer.default, null), _react.default.createElement(_StaticLayer.default, null));
   }, []);
-  var height = rowHeight * (rowsCount + 2) + 1;
+  var height = rowHeight * (rowsCount + 2 + rowBlocks.length) + 1;
   return (0, _react.useMemo)(function () {
     return _react.default.createElement("div", {
       className: "MainBlock__mainBlock__3lG9a",
@@ -62348,11 +62529,11 @@ var Calendar = function Calendar() {
       className: "Calendar__calendar__qh_12" + (" " + (handlers ? handlers.className || "" : ""))
     }, handlers), _react.default.createElement("div", {
       className: "Calendar__top__2DDTC"
-    }, _react.default.createElement(_TopBlock.default, null)), _react.default.createElement("div", {
+    }, _react.default.createElement(_TopBlock.default, null)), _react.default.createElement(_Calendar2.RowBlocksInfo.Provider, null, _react.default.createElement("div", {
       className: "Calendar__bottom__2g2Yl"
     }, _react.default.createElement(_LeftBlock.default, null), _react.default.createElement(_Calendar2.TimeLineInfo.Provider, null, _react.default.createElement(_Calendar2.DraggingAutoScrollInfo.Provider, null, _react.default.createElement(_MainBlock.default, {
       minColumnWidth: 200
-    })))))));
+    }))))))));
   }, [handlers]);
 };
 
@@ -62392,7 +62573,7 @@ module.exports = {
 module.exports = {
   "major": 0,
   "minor": 7,
-  "patch": 5
+  "patch": 6
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
@@ -62875,7 +63056,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "40923" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "40633" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

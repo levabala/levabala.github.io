@@ -24,7 +24,18 @@
   flex-direction: column;
 }
 .LeftBlock__leftBlock__21Twx .LeftBlock__chunk__2u0KB {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
   text-align: center;
+  box-shadow: 1px 0px 0px gray;
+}
+.LeftBlock__leftBlock__21Twx .LeftBlock__chunk__2u0KB.LeftBlock__first__15gy5 {
+  visibility: hidden;
+  box-shadow: none;
+}
+.LeftBlock__leftBlock__21Twx .LeftBlock__chunk__2u0KB.LeftBlock__blank__2qPhu {
+  visibility: hidden;
 }
 .MainBlock__mainBlock__3lG9a {
   position: relative;
@@ -162,6 +173,27 @@
 }
 .TimeLine__timeLine__1CT7j .TimeLine__timeMark__1eqLA {
   width: 200px;
+}
+.StaticLayer__staticLayer__kmzSR {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+.RowBlocks__rowBlocks__PLQqd {
+  position: absolute;
+  width: 100%;
+}
+.RowBlocks__rowBlocks__PLQqd .RowBlocks__block__5SeXy {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  background: #fffeee;
+}
+.RowBlocks__rowBlocks__PLQqd .RowBlocks__block__5SeXy .RowBlocks__label__14oxL {
+  padding-left: 1em;
 }
 .TopBlock__topBlock__27bJ5 {
   display: flex;
