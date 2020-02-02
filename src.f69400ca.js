@@ -59597,6 +59597,7 @@ var reloadCSS = require('_css_loader');
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
 module.exports = {
+  "scrollable": "ScrollingLayer__scrollable__c-cB3",
   "scrollingLayer": "ScrollingLayer__scrollingLayer__1ogmE",
   "scrollIsJustReset": "ScrollingLayer__scrollIsJustReset__1mWAK",
   "bottomBlock": "ScrollingLayer__bottomBlock__3OaJm"
@@ -61516,6 +61517,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _styleModuleImportMap = {
   "./ScrollingLayer.scss": {
+    "scrollable": "ScrollingLayer__scrollable__c-cB3",
     "scrollingLayer": "ScrollingLayer__scrollingLayer__1ogmE",
     "scrollIsJustReset": "ScrollingLayer__scrollIsJustReset__1mWAK",
     "topBlock": "ScrollingLayer__topBlock__2O2Ed",
@@ -61590,26 +61592,36 @@ var ScrollingLayer = function ScrollingLayer() {
       return endScroll();
     });
   }, [endScroll]);
+  var topBlockContent = (0, _react.useMemo)(function () {
+    return _react.default.createElement(_TimeLine.default, null);
+  }, []);
+  var bottomBlockContent = (0, _react.useMemo)(function () {
+    return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement(_BackGrid.default, null), _react.default.createElement(_AppointmentsPlacer.default, null), _react.default.createElement(_RestrictedZones.default, null));
+  }, []);
   var content = (0, _react.useMemo)(function () {
     return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("div", {
-      className: "ScrollingLayer__topBlock__2O2Ed"
-    }, _react.default.createElement(_TimeLine.default, null)), _react.default.createElement("div", {
-      className: "ScrollingLayer__bottomBlock__3OaJm"
-    }, _react.default.createElement(_BackGrid.default, null), _react.default.createElement(_AppointmentsPlacer.default, null), _react.default.createElement(_RestrictedZones.default, null)));
-  }, []);
-  return (0, _react.useMemo)(function () {
-    return _react.default.createElement("div", {
-      ref: self,
+      className: "ScrollingLayer__topBlock__2O2Ed ScrollingLayer__scrollable__c-cB3",
       style: {
         transform: transform,
         transitionDuration: "".concat(scrollDuration, "s")
       },
-      onTransitionEnd: onTransitionEnd,
+      onTransitionEnd: onTransitionEnd
+    }, topBlockContent), _react.default.createElement("div", {
+      className: "ScrollingLayer__bottomBlock__3OaJm ScrollingLayer__scrollable__c-cB3",
+      style: {
+        transform: transform,
+        transitionDuration: "".concat(scrollDuration, "s")
+      }
+    }, bottomBlockContent));
+  }, [transform, scrollDuration, onTransitionEnd, topBlockContent, bottomBlockContent]);
+  return (0, _react.useMemo)(function () {
+    return _react.default.createElement("div", {
+      ref: self,
       className: (0, _getClassName2.default)((0, _classnames.default)("scrollingLayer", scrollIsJustReset ? "scrollIsJustReset" : ""), _styleModuleImportMap, {
         "handleMissingStyleName": "warn"
       })
     }, content);
-  }, [self, transform, scrollDuration, onTransitionEnd, content, scrollIsJustReset]);
+  }, [self, content, scrollIsJustReset]);
 };
 
 var _default = ScrollingLayer;
@@ -62573,7 +62585,7 @@ module.exports = {
 module.exports = {
   "major": 0,
   "minor": 7,
-  "patch": 7
+  "patch": 8
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
@@ -63056,7 +63068,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34007" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44015" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

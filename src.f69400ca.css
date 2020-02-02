@@ -46,12 +46,15 @@
           user-select: none;
   overflow: hidden;
 }
+.ScrollingLayer__scrollable__c-cB3 {
+  transform: translate3d(0px, 0px, 0px);
+  transition: transform 0.5s ease-in-out;
+}
+
 .ScrollingLayer__scrollingLayer__1ogmE {
   position: absolute;
   width: 100%;
   height: 100%;
-  transform: translate3d(0px, 0px, 0px);
-  transition: transform 0.5s ease-in-out;
   display: -ms-grid;
   display: grid;
   -ms-grid-rows: -webkit-min-content 1fr;
