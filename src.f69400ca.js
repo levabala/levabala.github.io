@@ -61158,12 +61158,12 @@ var BackGrid = function BackGrid() {
         key: i,
         className: "BackGrid__border__2l_PZ BackGrid__vertical__IrZZr",
         style: {
-          transform: "translate(".concat((i - additionalColumnsOneSide - rowsCount - 1) * columnWidth, "px, 0px)"),
+          transform: "translate(".concat((i - additionalColumnsOneSide - rowsCount - rowBlocks.length - 1) * columnWidth, "px, 0px)"),
           width: columnWidth
         }
       });
     });
-  }, [columnsCount, pageWidth, rowsCount, buffer, additionalColumnsOneSide, rowHeight, columnWidth]);
+  }, [columnsCount, pageWidth, rowsCount, buffer, additionalColumnsOneSide, rowHeight, columnWidth, rowBlocks]);
   var translateX = -(isScrolling ? scrollOffsetDone : scrollOffset) * oneScrollSizePixels;
   var translate = "translate(".concat(translateX, "px, ", 0, "px)");
   return (0, _react.useMemo)(function () {
@@ -62573,7 +62573,7 @@ module.exports = {
 module.exports = {
   "major": 0,
   "minor": 7,
-  "patch": 6
+  "patch": 7
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
@@ -63056,7 +63056,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "40633" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34007" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
