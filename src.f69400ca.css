@@ -52,21 +52,22 @@
 }
 
 .ScrollingLayer__scrollingLayer__1ogmE {
-  position: absolute;
   width: 100%;
   height: 100%;
-  display: -ms-grid;
-  display: grid;
-  -ms-grid-rows: -webkit-min-content 1fr;
-  -ms-grid-rows: min-content 1fr;
-  grid-template-rows: -webkit-min-content 1fr;
-  grid-template-rows: min-content 1fr;
 }
 .ScrollingLayer__scrollingLayer__1ogmE.ScrollingLayer__scrollIsJustReset__1mWAK {
   transition: none;
 }
+.ScrollingLayer__scrollingLayer__1ogmE .ScrollingLayer__topBlock__2O2Ed {
+  position: absolute;
+  display: -ms-grid;
+  display: grid;
+  z-index: 100;
+}
 .ScrollingLayer__scrollingLayer__1ogmE .ScrollingLayer__bottomBlock__3OaJm {
+  padding-top: 50px;
   position: relative;
+  height: inherit;
 }
 .AppointmentWrapper__appointmentWrapper__1Y-Le {
   background: #fff;
@@ -177,6 +178,9 @@
 .TimeLine__timeLine__1CT7j .TimeLine__timeMark__1eqLA {
   width: 200px;
 }
+.TimeLine__timeLine__1CT7j .TimeLine__timeMark__1eqLA > div {
+  padding-left: 1em;
+}
 .StaticLayer__staticLayer__kmzSR {
   position: absolute;
   left: 0;
@@ -210,11 +214,13 @@
 }
 .MonthChunk__monthRow__2CO4_ {
   transform: translateX(0);
+  z-index: 100;
 }
 .MonthChunk__monthRow__2CO4_ .MonthChunk__offsetController__2Iw9_ {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  background: white;
   transition: transform 0.5s ease-in-out;
   transform: translateX(0);
 }
@@ -252,11 +258,13 @@
 }
 .MonthRow__monthRow__39hGQ {
   transform: translateX(0);
+  z-index: 100;
 }
 .MonthRow__monthRow__39hGQ .MonthRow__offsetController__3aWay {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  background: white;
   transition: transform 0.5s ease-in-out;
   transform: translateX(0);
 }

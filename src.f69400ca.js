@@ -59597,12 +59597,57 @@ var reloadCSS = require('_css_loader');
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
 module.exports = {
+  "rowHeight": "50px",
   "scrollable": "ScrollingLayer__scrollable__c-cB3",
   "scrollingLayer": "ScrollingLayer__scrollingLayer__1ogmE",
   "scrollIsJustReset": "ScrollingLayer__scrollIsJustReset__1mWAK",
+  "topBlock": "ScrollingLayer__topBlock__2O2Ed",
   "bottomBlock": "ScrollingLayer__bottomBlock__3OaJm"
 };
-},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../node_modules/@use-it/interval/dist/interval.m.js":[function(require,module,exports) {
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"assembly/stickyController.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.StickyController = void 0;
+
+function makeElementsSticky(elements) {
+  elements.reduce(function (offsetTop, element) {
+    element.style.position = "fixed";
+    element.style.top = "".concat(offsetTop, "px");
+    return offsetTop + element.offsetHeight;
+  }, 0);
+}
+
+function makeElementsNonSticky(elements) {
+  elements.forEach(function (element) {
+    element.style.position = "";
+    element.style.top = "";
+  });
+}
+
+var StickyController = function () {
+  var elements = [];
+  var triggerScrollValue = null;
+  window.addEventListener("scroll", function () {
+    if (triggerScrollValue === null) return;
+    var _window = window,
+        scrollY = _window.scrollY;
+    if (scrollY >= triggerScrollValue) makeElementsSticky(elements);else makeElementsNonSticky(elements);
+  });
+  return {
+    addStickyElement: function addStickyElement(element, index) {
+      return elements[index] = element;
+    },
+    setTriggerScrollValue: function setTriggerScrollValue(value) {
+      return triggerScrollValue = value;
+    }
+  };
+}();
+
+exports.StickyController = StickyController;
+},{}],"../node_modules/@use-it/interval/dist/interval.m.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -60874,7 +60919,7 @@ var AppointmentsPlacer = function AppointmentsPlacer() {
       oneDayStartTime = _GridInfo$useContaine.oneDayStartTime;
 
   var _ViewIntervalInfo$use = _Calendar.ViewIntervalInfo.useContainer(),
-      viewInterval = _ViewIntervalInfo$use.viewIntervalAfterScrolling,
+      viewInterval = _ViewIntervalInfo$use.viewIntervalMax,
       oneScrollDuration = _ViewIntervalInfo$use.oneScrollDuration;
 
   var _ScrollInfo$useContai = _Calendar.ScrollInfo.useContainer(),
@@ -61499,6 +61544,8 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _useHooks = require("use-hooks");
 
+var _stickyController = require("../../../../assembly/stickyController");
+
 var _Calendar = require("../../Calendar.containers");
 
 var _AppointmentsPlacer = _interopRequireDefault(require("./AppointmentsPlacer"));
@@ -61598,8 +61645,16 @@ var ScrollingLayer = function ScrollingLayer() {
   var bottomBlockContent = (0, _react.useMemo)(function () {
     return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement(_BackGrid.default, null), _react.default.createElement(_AppointmentsPlacer.default, null), _react.default.createElement(_RestrictedZones.default, null));
   }, []);
+  var topBlockRef = (0, _react.useRef)(null); // sticky hook
+
+  (0, _react.useEffect)(function () {
+    var element = topBlockRef.current;
+
+    _stickyController.StickyController.addStickyElement(element, 1);
+  }, []);
   var content = (0, _react.useMemo)(function () {
     return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("div", {
+      ref: topBlockRef,
       className: "ScrollingLayer__topBlock__2O2Ed ScrollingLayer__scrollable__c-cB3",
       style: {
         transform: transform,
@@ -61626,7 +61681,7 @@ var ScrollingLayer = function ScrollingLayer() {
 
 var _default = ScrollingLayer;
 exports.default = _default;
-},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","babel-plugin-react-css-modules/dist/browser/getClassName":"../node_modules/babel-plugin-react-css-modules/dist/browser/getClassName.js","./ScrollingLayer.scss":"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.scss","classnames":"../node_modules/classnames/index.js","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./AppointmentsPlacer":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/index.ts","./BackGrid":"components/Calendar/MainBlock/ScrollingLayer/BackGrid/index.ts","./RestrictedZones":"components/Calendar/MainBlock/ScrollingLayer/RestrictedZones/index.ts","./TimeLine":"components/Calendar/MainBlock/ScrollingLayer/TimeLine/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","babel-plugin-react-css-modules/dist/browser/getClassName":"../node_modules/babel-plugin-react-css-modules/dist/browser/getClassName.js","./ScrollingLayer.scss":"components/Calendar/MainBlock/ScrollingLayer/ScrollingLayer.scss","classnames":"../node_modules/classnames/index.js","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../../../assembly/stickyController":"assembly/stickyController.ts","../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./AppointmentsPlacer":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/index.ts","./BackGrid":"components/Calendar/MainBlock/ScrollingLayer/BackGrid/index.ts","./RestrictedZones":"components/Calendar/MainBlock/ScrollingLayer/RestrictedZones/index.ts","./TimeLine":"components/Calendar/MainBlock/ScrollingLayer/TimeLine/index.ts"}],"components/Calendar/MainBlock/ScrollingLayer/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -62260,6 +62315,8 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _useHooks = require("use-hooks");
 
+var _stickyController = require("../../../../assembly/stickyController");
+
 var _ui = require("../../../../stores/ui");
 
 var _Calendar = require("../../Calendar.containers");
@@ -62328,7 +62385,15 @@ var MonthRow = function MonthRow() {
         offsetHeight: offsetHeight
       });
     }
-  }, [widthD]);
+  }, [widthD]); // sticky hook
+
+  (0, _react.useEffect)(function () {
+    var element = self.current;
+
+    _stickyController.StickyController.addStickyElement(element, 0);
+
+    _stickyController.StickyController.setTriggerScrollValue(element.offsetTop);
+  }, []);
   var buffer = Math.max(1, Math.abs(daysDeltaSinceLast)); // useEffect(() => (jumpDelta !== 0 ? setJumpDelta(0) : undefined), [jumpDelta]);
   // console.log(buffer, jumpDelta);
 
@@ -62388,7 +62453,7 @@ var MonthRow = function MonthRow() {
 
 var _default = MonthRow;
 exports.default = _default;
-},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../../../stores/ui":"stores/ui.ts","../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./MonthChunk":"components/Calendar/TopBlock/MonthRow/MonthChunk/index.ts","./MonthRow.scss":"components/Calendar/TopBlock/MonthRow/MonthRow.scss"}],"components/Calendar/TopBlock/MonthRow/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../../../assembly/stickyController":"assembly/stickyController.ts","../../../../stores/ui":"stores/ui.ts","../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./MonthChunk":"components/Calendar/TopBlock/MonthRow/MonthChunk/index.ts","./MonthRow.scss":"components/Calendar/TopBlock/MonthRow/MonthRow.scss"}],"components/Calendar/TopBlock/MonthRow/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -62584,8 +62649,8 @@ module.exports = {
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"CurrentVersion.json":[function(require,module,exports) {
 module.exports = {
   "major": 0,
-  "minor": 7,
-  "patch": 8
+  "minor": 8,
+  "patch": 0
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
@@ -63068,7 +63133,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44015" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "43195" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
