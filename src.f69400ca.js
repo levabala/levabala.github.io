@@ -57940,7 +57940,7 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.DraggingAutoScrollInfo = exports.LeftColumnInfo = exports.ViewIntervalInfo = exports.GridInfo = exports.ScrollInfo = exports.RowsInfo = exports.ColumnsInfo = exports.TimeLineInfo = exports.DraggedInfo = exports.RowBlocksInfo = exports.RestrictedZonesInfo = exports.Weekday = void 0;
+exports.DraggingAutoScrollInfo = exports.LeftColumnInfo = exports.ViewIntervalInfo = exports.GridInfo = exports.ScrollInfo = exports.RowsInfo = exports.ColumnsInfo = exports.TimeLineInfo = exports.DraggedInfo = exports.SettingsInfo = exports.DragSettingsInfo = exports.AppointmentSettingsInfo = exports.RowBlocksInfo = exports.RestrictedZonesInfo = exports.Weekday = void 0;
 
 var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
@@ -57969,6 +57969,10 @@ var _ui = require("../../stores/ui");
 var _CalendarVariables = _interopRequireDefault(require("./Calendar.variables.scss"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 var initialTime = new Date().valueOf();
 var initialStartOfDay = (0, _dateFns.startOfDay)(initialTime);
@@ -58228,6 +58232,9 @@ function useGrid() {
 
   var oneDayDuration = oneDayStepsCount * gridStepDuration.valueOf();
   var oneDayDurationBlind = (0, _timeConverts.convert)(1, _timeConverts.Duration.day, _timeConverts.Duration.ms) - oneDayDuration;
+  var getEndOfWorkDay = (0, _react.useCallback)(function (date) {
+    return (0, _dateFns.addMilliseconds)(getStartOfWorkDay(date), oneDayDuration);
+  }, [oneDayDuration, getStartOfWorkDay]);
   var initialZeroAxis = oneDayStartTime;
 
   var _useState35 = (0, _react.useState)(initialZeroAxis),
@@ -58247,7 +58254,8 @@ function useGrid() {
     setOneDayStepsCount: setOneDayStepsCount,
     oneDayDuration: oneDayDuration,
     oneDayDurationBlind: oneDayDurationBlind,
-    getStartOfWorkDay: getStartOfWorkDay
+    getStartOfWorkDay: getStartOfWorkDay,
+    getEndOfWorkDay: getEndOfWorkDay
   };
 }
 
@@ -58474,7 +58482,7 @@ var RowBlocksInfo = (0, _unstatedNext.createContainer)(function () {
   var indexesMap = (0, _react.useMemo)(function () {
     var counter = 0;
     var wasPrevious = false;
-    var result = (0, _utility.shell)(rowsCount + rowBlocks.length + 2).reduce(function (acc, _, i) {
+    var result = (0, _utility.shell)(rowsCount + rowBlocks.length + 2).reduce(function (acc) {
       var isStartOfSomething = rowBlocks.some(function (block) {
         return block.start === counter;
       }) && !wasPrevious;
@@ -58492,6 +58500,88 @@ var RowBlocksInfo = (0, _unstatedNext.createContainer)(function () {
   };
 });
 exports.RowBlocksInfo = RowBlocksInfo;
+var AppointmentSettingsInfo = (0, _unstatedNext.createContainer)(function () {
+  var stateVisibilityAvatar = (0, _react.useState)(true);
+  var stateVisibilityVisits = (0, _react.useState)(true);
+  return {
+    stateVisibilityAvatar: {
+      name: "Avatar visibility",
+      state: stateVisibilityAvatar
+    },
+    stateVisibilityVisits: {
+      name: "Visits visibility",
+      state: stateVisibilityVisits
+    }
+  };
+});
+exports.AppointmentSettingsInfo = AppointmentSettingsInfo;
+var DragSettingsInfo = (0, _unstatedNext.createContainer)(function () {
+  var stateOnDragging = (0, _react.useState)(true);
+  var stateOnDraggingApart = (0, _react.useState)(true);
+  var stateOnDraggingApartCrossBlock = (0, _react.useState)(true);
+  return {
+    stateOnDragging: {
+      name: "Dragging",
+      state: stateOnDragging
+    },
+    stateOnDraggingApart: {
+      name: "Dragging Apart",
+      state: stateOnDraggingApart
+    },
+    stateOnDraggingApartCrossBlock: {
+      name: "Dragging Apart Cross Block",
+      state: stateOnDraggingApartCrossBlock
+    }
+  };
+});
+exports.DragSettingsInfo = DragSettingsInfo;
+var SettingsInfo = (0, _unstatedNext.createContainer)(function () {
+  var dragSettings = DragSettingsInfo.useContainer();
+  var appSettings = AppointmentSettingsInfo.useContainer();
+
+  var allSettings = _objectSpread({}, dragSettings, {}, appSettings);
+
+  var dependencies = {
+    stateOnDragging: [],
+    stateVisibilityAvatar: [],
+    stateVisibilityVisits: [],
+    stateOnDraggingApart: ["stateOnDragging"],
+    stateOnDraggingApartCrossBlock: ["stateOnDragging", "stateOnDraggingApart"]
+  };
+
+  var checkIfDisabled = function checkIfDisabled(name) {
+    return dependencies[name].some(function (depName) {
+      return !allSettings[depName].state[0];
+    });
+  };
+
+  var state2entity = function state2entity(_ref) {
+    var _ref2 = (0, _slicedToArray2.default)(_ref, 2),
+        key = _ref2[0],
+        _ref2$ = _ref2[1],
+        name = _ref2$.name,
+        _ref2$$state = (0, _slicedToArray2.default)(_ref2$.state, 2),
+        checked = _ref2$$state[0],
+        setter = _ref2$$state[1];
+
+    return {
+      name: name,
+      checked: checked,
+      setter: setter,
+      disabled: checkIfDisabled(key)
+    };
+  };
+
+  var settings = [{
+    groupName: "Dragging",
+    settings: Object.entries(dragSettings).map(state2entity)
+  }, {
+    groupName: "Appointment",
+    settings: Object.entries(appSettings).map(state2entity)
+  }];
+  return settings;
+});
+exports.SettingsInfo = SettingsInfo;
 var DraggedInfo = (0, _unstatedNext.createContainer)(useDragged);
 exports.DraggedInfo = DraggedInfo;
 var TimeLineInfo = (0, _unstatedNext.createContainer)(useTimeLine);
@@ -58916,7 +59006,7 @@ function useAppointments() {
     });
     if (window.logging) console.log("placing ".concat(makeIdShorter(forWhom))); // if no intersectings - just return
 
-    if (!intersectingApps.count()) return [Result.Success, appBlocksAfterDrop];
+    if (!intersectingApps.count()) return [Result.Success, appBlocksAfterDrop, true];
     var result = intersectingApps.reduce(function (appBlocks, val) {
       if (!appBlocks) return false;
       if (window.logging) console.log("shifting app ".concat(makeIdShorter(val.id)));
@@ -58928,7 +59018,7 @@ function useAppointments() {
       var newAppBlocks = applyShiftNode(rootShiftNode, appBlocks);
       return newAppBlocks;
     }, appBlocksAfterDrop);
-    if (!result) return [Result.Fail];else return [Result.Success, result];
+    if (!result) return [Result.Fail];else return [Result.Success, result, false];
   }, [getIntersectingApps, getVerticalNeighboursByApp, appointmentBlocks, rowsCount, shiftAppForBlocks, updateAppForBlocks]);
   window.appBlocks = appointmentBlocks; // console.log(
   //   appointmentBlocks.toArray().map(block => intervalToString(block.interval))
@@ -60317,11 +60407,13 @@ module.hot.accept(reloadCSS);
 module.exports = {
   "rowHeight": "50px",
   "appointmentCell": "AppointmentCell__appointmentCell__2A3wN",
+  "noAvatar": "AppointmentCell__noAvatar__2g7Ni",
+  "avatar": "AppointmentCell__avatar__tRFru",
+  "noVisits": "AppointmentCell__noVisits__1O9Bf",
+  "points": "AppointmentCell__points__16BwB",
   "leftBlock": "AppointmentCell__leftBlock__12rTr",
   "marker": "AppointmentCell__marker__3Eep5",
-  "avatar": "AppointmentCell__avatar__tRFru",
-  "rightBlock": "AppointmentCell__rightBlock__1crxs",
-  "points": "AppointmentCell__points__16BwB"
+  "rightBlock": "AppointmentCell__rightBlock__1crxs"
 };
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"style-components/CenteredHorizontally.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
@@ -60393,7 +60485,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
+var _getClassName2 = _interopRequireDefault(require("babel-plugin-react-css-modules/dist/browser/getClassName"));
+
 require("./AppointmentCell.scss");
+
+var _classnames = _interopRequireDefault(require("classnames"));
 
 var _dateFns = require("date-fns");
 
@@ -60403,11 +60501,34 @@ var _CenteredHorizontally = _interopRequireDefault(require("../../../../../../..
 
 var _CenteredVertically = _interopRequireDefault(require("../../../../../../../style-components/CenteredVertically"));
 
+var _Calendar = require("../../../../../Calendar.containers");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var _styleModuleImportMap = {
+  "./AppointmentCell.scss": {
+    "appointmentCell": "AppointmentCell__appointmentCell__2A3wN",
+    "noAvatar": "AppointmentCell__noAvatar__2g7Ni",
+    "avatar": "AppointmentCell__avatar__tRFru",
+    "noVisits": "AppointmentCell__noVisits__1O9Bf",
+    "points": "AppointmentCell__points__16BwB",
+    "leftBlock": "AppointmentCell__leftBlock__12rTr",
+    "marker": "AppointmentCell__marker__3Eep5",
+    "rightBlock": "AppointmentCell__rightBlock__1crxs"
+  }
+};
+
 var AppointmentCell = function AppointmentCell(props) {
+  var _AppointmentSettingsI = _Calendar.AppointmentSettingsInfo.useContainer(),
+      _AppointmentSettingsI2 = (0, _slicedToArray2.default)(_AppointmentSettingsI.stateVisibilityAvatar.state, 1),
+      visibilityAvatar = _AppointmentSettingsI2[0],
+      _AppointmentSettingsI3 = (0, _slicedToArray2.default)(_AppointmentSettingsI.stateVisibilityVisits.state, 1),
+      visibilityVisits = _AppointmentSettingsI3[0];
+
   return _react.default.createElement("div", {
-    className: "AppointmentCell__appointmentCell__2A3wN"
+    className: (0, _getClassName2.default)((0, _classnames.default)("appointmentCell", visibilityAvatar ? "" : "noAvatar", visibilityVisits ? "" : "noVisits"), _styleModuleImportMap, {
+      "handleMissingStyleName": "warn"
+    })
   }, _react.default.createElement("div", {
     className: "AppointmentCell__leftBlock__12rTr"
   }, _react.default.createElement("span", {
@@ -60425,7 +60546,7 @@ var AppointmentCell = function AppointmentCell(props) {
 
 var _default = AppointmentCell;
 exports.default = _default;
-},{"./AppointmentCell.scss":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/AppointmentCell.scss","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","../../../../../../../style-components/CenteredHorizontally":"style-components/CenteredHorizontally.tsx","../../../../../../../style-components/CenteredVertically":"style-components/CenteredVertically.tsx"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","babel-plugin-react-css-modules/dist/browser/getClassName":"../node_modules/babel-plugin-react-css-modules/dist/browser/getClassName.js","./AppointmentCell.scss":"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/AppointmentCell.scss","classnames":"../node_modules/classnames/index.js","date-fns":"../node_modules/date-fns/esm/index.js","react":"../node_modules/react/index.js","../../../../../../../style-components/CenteredHorizontally":"style-components/CenteredHorizontally.tsx","../../../../../../../style-components/CenteredVertically":"style-components/CenteredVertically.tsx","../../../../../Calendar.containers":"components/Calendar/Calendar.containers.ts"}],"components/Calendar/MainBlock/ScrollingLayer/AppointmentsPlacer/AppointmentWrapper/AppointmentCell/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -60484,6 +60605,10 @@ var AppointmentWrapper = function AppointmentWrapper(_ref) {
       top = _ref.top,
       app = _ref.app;
 
+  var _DragSettingsInfo$use = _Calendar.DragSettingsInfo.useContainer(),
+      _DragSettingsInfo$use2 = (0, _slicedToArray2.default)(_DragSettingsInfo$use.stateOnDragging.state, 1),
+      onDragging = _DragSettingsInfo$use2[0];
+
   var _useState = (0, _react.useState)(null),
       _useState2 = (0, _slicedToArray2.default)(_useState, 2),
       mouseDownCoords = _useState2[0],
@@ -60525,6 +60650,7 @@ var AppointmentWrapper = function AppointmentWrapper(_ref) {
     });
   }, [mouseDownCoords]);
   var onMouseDown = (0, _react.useCallback)(function (event) {
+    if (!onDragging) return;
     var appElement = ref.current;
 
     var _appElement$getBoundi = appElement.getBoundingClientRect(),
@@ -60545,7 +60671,7 @@ var AppointmentWrapper = function AppointmentWrapper(_ref) {
       x: event.clientX,
       y: event.clientY
     });
-  }, [setDragOffsetToAppCell]);
+  }, [setDragOffsetToAppCell, onDragging]);
   var onMouseUp = (0, _react.useCallback)(function () {
     setMouseDownCoords(null);
     setOffset({
@@ -61894,11 +62020,18 @@ var MainBlock = function MainBlock(_ref) {
       zeroAxis = _GridInfo$useContaine.zeroAxis,
       gridStepDuration = _GridInfo$useContaine.gridStepDuration,
       oneDayDurationBlind = _GridInfo$useContaine.oneDayDurationBlind,
-      oneDayDuration = _GridInfo$useContaine.oneDayDuration;
+      oneDayDuration = _GridInfo$useContaine.oneDayDuration,
+      getEndOfWorkDay = _GridInfo$useContaine.getEndOfWorkDay;
 
   var _DraggingAutoScrollIn = _Calendar.DraggingAutoScrollInfo.useContainer(),
       thresholdPixelsHorizontal = _DraggingAutoScrollIn.thresholdPixelsHorizontal,
       thresholdPixelsVertical = _DraggingAutoScrollIn.thresholdPixelsVertical;
+
+  var _DragSettingsInfo$use = _Calendar.DragSettingsInfo.useContainer(),
+      _DragSettingsInfo$use2 = (0, _slicedToArray2.default)(_DragSettingsInfo$use.stateOnDragging.state, 1),
+      onDragging = _DragSettingsInfo$use2[0],
+      _DragSettingsInfo$use3 = (0, _slicedToArray2.default)(_DragSettingsInfo$use.stateOnDraggingApart.state, 1),
+      onDraggingApart = _DragSettingsInfo$use3[0];
 
   var _useWindowSize = (0, _useHooks.useWindowSize)(),
       width = _useWindowSize.width;
@@ -62026,6 +62159,7 @@ var MainBlock = function MainBlock(_ref) {
     return zeroAxis.valueOf() + offsetDuration + daysDurationAddition;
   }, [zeroAxis, gridStepDuration, oneDayDuration, oneDayDurationBlind]);
   var mouseDownHandler = (0, _react.useCallback)(function (event) {
+    if (!onDragging) return;
     var pageX = event.pageX,
         pageY = event.pageY;
 
@@ -62042,7 +62176,7 @@ var MainBlock = function MainBlock(_ref) {
       setDraggingApp(app);
       setDragStartScrollY(window.scrollY);
     }
-  }, [getRowColumn, getApp, setDraggingApp, getDate]);
+  }, [getRowColumn, getApp, setDraggingApp, getDate, onDragging]);
   var mouseUpHandler = (0, _react.useCallback)(function (event) {
     // console.log("mouse up", draggingApp);
     if (!draggingApp) return; //  console.log("mouse up (with draggingApp)");
@@ -62076,6 +62210,13 @@ var MainBlock = function MainBlock(_ref) {
       return restrict ? true : (0, _interval.areIntervalsIntersects)((0, _interval.numberizeInterval)(zone), newInterval, false, false);
     }, false);
     if (restricted) return;
+    var overlapsNextDay = newInterval.end > getEndOfWorkDay(newInterval.start).valueOf(); // console.log(
+    //   [newInterval.end, getEndOfWorkDay(newInterval.start)].map(date =>
+    //     format(date, "dd HH:mm")
+    //   )
+    // );
+
+    if (overlapsNextDay) return;
 
     var updatedApp = _objectSpread({}, draggingApp, {
       rowIndex: row,
@@ -62083,17 +62224,18 @@ var MainBlock = function MainBlock(_ref) {
     });
 
     var _tryToFreePlace = tryToFreePlace(updatedApp.id, updatedApp.rowIndex, updatedApp.interval),
-        _tryToFreePlace2 = (0, _slicedToArray2.default)(_tryToFreePlace, 2),
+        _tryToFreePlace2 = (0, _slicedToArray2.default)(_tryToFreePlace, 3),
         shiftResult = _tryToFreePlace2[0],
-        newAppBlocks = _tryToFreePlace2[1];
+        newAppBlocks = _tryToFreePlace2[1],
+        nothingChanged = _tryToFreePlace2[2];
 
-    if (shiftResult === _appointments.Result.Success) setAppointmentBlocks(newAppBlocks);
+    if (shiftResult === _appointments.Result.Success && (nothingChanged || onDraggingApart)) setAppointmentBlocks(newAppBlocks);
     setDraggingApp(null);
     setRelativeTriggerLeft(Infinity);
     setRelativeTriggerRight(Infinity);
     setRelativeTriggerTop(Infinity);
     setRelativeTriggerBottom(Infinity);
-  }, [draggingApp, getRowColumn, getDate, setDraggingApp, dragOffsetToAppCell, tryToFreePlace, setAppointmentBlocks, dragStartScrollY, restrictedZones]);
+  }, [draggingApp, getRowColumn, getDate, setDraggingApp, dragOffsetToAppCell, tryToFreePlace, setAppointmentBlocks, dragStartScrollY, restrictedZones, getEndOfWorkDay, onDraggingApart]);
   var mouseMoveHandler = (0, _react.useCallback)(function (event) {
     if (!isDragging) return;
     var relativeTriggerLeft = event.clientX;
@@ -62141,7 +62283,199 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = _MainBlock.default;
 exports.default = _default;
-},{"./MainBlock":"components/Calendar/MainBlock/MainBlock.tsx"}],"components/Calendar/TopBlock/TopBlock.scss":[function(require,module,exports) {
+},{"./MainBlock":"components/Calendar/MainBlock/MainBlock.tsx"}],"components/Calendar/RightPanel/RightPanel.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "rightPanel": "RightPanel__rightPanel__3vEMI",
+  "opened": "RightPanel__opened__1HTTK"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/RightPanel/SettingsBlock/SettingsBlock.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "settingsBlock": "SettingsBlock__settingsBlock__2V7GN"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/RightPanel/SettingsBlock/SettingsGroup/SettingsGroup.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+module.exports = {
+  "settingsGroup": "SettingsGroup__settingsGroup__JhOgD",
+  "groupName": "SettingsGroup__groupName__1bSuW",
+  "entity": "SettingsGroup__entity__1cZl4"
+};
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"components/Calendar/RightPanel/SettingsBlock/SettingsGroup/SettingsGroup.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+require("./SettingsGroup.scss");
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var SettingsGroup = function SettingsGroup(_ref) {
+  var groupName = _ref.groupName,
+      settings = _ref.settings;
+
+  var onChangeSetter = function onChangeSetter(setter) {
+    return function (event) {
+      return setter(event.target.checked);
+    };
+  };
+
+  return _react.default.createElement("div", {
+    className: "SettingsGroup__settingsGroup__JhOgD"
+  }, _react.default.createElement("div", {
+    className: "SettingsGroup__groupName__1bSuW"
+  }, groupName), settings.map(function (_ref2) {
+    var name = _ref2.name,
+        checked = _ref2.checked,
+        setter = _ref2.setter,
+        disabled = _ref2.disabled;
+    return _react.default.createElement("div", {
+      key: name,
+      className: "SettingsGroup__entity__1cZl4"
+    }, _react.default.createElement("input", {
+      type: "checkbox",
+      checked: checked,
+      disabled: disabled,
+      onChange: onChangeSetter(setter)
+    }), name);
+  }));
+};
+
+var _default = SettingsGroup;
+exports.default = _default;
+},{"./SettingsGroup.scss":"components/Calendar/RightPanel/SettingsBlock/SettingsGroup/SettingsGroup.scss","react":"../node_modules/react/index.js"}],"components/Calendar/RightPanel/SettingsBlock/SettingsBlock.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+require("./SettingsBlock.scss");
+
+var _react = _interopRequireDefault(require("react"));
+
+var _Calendar = require("../../Calendar.containers");
+
+var _SettingsGroup = _interopRequireDefault(require("./SettingsGroup/SettingsGroup"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var SettingsBlock = function SettingsBlock() {
+  var settings = _Calendar.SettingsInfo.useContainer();
+
+  return _react.default.createElement("div", {
+    className: "SettingsBlock__settingsBlock__2V7GN"
+  }, settings.map(function (_ref) {
+    var groupName = _ref.groupName,
+        settings = _ref.settings;
+    return _react.default.createElement(_SettingsGroup.default, {
+      key: groupName,
+      groupName: groupName,
+      settings: settings
+    });
+  }));
+};
+
+var _default = SettingsBlock;
+exports.default = _default;
+},{"./SettingsBlock.scss":"components/Calendar/RightPanel/SettingsBlock/SettingsBlock.scss","react":"../node_modules/react/index.js","../../Calendar.containers":"components/Calendar/Calendar.containers.ts","./SettingsGroup/SettingsGroup":"components/Calendar/RightPanel/SettingsBlock/SettingsGroup/SettingsGroup.tsx"}],"components/Calendar/RightPanel/SettingsBlock/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _SettingsBlock = _interopRequireDefault(require("./SettingsBlock"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _default = _SettingsBlock.default;
+exports.default = _default;
+},{"./SettingsBlock":"components/Calendar/RightPanel/SettingsBlock/SettingsBlock.tsx"}],"components/Calendar/RightPanel/RightPanel.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
+var _getClassName2 = _interopRequireDefault(require("babel-plugin-react-css-modules/dist/browser/getClassName"));
+
+require("./RightPanel.scss");
+
+var _classnames = _interopRequireDefault(require("classnames"));
+
+var _react = _interopRequireWildcard(require("react"));
+
+var _useHooks = require("use-hooks");
+
+var _SettingsBlock = _interopRequireDefault(require("./SettingsBlock"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; if (obj != null) { var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _styleModuleImportMap = {
+  "./RightPanel.scss": {
+    "rightPanel": "RightPanel__rightPanel__3vEMI",
+    "opened": "RightPanel__opened__1HTTK"
+  }
+};
+
+var RightPanel = function RightPanel() {
+  var _useState = (0, _react.useState)(true),
+      _useState2 = (0, _slicedToArray2.default)(_useState, 2),
+      opened = _useState2[0],
+      setOpened = _useState2[1];
+
+  var backquote = (0, _useHooks.useKeyPress)("`", true);
+  var ye = (0, _useHooks.useKeyPress)("ё", true);
+  var openedPrevious = (0, _useHooks.usePrevious)(opened);
+  if ((backquote || ye) && openedPrevious === opened) setOpened(!opened);
+  return _react.default.createElement("div", {
+    className: (0, _getClassName2.default)((0, _classnames.default)("rightPanel", opened ? "opened" : ""), _styleModuleImportMap, {
+      "handleMissingStyleName": "warn"
+    })
+  }, _react.default.createElement(_SettingsBlock.default, null));
+};
+
+var _default = RightPanel;
+exports.default = _default;
+},{"@babel/runtime/helpers/slicedToArray":"../node_modules/@babel/runtime/helpers/slicedToArray.js","babel-plugin-react-css-modules/dist/browser/getClassName":"../node_modules/babel-plugin-react-css-modules/dist/browser/getClassName.js","./RightPanel.scss":"components/Calendar/RightPanel/RightPanel.scss","classnames":"../node_modules/classnames/index.js","react":"../node_modules/react/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","./SettingsBlock":"components/Calendar/RightPanel/SettingsBlock/index.ts"}],"components/Calendar/RightPanel/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _RightPanel = _interopRequireDefault(require("./RightPanel"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _default = _RightPanel.default;
+exports.default = _default;
+},{"./RightPanel":"components/Calendar/RightPanel/RightPanel.tsx"}],"components/Calendar/TopBlock/TopBlock.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
@@ -62543,6 +62877,8 @@ var _LeftBlock = _interopRequireDefault(require("./LeftBlock"));
 
 var _MainBlock = _interopRequireDefault(require("./MainBlock"));
 
+var _RightPanel = _interopRequireDefault(require("./RightPanel"));
+
 var _TopBlock = _interopRequireDefault(require("./TopBlock"));
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
@@ -62614,7 +62950,7 @@ var Calendar = function Calendar() {
   }, [handlers]);
 };
 
-var Wrapper = function Wrapper() {
+var WrapperProviders = function WrapperProviders() {
   return _react.default.createElement(_Calendar2.RestrictedZonesInfo.Provider, null, _react.default.createElement(_users.UsersInfo.Provider, null, _react.default.createElement(_Calendar2.DraggedInfo.Provider, null, _react.default.createElement(_Calendar2.ColumnsInfo.Provider, null, _react.default.createElement(_Calendar2.GridInfo.Provider, null, _react.default.createElement(_Calendar2.RowsInfo.Provider, null, _react.default.createElement(_Calendar2.LeftColumnInfo.Provider, null, _react.default.createElement(_appointments.AppointmentsInfo.Provider, {
     initialState: {
       blockSize: 10
@@ -62622,9 +62958,13 @@ var Wrapper = function Wrapper() {
   }, _react.default.createElement(_Calendar2.ScrollInfo.Provider, null, _react.default.createElement(Calendar, null))))))))));
 };
 
-var _default = Wrapper;
+var WrapperSettings = function WrapperSettings() {
+  return _react.default.createElement(_Calendar2.DragSettingsInfo.Provider, null, _react.default.createElement(_Calendar2.AppointmentSettingsInfo.Provider, null, _react.default.createElement(_Calendar2.SettingsInfo.Provider, null, _react.default.createElement(WrapperProviders, null), _react.default.createElement(_RightPanel.default, null))));
+};
+
+var _default = WrapperSettings;
 exports.default = _default;
-},{"@babel/runtime/helpers/extends":"../node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/asyncToGenerator":"../node_modules/@babel/runtime/helpers/asyncToGenerator.js","./Calendar.scss":"components/Calendar/Calendar.scss","react":"../node_modules/react/index.js","react-swipeable":"../node_modules/react-swipeable/es/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../stores/appointments":"stores/appointments.ts","../../stores/ui":"stores/ui.ts","../../stores/users":"stores/users.ts","./AutoFetcherApps":"components/Calendar/AutoFetcherApps.ts","./Calendar.containers":"components/Calendar/Calendar.containers.ts","./LeftBlock":"components/Calendar/LeftBlock/index.ts","./MainBlock":"components/Calendar/MainBlock/index.ts","./TopBlock":"components/Calendar/TopBlock/index.ts"}],"components/Calendar/index.ts":[function(require,module,exports) {
+},{"@babel/runtime/helpers/extends":"../node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/regenerator":"../node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/asyncToGenerator":"../node_modules/@babel/runtime/helpers/asyncToGenerator.js","./Calendar.scss":"components/Calendar/Calendar.scss","react":"../node_modules/react/index.js","react-swipeable":"../node_modules/react-swipeable/es/index.js","use-hooks":"../node_modules/use-hooks/dist/es2015/index.js","../../stores/appointments":"stores/appointments.ts","../../stores/ui":"stores/ui.ts","../../stores/users":"stores/users.ts","./AutoFetcherApps":"components/Calendar/AutoFetcherApps.ts","./Calendar.containers":"components/Calendar/Calendar.containers.ts","./LeftBlock":"components/Calendar/LeftBlock/index.ts","./MainBlock":"components/Calendar/MainBlock/index.ts","./RightPanel":"components/Calendar/RightPanel/index.ts","./TopBlock":"components/Calendar/TopBlock/index.ts"}],"components/Calendar/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -62650,7 +62990,7 @@ module.exports = {
 module.exports = {
   "major": 0,
   "minor": 8,
-  "patch": 0
+  "patch": 4
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
@@ -63133,7 +63473,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "43195" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33995" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

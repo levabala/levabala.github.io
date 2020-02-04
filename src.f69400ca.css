@@ -96,6 +96,12 @@
   justify-content: space-between;
   height: 100%;
 }
+.AppointmentCell__appointmentCell__2A3wN.AppointmentCell__noAvatar__2g7Ni .AppointmentCell__avatar__tRFru {
+  display: none;
+}
+.AppointmentCell__appointmentCell__2A3wN.AppointmentCell__noVisits__1O9Bf .AppointmentCell__points__16BwB {
+  display: none;
+}
 .AppointmentCell__appointmentCell__2A3wN .AppointmentCell__leftBlock__12rTr {
   display: -ms-grid;
   display: grid;
@@ -201,6 +207,35 @@
 }
 .RowBlocks__rowBlocks__PLQqd .RowBlocks__block__5SeXy .RowBlocks__label__14oxL {
   padding-left: 1em;
+}
+.RightPanel__rightPanel__3vEMI {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: white;
+  border: solid black 1px;
+  width: 20%;
+  transform: translateX(100%);
+  transition: transform 0.5s ease-in-out;
+  z-index: 1000;
+  padding: 1em;
+}
+.RightPanel__rightPanel__3vEMI.RightPanel__opened__1HTTK {
+  transform: translateX(0%);
+}
+.SettingsBlock__settingsBlock__2V7GN {
+  font-size: 1.2em;
+}
+.SettingsGroup__settingsGroup__JhOgD {
+  margin-bottom: 1em;
+}
+.SettingsGroup__settingsGroup__JhOgD .SettingsGroup__groupName__1bSuW {
+  font-size: 1em;
+  margin-bottom: 0.2em;
+}
+.SettingsGroup__settingsGroup__JhOgD .SettingsGroup__entity__1cZl4 {
+  margin-left: 1em;
 }
 .TopBlock__topBlock__27bJ5 {
   display: flex;
