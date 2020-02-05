@@ -59209,7 +59209,11 @@ function fetchAppointmentsAtInterval(dayInterval, returnAlreadyFetched, toGenera
   var maxRowIndex = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 20;
 
   function snapValue(val) {
-    return Math.floor(val / stepDuration.valueOf()) * stepDuration.valueOf();
+    var a = val / stepDuration.valueOf();
+    var b = Math.floor(a);
+    var ad = new Date(a);
+    var bd = new Date(b);
+    return b * stepDuration.valueOf();
   }
 
   var possibleDuration = {
@@ -63044,7 +63048,7 @@ module.exports = {
 module.exports = {
   "major": 0,
   "minor": 8,
-  "patch": 7
+  "patch": 8
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
