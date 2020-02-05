@@ -59213,6 +59213,13 @@ function fetchAppointmentsAtInterval(dayInterval, returnAlreadyFetched, toGenera
     var b = Math.floor(a);
     var ad = new Date(a);
     var bd = new Date(b);
+    console.log({
+      a: a,
+      b: b,
+      ad: ad,
+      bd: bd,
+      stepDuration: stepDuration.valueOf()
+    });
     return b * stepDuration.valueOf();
   }
 
@@ -63048,7 +63055,7 @@ module.exports = {
 module.exports = {
   "major": 0,
   "minor": 8,
-  "patch": 8
+  "patch": 9
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
