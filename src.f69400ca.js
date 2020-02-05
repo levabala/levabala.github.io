@@ -59210,19 +59210,19 @@ function fetchAppointmentsAtInterval(dayInterval, returnAlreadyFetched, toGenera
 
   function snapValue(val) {
     var a = val / stepDuration.valueOf();
-    var b = Math.floor(a);
-    var ad = new Date(a);
-    var bd = new Date(b);
-    console.log({
-      val: val,
-      a: a,
-      b: b,
-      ad: ad,
-      bd: bd,
-      stepDuration: stepDuration.valueOf(),
-      res: b * stepDuration.valueOf(),
-      resd: new Date(b * stepDuration.valueOf())
-    });
+    var b = Math.floor(a); // const ad = new Date(a);
+    // const bd = new Date(b);
+    // console.log({
+    //   val,
+    //   a,
+    //   b,
+    //   ad,
+    //   bd,
+    //   stepDuration: stepDuration.valueOf(),
+    //   res: b * stepDuration.valueOf(),
+    //   resd: new Date(b * stepDuration.valueOf())
+    // });
+
     return b * stepDuration.valueOf();
   }
 
@@ -59232,16 +59232,17 @@ function fetchAppointmentsAtInterval(dayInterval, returnAlreadyFetched, toGenera
   };
   var dayIntervalStart = dayInterval.start.valueOf();
   if (processedIntervals.has(dayIntervalStart)) if (returnAlreadyFetched) return processedIntervals.get(dayIntervalStart);else return [];
+  var intervalDuration = dayInterval.end.valueOf() - dayInterval.start.valueOf();
   var apps = (0, _utility.shell)(toGenerate).map(function () {
-    return snapValue((0, _random.randomInt)(dayInterval.start, Math.max(dayInterval.start.valueOf(), dayInterval.end.valueOf() - possibleDuration.start.valueOf())));
+    return dayInterval.start.valueOf() + snapValue((0, _random.randomInt)(0, Math.max(0, intervalDuration - possibleDuration.start.valueOf())));
   }).map(function (start) {
     var duration = snapValue((0, _random.randomInt)(possibleDuration.start, possibleDuration.end.valueOf() + (possibleDuration.end.valueOf() - possibleDuration.start.valueOf())));
     var end = Math.min(start + duration, dayInterval.end.valueOf());
     var interval = {
       start: start,
       end: end
-    };
-    console.log((0, _dateFns.format)(interval.start, "dd HH:mm"));
+    }; // console.log(format(interval.start, "dd HH:mm"));
+
     return (0, _appointments.createAppointment)({
       interval: interval,
       rowIndex: (0, _random.randomInt)(0, maxRowIndex),
@@ -59286,7 +59287,19 @@ function _fetchAppointments() {
             return (0, _timeout.timeout)(delay);
 
           case 7:
+            // function toGMT(date: Date) {
+            //   return addMinutes(date, date.getTimezoneOffset());
+            // }
             intervalsFilled = intervals.map(function (interval) {
+              // const intervalGMT: Interval = {
+              //   start: toGMT(new Date(interval.start)),
+              //   end: toGMT(new Date(interval.end))
+              // };
+              // console.log(
+              //   intervalToString(interval),
+              //   "=>",
+              //   intervalToString(intervalGMT)
+              // );
               return fetchAppointmentsAtInterval(interval, returnAlreadyFetched, densityPerDay, stepDuration, maxRowIndex);
             });
             apps = intervalsFilled.reduce(function (acc, val) {
@@ -59402,13 +59415,11 @@ function useAutoFetcherApps() {
       return intervalsSplitted;
     }).reduce(function (acc, val) {
       return [].concat((0, _toConsumableArray2.default)(acc), (0, _toConsumableArray2.default)(val));
-    });
-    console.log(intervals.map(function (interval) {
-      return (0, _interval.intervalToString)(interval);
-    }));
-    console.log(intervalsRestricted.map(function (interval) {
-      return (0, _interval.intervalToString)(interval);
-    }));
+    }); // console.log(intervals.map(interval => intervalToString(interval)));
+    // console.log(
+    //   intervalsRestricted.map(interval => intervalToString(interval))
+    // );
+
     (0, _fetchAppointments.fetchAppointments)(intervalsRestricted, gridStepDuration, 70, rowsCount).then(function (apps) {
       return apps.length ? setNextPusingApps(apps) : undefined;
     });
@@ -60591,7 +60602,7 @@ var AppointmentCell = function AppointmentCell(props) {
     className: "AppointmentCell__avatar__tRFru"
   })), _react.default.createElement(_CenteredVertically.default, null, _react.default.createElement("span", {
     className: ""
-  }, "".concat(props.app.id.split("-")[0], ", ").concat((0, _dateFns.format)(props.app.interval.start, "dd H:mm"), ", ").concat(props.app.rowIndex, ", ").concat(props.app.blockId)))), _react.default.createElement("div", {
+  }, "".concat(props.app.id.split("-")[0], ", ").concat((0, _dateFns.format)(props.app.interval.start, "dd H:mm"), ", ").concat(props.app.rowIndex)))), _react.default.createElement("div", {
     className: "AppointmentCell__rightBlock__1crxs"
   }, _react.default.createElement(_CenteredVertically.default, null, _react.default.createElement("span", {
     className: "AppointmentCell__points__16BwB"
@@ -62511,7 +62522,7 @@ var _styleModuleImportMap = {
 };
 
 var RightPanel = function RightPanel() {
-  var _useState = (0, _react.useState)(true),
+  var _useState = (0, _react.useState)(false),
       _useState2 = (0, _slicedToArray2.default)(_useState, 2),
       opened = _useState2[0],
       setOpened = _useState2[1];
@@ -63058,7 +63069,7 @@ module.exports = {
 module.exports = {
   "major": 0,
   "minor": 8,
-  "patch": 10
+  "patch": 11
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
@@ -63321,7 +63332,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33077" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36809" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
