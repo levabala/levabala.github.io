@@ -59226,11 +59226,8 @@ function fetchAppointmentsAtInterval(dayInterval, returnAlreadyFetched, toGenera
     var interval = {
       start: start,
       end: end
-    }; // console.log(
-    //   format(interval.start, "dd HH:mm")
-    //   // format(interval.end, "HH:mm")
-    // );
-
+    };
+    console.log((0, _dateFns.format)(interval.start, "dd HH:mm"));
     return (0, _appointments.createAppointment)({
       interval: interval,
       rowIndex: (0, _random.randomInt)(0, maxRowIndex),
@@ -60580,7 +60577,7 @@ var AppointmentCell = function AppointmentCell(props) {
     className: "AppointmentCell__avatar__tRFru"
   })), _react.default.createElement(_CenteredVertically.default, null, _react.default.createElement("span", {
     className: ""
-  }, "".concat(props.app.id.split("-")[0], ", ").concat((0, _dateFns.format)(props.app.interval.start, "dd H:mm"), ", ").concat(props.app.rowIndex)))), _react.default.createElement("div", {
+  }, "".concat(props.app.id.split("-")[0], ", ").concat((0, _dateFns.format)(props.app.interval.start, "dd H:mm"), ", ").concat(props.app.rowIndex, ", ").concat(props.app.blockId)))), _react.default.createElement("div", {
     className: "AppointmentCell__rightBlock__1crxs"
   }, _react.default.createElement(_CenteredVertically.default, null, _react.default.createElement("span", {
     className: "AppointmentCell__points__16BwB"
@@ -63047,7 +63044,7 @@ module.exports = {
 module.exports = {
   "major": 0,
   "minor": 8,
-  "patch": 6
+  "patch": 7
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
