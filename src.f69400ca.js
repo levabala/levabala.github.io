@@ -63475,8 +63475,7 @@ var _users = require("./stores/users");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // here we disable console and performance for better production experience
-console.log("development");
-
+// console.log(process.env.NODE_ENV);
 if (!process || !process.env || "development" !== "development") {
   performance.mark = function () {
     return undefined;
