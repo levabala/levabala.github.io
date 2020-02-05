@@ -59214,11 +59214,14 @@ function fetchAppointmentsAtInterval(dayInterval, returnAlreadyFetched, toGenera
     var ad = new Date(a);
     var bd = new Date(b);
     console.log({
+      val: val,
       a: a,
       b: b,
       ad: ad,
       bd: bd,
-      stepDuration: stepDuration.valueOf()
+      stepDuration: stepDuration.valueOf(),
+      res: b * stepDuration.valueOf(),
+      resd: new Date(b * stepDuration.valueOf())
     });
     return b * stepDuration.valueOf();
   }
@@ -63055,7 +63058,7 @@ module.exports = {
 module.exports = {
   "major": 0,
   "minor": 8,
-  "patch": 9
+  "patch": 10
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
