@@ -63047,7 +63047,7 @@ module.exports = {
 module.exports = {
   "major": 0,
   "minor": 8,
-  "patch": 5
+  "patch": 6
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
