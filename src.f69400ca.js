@@ -57940,7 +57940,7 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.DraggingAutoScrollInfo = exports.LeftColumnInfo = exports.ViewIntervalInfo = exports.GridInfo = exports.ScrollInfo = exports.RowsInfo = exports.ColumnsInfo = exports.TimeLineInfo = exports.DraggedInfo = exports.SettingsInfo = exports.DragSettingsInfo = exports.AppointmentSettingsInfo = exports.RowBlocksInfo = exports.RestrictedZonesInfo = exports.Weekday = void 0;
+exports.DraggingAutoScrollInfo = exports.LeftColumnInfo = exports.ViewIntervalInfo = exports.GridInfo = exports.ScrollInfo = exports.RowsInfo = exports.ColumnsInfo = exports.TimeLineInfo = exports.DraggedInfo = exports.SettingsInfo = exports.DragSettingsInfo = exports.AppointmentSettingsInfo = exports.GridSettingsInfo = exports.RowBlocksInfo = exports.RestrictedZonesInfo = exports.Weekday = void 0;
 
 var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
@@ -58000,30 +58000,48 @@ function useColumns() {
       columnsCount = _useState6[0],
       setColumnsCount = _useState6[1];
 
+  var _useState7 = (0, _react.useState)(0),
+      _useState8 = (0, _slicedToArray2.default)(_useState7, 2),
+      previousMinColumnWidth = _useState8[0],
+      setPreviousMinColumnWidth = _useState8[1];
+
+  var _useState9 = (0, _react.useState)(0),
+      _useState10 = (0, _slicedToArray2.default)(_useState9, 2),
+      previousContainerWidth = _useState10[0],
+      setPreviousContainerWidth = _useState10[1];
+
   var setColumns = function setColumns(containerWidth, minColumnWidth) {
     var newColumnsCount = Math.floor(containerWidth / minColumnWidth);
     var newColumnWidth = containerWidth / newColumnsCount;
     setColumnsCount(newColumnsCount);
     setColumnWidth(newColumnWidth);
+    if (containerWidth !== previousContainerWidth) setPreviousContainerWidth(containerWidth);
+  };
+
+  var setMinColumnWidth = function setMinColumnWidth(minColumnWidth) {
+    setPreviousMinColumnWidth(minColumnWidth);
+    setColumns(previousContainerWidth, minColumnWidth);
   };
 
   return {
     columnWidth: columnWidth,
     columnsCount: columnsCount,
-    setColumns: setColumns
+    setColumns: setColumns,
+    minColumnWidth: previousMinColumnWidth,
+    setMinColumnWidth: setMinColumnWidth
   };
 }
 
 function useRows() {
-  var _useState7 = (0, _react.useState)(parseFloat(_CalendarVariables.default.rowHeight)),
-      _useState8 = (0, _slicedToArray2.default)(_useState7, 2),
-      rowHeight = _useState8[0],
-      setRowHeight = _useState8[1];
+  var _useState11 = (0, _react.useState)(parseFloat(_CalendarVariables.default.rowHeight)),
+      _useState12 = (0, _slicedToArray2.default)(_useState11, 2),
+      rowHeight = _useState12[0],
+      setRowHeight = _useState12[1];
 
-  var _useState9 = (0, _react.useState)(40),
-      _useState10 = (0, _slicedToArray2.default)(_useState9, 2),
-      rowsCount = _useState10[0],
-      setRowsCount = _useState10[1];
+  var _useState13 = (0, _react.useState)(40),
+      _useState14 = (0, _slicedToArray2.default)(_useState13, 2),
+      rowsCount = _useState14[0],
+      setRowsCount = _useState14[1];
 
   var setRows = function setRows(newRowsCount, newRowHeight) {
     setRowsCount(newRowsCount);
@@ -58041,10 +58059,10 @@ function useTimeLine() {
   var _RowsInfo$useContaine = RowsInfo.useContainer(),
       rowHeight = _RowsInfo$useContaine.rowHeight;
 
-  var _useState11 = (0, _react.useState)(rowHeight),
-      _useState12 = (0, _slicedToArray2.default)(_useState11, 2),
-      timeLineHeight = _useState12[0],
-      setTimeLineHeight = _useState12[1];
+  var _useState15 = (0, _react.useState)(rowHeight),
+      _useState16 = (0, _slicedToArray2.default)(_useState15, 2),
+      timeLineHeight = _useState16[0],
+      setTimeLineHeight = _useState16[1];
 
   return {
     timeLineHeight: timeLineHeight,
@@ -58058,49 +58076,49 @@ function useScroll() {
   var _ColumnsInfo$useConta = ColumnsInfo.useContainer(),
       columnWidth = _ColumnsInfo$useConta.columnWidth;
 
-  var _useState13 = (0, _react.useState)(0),
-      _useState14 = (0, _slicedToArray2.default)(_useState13, 2),
-      scrollOffset = _useState14[0],
-      setScrollOffset = _useState14[1];
+  var _useState17 = (0, _react.useState)(0),
+      _useState18 = (0, _slicedToArray2.default)(_useState17, 2),
+      scrollOffset = _useState18[0],
+      setScrollOffset = _useState18[1];
 
   var oneScrollSize = (0, _useHooks.useMedia)(["(max-width: 800px)"], [1], 0.5);
 
-  var _useState15 = (0, _react.useState)(false),
-      _useState16 = (0, _slicedToArray2.default)(_useState15, 2),
-      isScrolling = _useState16[0],
-      setIsScrolling = _useState16[1];
-
-  var _useState17 = (0, _react.useState)(0.5),
-      _useState18 = (0, _slicedToArray2.default)(_useState17, 1),
-      scrollDuration = _useState18[0];
-
-  var _useState19 = (0, _react.useState)(0),
+  var _useState19 = (0, _react.useState)(false),
       _useState20 = (0, _slicedToArray2.default)(_useState19, 2),
-      oneScrollSizePixels = _useState20[0],
-      setOneScrollSizePixels = _useState20[1];
+      isScrolling = _useState20[0],
+      setIsScrolling = _useState20[1];
 
-  var _useState21 = (0, _react.useState)(0),
-      _useState22 = (0, _slicedToArray2.default)(_useState21, 2),
-      oneScrollSizeReal = _useState22[0],
-      setOneScrollSizeReal = _useState22[1];
+  var _useState21 = (0, _react.useState)(0.5),
+      _useState22 = (0, _slicedToArray2.default)(_useState21, 1),
+      scrollDuration = _useState22[0];
 
   var _useState23 = (0, _react.useState)(0),
       _useState24 = (0, _slicedToArray2.default)(_useState23, 2),
-      lastScrollDirection = _useState24[0],
-      setLastScrollDirection = _useState24[1];
+      oneScrollSizePixels = _useState24[0],
+      setOneScrollSizePixels = _useState24[1];
 
-  var _useState25 = (0, _react.useState)(false),
+  var _useState25 = (0, _react.useState)(0),
       _useState26 = (0, _slicedToArray2.default)(_useState25, 2),
-      scrollIsJustReset = _useState26[0],
-      setScrollIsJustReset = _useState26[1];
+      oneScrollSizeReal = _useState26[0],
+      setOneScrollSizeReal = _useState26[1];
+
+  var _useState27 = (0, _react.useState)(0),
+      _useState28 = (0, _slicedToArray2.default)(_useState27, 2),
+      lastScrollDirection = _useState28[0],
+      setLastScrollDirection = _useState28[1];
+
+  var _useState29 = (0, _react.useState)(false),
+      _useState30 = (0, _slicedToArray2.default)(_useState29, 2),
+      scrollIsJustReset = _useState30[0],
+      setScrollIsJustReset = _useState30[1];
 
   var scrollIsJustResetPrevious = (0, _useHooks.usePrevious)(scrollIsJustReset);
   if (scrollIsJustResetPrevious && scrollIsJustReset) setScrollIsJustReset(false); // console.log({ scrollIsJustReset, scrollIsJustResetPrevious });
 
-  var _useState27 = (0, _react.useState)(scrollOffset),
-      _useState28 = (0, _slicedToArray2.default)(_useState27, 2),
-      scrollOffsetDone = _useState28[0],
-      setScrollOffsetDone = _useState28[1];
+  var _useState31 = (0, _react.useState)(scrollOffset),
+      _useState32 = (0, _slicedToArray2.default)(_useState31, 2),
+      scrollOffsetDone = _useState32[0],
+      setScrollOffsetDone = _useState32[1];
 
   var columnsPerScroll = Math.round(oneScrollSizePixels / columnWidth) || 0;
   var resetScroll = (0, _react.useCallback)(function () {
@@ -58215,20 +58233,20 @@ function useGrid() {
     return (0, _dateFns.addHours)((0, _dateFns.addMinutes)((0, _dateFns.startOfDay)(date), 0), 7);
   }, []);
 
-  var _useState29 = (0, _react.useState)((0, _dateFns.addMinutes)(0, 40)),
-      _useState30 = (0, _slicedToArray2.default)(_useState29, 2),
-      gridStepDuration = _useState30[0],
-      setGridStepDuration = _useState30[1];
-
-  var _useState31 = (0, _react.useState)(getStartOfWorkDay(initialTime)),
-      _useState32 = (0, _slicedToArray2.default)(_useState31, 2),
-      oneDayStartTime = _useState32[0],
-      setOneDayStartTime = _useState32[1];
-
-  var _useState33 = (0, _react.useState)(10),
+  var _useState33 = (0, _react.useState)((0, _dateFns.addMinutes)(0, 40)),
       _useState34 = (0, _slicedToArray2.default)(_useState33, 2),
-      oneDayStepsCount = _useState34[0],
-      setOneDayStepsCount = _useState34[1];
+      gridStepDuration = _useState34[0],
+      setGridStepDuration = _useState34[1];
+
+  var _useState35 = (0, _react.useState)(getStartOfWorkDay(initialTime)),
+      _useState36 = (0, _slicedToArray2.default)(_useState35, 2),
+      oneDayStartTime = _useState36[0],
+      setOneDayStartTime = _useState36[1];
+
+  var _useState37 = (0, _react.useState)(10),
+      _useState38 = (0, _slicedToArray2.default)(_useState37, 2),
+      oneDayStepsCount = _useState38[0],
+      setOneDayStepsCount = _useState38[1];
 
   var oneDayDuration = oneDayStepsCount * gridStepDuration.valueOf();
   var oneDayDurationBlind = (0, _timeConverts.convert)(1, _timeConverts.Duration.day, _timeConverts.Duration.ms) - oneDayDuration;
@@ -58237,10 +58255,10 @@ function useGrid() {
   }, [oneDayDuration, getStartOfWorkDay]);
   var initialZeroAxis = oneDayStartTime;
 
-  var _useState35 = (0, _react.useState)(initialZeroAxis),
-      _useState36 = (0, _slicedToArray2.default)(_useState35, 2),
-      zeroAxis = _useState36[0],
-      setZeroAxis = _useState36[1];
+  var _useState39 = (0, _react.useState)(initialZeroAxis),
+      _useState40 = (0, _slicedToArray2.default)(_useState39, 2),
+      zeroAxis = _useState40[0],
+      setZeroAxis = _useState40[1];
 
   return {
     initialZeroAxis: initialZeroAxis,
@@ -58303,10 +58321,10 @@ function useViewInterval() {
     end: (0, _dateFns.addMilliseconds)(zeroAxis, totalOffsetDurationEndNormalized).valueOf()
   };
 
-  var _useState37 = (0, _react.useState)(viewInterval),
-      _useState38 = (0, _slicedToArray2.default)(_useState37, 2),
-      viewIntervalAfterScrolling = _useState38[0],
-      setViewIntervalAfterScrolling = _useState38[1];
+  var _useState41 = (0, _react.useState)(viewInterval),
+      _useState42 = (0, _slicedToArray2.default)(_useState41, 2),
+      viewIntervalAfterScrolling = _useState42[0],
+      setViewIntervalAfterScrolling = _useState42[1];
 
   var viewIntervalMax = (0, _interval.maxInterval)(viewInterval, viewIntervalAfterScrolling); // console.log(
   //   `view: ${format(viewIntervalMax.start, "dd HH:mm")} - ${format(
@@ -58354,18 +58372,18 @@ function useViewInterval() {
 }
 
 function useDragged() {
-  var _useState39 = (0, _react.useState)(null),
-      _useState40 = (0, _slicedToArray2.default)(_useState39, 2),
-      draggingApp = _useState40[0],
-      setDraggingApp = _useState40[1];
+  var _useState43 = (0, _react.useState)(null),
+      _useState44 = (0, _slicedToArray2.default)(_useState43, 2),
+      draggingApp = _useState44[0],
+      setDraggingApp = _useState44[1];
 
-  var _useState41 = (0, _react.useState)({
+  var _useState45 = (0, _react.useState)({
     dx: 0,
     dy: 0
   }),
-      _useState42 = (0, _slicedToArray2.default)(_useState41, 2),
-      dragOffsetToAppCell = _useState42[0],
-      setDragOffsetToAppCell = _useState42[1];
+      _useState46 = (0, _slicedToArray2.default)(_useState45, 2),
+      dragOffsetToAppCell = _useState46[0],
+      setDragOffsetToAppCell = _useState46[1];
 
   var isDragging = draggingApp !== null;
   return {
@@ -58384,10 +58402,10 @@ function useDraggingAutoScroll() {
   var _RowsInfo$useContaine2 = RowsInfo.useContainer(),
       rowHeight = _RowsInfo$useContaine2.rowHeight;
 
-  var _useState43 = (0, _react.useState)(0.3),
-      _useState44 = (0, _slicedToArray2.default)(_useState43, 2),
-      threshold = _useState44[0],
-      setThreshold = _useState44[1];
+  var _useState47 = (0, _react.useState)(0.3),
+      _useState48 = (0, _slicedToArray2.default)(_useState47, 2),
+      threshold = _useState48[0],
+      setThreshold = _useState48[1];
 
   var thresholdPixelsHorizontal = columnWidth * threshold;
   var thresholdPixelsVertical = rowHeight * threshold;
@@ -58412,33 +58430,33 @@ exports.Weekday = Weekday;
 })(Weekday || (exports.Weekday = Weekday = {}));
 
 var RestrictedZonesInfo = (0, _unstatedNext.createContainer)(function () {
-  var _useState47;
+  var _useState51;
 
-  var _useState45 = (0, _react.useState)((_useState47 = {}, (0, _defineProperty2.default)(_useState47, Weekday.Sunday, []), (0, _defineProperty2.default)(_useState47, Weekday.Monday, [{
+  var _useState49 = (0, _react.useState)((_useState51 = {}, (0, _defineProperty2.default)(_useState51, Weekday.Sunday, []), (0, _defineProperty2.default)(_useState51, Weekday.Monday, [{
     start: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 11), 0),
     end: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 12), 20)
-  }]), (0, _defineProperty2.default)(_useState47, Weekday.Tuesday, [{
+  }]), (0, _defineProperty2.default)(_useState51, Weekday.Tuesday, [{
     start: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 8), 20),
     end: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 9), 40)
-  }]), (0, _defineProperty2.default)(_useState47, Weekday.Wednesday, [{
+  }]), (0, _defineProperty2.default)(_useState51, Weekday.Wednesday, [{
     start: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 7), 0),
     end: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 9), 0)
   }, {
     start: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 10), 20),
     end: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 11), 0)
-  }]), (0, _defineProperty2.default)(_useState47, Weekday.Thursday, [{
+  }]), (0, _defineProperty2.default)(_useState51, Weekday.Thursday, [{
     start: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 7), 0),
     end: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 7), 40)
   }, {
     start: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 10), 20),
     end: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 11), 40)
-  }]), (0, _defineProperty2.default)(_useState47, Weekday.Friday, [{
+  }]), (0, _defineProperty2.default)(_useState51, Weekday.Friday, [{
     start: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 8), 20),
     end: (0, _dateFns.addMinutes)((0, _dateFns.addHours)(initialStartOfDay, 9), 40)
-  }]), (0, _defineProperty2.default)(_useState47, Weekday.Saturday, []), _useState47)),
-      _useState46 = (0, _slicedToArray2.default)(_useState45, 2),
-      restrictedZones = _useState46[0],
-      setRestrictedZones = _useState46[1];
+  }]), (0, _defineProperty2.default)(_useState51, Weekday.Saturday, []), _useState51)),
+      _useState50 = (0, _slicedToArray2.default)(_useState49, 2),
+      restrictedZones = _useState50[0],
+      setRestrictedZones = _useState50[1];
 
   return {
     restrictedZones: restrictedZones,
@@ -58450,7 +58468,7 @@ var RowBlocksInfo = (0, _unstatedNext.createContainer)(function () {
   var _RowsInfo$useContaine3 = RowsInfo.useContainer(),
       rowsCount = _RowsInfo$useContaine3.rowsCount;
 
-  var _useState48 = (0, _react.useState)([{
+  var _useState52 = (0, _react.useState)([{
     start: 0,
     end: 3,
     name: "Just the first block"
@@ -58475,9 +58493,9 @@ var RowBlocksInfo = (0, _unstatedNext.createContainer)(function () {
     end: 40,
     name: "Or not not?"
   }]),
-      _useState49 = (0, _slicedToArray2.default)(_useState48, 2),
-      rowBlocks = _useState49[0],
-      setRowBlocks = _useState49[1];
+      _useState53 = (0, _slicedToArray2.default)(_useState52, 2),
+      rowBlocks = _useState53[0],
+      setRowBlocks = _useState53[1];
 
   var indexesMap = (0, _react.useMemo)(function () {
     var counter = 0;
@@ -58500,6 +58518,20 @@ var RowBlocksInfo = (0, _unstatedNext.createContainer)(function () {
   };
 });
 exports.RowBlocksInfo = RowBlocksInfo;
+var GridSettingsInfo = (0, _unstatedNext.createContainer)(function () {
+  var _ColumnsInfo$useConta4 = ColumnsInfo.useContainer(),
+      minColumnWidth = _ColumnsInfo$useConta4.minColumnWidth,
+      setMinColumnWidth = _ColumnsInfo$useConta4.setMinColumnWidth;
+
+  var stateMinColumnWidth = [minColumnWidth, setMinColumnWidth];
+  return {
+    stateMinColumnWidth: {
+      name: "Minimal Column Width",
+      state: stateMinColumnWidth
+    }
+  };
+});
+exports.GridSettingsInfo = GridSettingsInfo;
 var AppointmentSettingsInfo = (0, _unstatedNext.createContainer)(function () {
   var stateVisibilityAvatar = (0, _react.useState)(true);
   var stateVisibilityVisits = (0, _react.useState)(true);
@@ -58536,12 +58568,14 @@ var DragSettingsInfo = (0, _unstatedNext.createContainer)(function () {
 });
 exports.DragSettingsInfo = DragSettingsInfo;
 var SettingsInfo = (0, _unstatedNext.createContainer)(function () {
-  var dragSettings = DragSettingsInfo.useContainer();
-  var appSettings = AppointmentSettingsInfo.useContainer();
+  var settingsDrag = DragSettingsInfo.useContainer();
+  var settingsApp = AppointmentSettingsInfo.useContainer();
+  var settingsGrid = GridSettingsInfo.useContainer();
 
-  var allSettings = _objectSpread({}, dragSettings, {}, appSettings);
+  var allSettings = _objectSpread({}, settingsDrag, {}, settingsApp, {}, settingsGrid);
 
   var dependencies = {
+    stateMinColumnWidth: [],
     stateOnDragging: [],
     stateVisibilityAvatar: [],
     stateVisibilityVisits: [],
@@ -58561,23 +58595,30 @@ var SettingsInfo = (0, _unstatedNext.createContainer)(function () {
         _ref2$ = _ref2[1],
         name = _ref2$.name,
         _ref2$$state = (0, _slicedToArray2.default)(_ref2$.state, 2),
-        checked = _ref2$$state[0],
+        value = _ref2$$state[0],
         setter = _ref2$$state[1];
 
     return {
       name: name,
-      checked: checked,
+      value: value,
       setter: setter,
       disabled: checkIfDisabled(key)
     };
   };
 
+  var normalizeSettings = function normalizeSettings(settings) {
+    return Object.entries(settings).map(state2entity);
+  };
+
   var settings = [{
     groupName: "Dragging",
-    settings: Object.entries(dragSettings).map(state2entity)
+    settings: normalizeSettings(settingsDrag)
   }, {
     groupName: "Appointment",
-    settings: Object.entries(appSettings).map(state2entity)
+    settings: normalizeSettings(settingsApp)
+  }, {
+    groupName: "Grid",
+    settings: normalizeSettings(settingsGrid)
   }];
   return settings;
 });
@@ -59350,11 +59391,13 @@ function useAutoFetcherApps() {
       return intervalsSplitted;
     }).reduce(function (acc, val) {
       return [].concat((0, _toConsumableArray2.default)(acc), (0, _toConsumableArray2.default)(val));
-    }); // console.log(intervals.map(interval => intervalToString(interval)));
-    // console.log(
-    //   intervalsRestricted.map(interval => intervalToString(interval))
-    // );
-
+    });
+    console.log(intervals.map(function (interval) {
+      return (0, _interval.intervalToString)(interval);
+    }));
+    console.log(intervalsRestricted.map(function (interval) {
+      return (0, _interval.intervalToString)(interval);
+    }));
     (0, _fetchAppointments.fetchAppointments)(intervalsRestricted, gridStepDuration, 70, rowsCount).then(function (apps) {
       return apps.length ? setNextPusingApps(apps) : undefined;
     });
@@ -62328,9 +62371,15 @@ var SettingsGroup = function SettingsGroup(_ref) {
   var groupName = _ref.groupName,
       settings = _ref.settings;
 
-  var onChangeSetter = function onChangeSetter(setter) {
+  var onChangeSetterBoolean = function onChangeSetterBoolean(setter) {
     return function (event) {
       return setter(event.target.checked);
+    };
+  };
+
+  var onChangeSetterNumber = function onChangeSetterNumber(setter) {
+    return function (event) {
+      return setter(parseInt(event.target.value));
     };
   };
 
@@ -62340,18 +62389,26 @@ var SettingsGroup = function SettingsGroup(_ref) {
     className: "SettingsGroup__groupName__1bSuW"
   }, groupName), settings.map(function (_ref2) {
     var name = _ref2.name,
-        checked = _ref2.checked,
+        value = _ref2.value,
         setter = _ref2.setter,
         disabled = _ref2.disabled;
+    var setterElement = typeof value === "boolean" ? _react.default.createElement("input", {
+      type: "checkbox",
+      checked: value,
+      disabled: disabled,
+      onChange: onChangeSetterBoolean(setter)
+    }) : _react.default.createElement("input", {
+      min: 1,
+      step: 1,
+      type: "range",
+      value: value,
+      disabled: disabled,
+      onChange: onChangeSetterNumber(setter)
+    });
     return _react.default.createElement("div", {
       key: name,
       className: "SettingsGroup__entity__1cZl4"
-    }, _react.default.createElement("input", {
-      type: "checkbox",
-      checked: checked,
-      disabled: disabled,
-      onChange: onChangeSetter(setter)
-    }), name);
+    }, name, setterElement);
   }));
 };
 
@@ -62951,15 +63008,15 @@ var Calendar = function Calendar() {
 };
 
 var WrapperProviders = function WrapperProviders() {
-  return _react.default.createElement(_Calendar2.RestrictedZonesInfo.Provider, null, _react.default.createElement(_users.UsersInfo.Provider, null, _react.default.createElement(_Calendar2.DraggedInfo.Provider, null, _react.default.createElement(_Calendar2.ColumnsInfo.Provider, null, _react.default.createElement(_Calendar2.GridInfo.Provider, null, _react.default.createElement(_Calendar2.RowsInfo.Provider, null, _react.default.createElement(_Calendar2.LeftColumnInfo.Provider, null, _react.default.createElement(_appointments.AppointmentsInfo.Provider, {
+  return _react.default.createElement(_Calendar2.RestrictedZonesInfo.Provider, null, _react.default.createElement(_users.UsersInfo.Provider, null, _react.default.createElement(_Calendar2.DraggedInfo.Provider, null, _react.default.createElement(_Calendar2.GridInfo.Provider, null, _react.default.createElement(_Calendar2.RowsInfo.Provider, null, _react.default.createElement(_Calendar2.LeftColumnInfo.Provider, null, _react.default.createElement(_appointments.AppointmentsInfo.Provider, {
     initialState: {
       blockSize: 10
     }
-  }, _react.default.createElement(_Calendar2.ScrollInfo.Provider, null, _react.default.createElement(Calendar, null))))))))));
+  }, _react.default.createElement(_Calendar2.ScrollInfo.Provider, null, _react.default.createElement(Calendar, null)))))))));
 };
 
 var WrapperSettings = function WrapperSettings() {
-  return _react.default.createElement(_Calendar2.DragSettingsInfo.Provider, null, _react.default.createElement(_Calendar2.AppointmentSettingsInfo.Provider, null, _react.default.createElement(_Calendar2.SettingsInfo.Provider, null, _react.default.createElement(WrapperProviders, null), _react.default.createElement(_RightPanel.default, null))));
+  return _react.default.createElement(_Calendar2.DragSettingsInfo.Provider, null, _react.default.createElement(_Calendar2.AppointmentSettingsInfo.Provider, null, _react.default.createElement(_Calendar2.ColumnsInfo.Provider, null, _react.default.createElement(_Calendar2.GridSettingsInfo.Provider, null, _react.default.createElement(_Calendar2.SettingsInfo.Provider, null, _react.default.createElement(WrapperProviders, null), _react.default.createElement(_RightPanel.default, null))))));
 };
 
 var _default = WrapperSettings;
@@ -62990,7 +63047,7 @@ module.exports = {
 module.exports = {
   "major": 0,
   "minor": 8,
-  "patch": 4
+  "patch": 5
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
@@ -63473,7 +63530,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33995" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33077" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
