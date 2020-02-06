@@ -63069,7 +63069,7 @@ module.exports = {
 module.exports = {
   "major": 0,
   "minor": 8,
-  "patch": 11
+  "patch": 12
 };
 },{}],"components/VersionBox/VersionBox.tsx":[function(require,module,exports) {
 "use strict";
@@ -63332,7 +63332,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36809" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "38073" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
