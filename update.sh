@@ -1,4 +1,5 @@
 cd ../nugareact2
+cat src/CurrentVersion.json
 yarn build
 
 cd ../levabala.github.io
