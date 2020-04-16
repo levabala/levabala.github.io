@@ -1,6 +1,6 @@
 cd ../nugareact2
-cat src/CurrentVersion.json
 yarn build
+cat src/CurrentVersion.json
 
 cd ../levabala.github.io
 find . -name "*.bak" -type f -delete
